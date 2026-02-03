@@ -38,15 +38,14 @@ import { BlockNavMenu } from "./BlockNavMenu"
 interface BlockRendererProps {
   blocks: PageBlock[]
   currentPath?: string
-  searchParams?: Record<string, string | string[] | undefined>
 }
 
-export function BlockRenderer({ blocks, currentPath, searchParams }: BlockRendererProps) {
+export function BlockRenderer({ blocks, currentPath }: BlockRendererProps) {
   return (
     <>
       {blocks.map((block) => (
         <BlockWrapper key={block.id} background={block.background}>
-          <Block block={block} currentPath={currentPath} searchParams={searchParams} />
+          <Block block={block} currentPath={currentPath} />
         </BlockWrapper>
       ))}
     </>
@@ -77,7 +76,7 @@ function BlockWrapper({
   )
 }
 
-function Block({ block, currentPath, searchParams }: { block: PageBlock; currentPath?: string; searchParams?: Record<string, string | string[] | undefined> }) {
+function Block({ block, currentPath }: { block: PageBlock; currentPath?: string }) {
   const { collection, item } = block
 
   if (!item || typeof item === "string") {
@@ -92,7 +91,7 @@ function Block({ block, currentPath, searchParams }: { block: PageBlock; current
     case "block_form":
       return <BlockForm data={item as BlockFormType} />
     case "block_posts":
-      return <BlockPosts data={item as BlockPostType} searchParams={searchParams} currentPath={currentPath} />
+      return <BlockPosts data={item as BlockPostType} />
     case "block_gallery":
       return <BlockGallery data={item as BlockGalleryType} />
     case "block_pricing":

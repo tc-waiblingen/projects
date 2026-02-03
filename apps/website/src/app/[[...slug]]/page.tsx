@@ -13,7 +13,6 @@ import { VisualEditingWrapper } from '@/components/visual-editing/VisualEditingW
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>
-  searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
 // Legacy WordPress paths that should 404 immediately without querying Directus
@@ -95,8 +94,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function Page({ params, searchParams }: PageProps) {
-  const [{ slug }, resolvedSearchParams] = await Promise.all([params, searchParams])
+export default async function Page({ params }: PageProps) {
+  const { slug } = await params
 
   if (isBlockedPath(slug)) {
     notFound()
@@ -137,7 +136,7 @@ export default async function Page({ params, searchParams }: PageProps) {
               </Heading>
             </Container>
           }
-          <BlockRenderer blocks={blocks} currentPath={permalink} searchParams={resolvedSearchParams} />
+          <BlockRenderer blocks={blocks} currentPath={permalink} />
           {showToc && <TableOfContents />}
         </TocProvider>
       </div>

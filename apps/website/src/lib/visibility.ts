@@ -25,6 +25,15 @@ export async function checkVisibility(
   status: string | null | undefined,
   publishedAt: string | null | undefined
 ): Promise<VisibilityResult> {
+  // Fast path: published content with past/null date is always visible
+  // Avoids calling draftMode() which forces dynamic rendering
+  if (status === 'published') {
+    if (!publishedAt || new Date(publishedAt) <= new Date()) {
+      return { visible: true, previewReason: null }
+    }
+  }
+
+  // Only call draftMode() when we might need preview capabilities
   const draft = await draftMode()
   const canPreview = draft.isEnabled || isDev
 
@@ -43,20 +52,10 @@ export async function checkVisibility(
     return { visible: false, previewReason: null }
   }
 
-  // Status is 'published' - check publish date
-  if (publishedAt) {
-    const publishDate = new Date(publishedAt)
-    const now = new Date()
-
-    if (publishDate > now) {
-      // Scheduled for future
-      if (canPreview) {
-        return { visible: true, previewReason: { type: 'scheduled', publishAt: publishDate } }
-      }
-      return { visible: false, previewReason: null }
-    }
+  // Status is 'published' but publish date is in the future (scheduled)
+  const publishDate = new Date(publishedAt!)
+  if (canPreview) {
+    return { visible: true, previewReason: { type: 'scheduled', publishAt: publishDate } }
   }
-
-  // Published and either no publish date or publish date is in the past
-  return { visible: true, previewReason: null }
+  return { visible: false, previewReason: null }
 }
