@@ -1,0 +1,43 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        # Build-time variables (NEXT_PUBLIC_* are inlined during build)
+        - NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
+        - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+        - NEXT_PUBLIC_ENABLE_VISUAL_EDITING=${NEXT_PUBLIC_ENABLE_VISUAL_EDITING}
+      secrets:
+        # Build-time secrets (for fetching content during static generation)
+        - DIRECTUS_TOKEN
+        - DIRECTUS_PUBLIC_TOKEN
+        - INSTAGRAM_ACCESS_TOKEN
+        - INSTAGRAM_USER_ID
+        - URL_SIGNING_SECRET
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Runtime variables (server-side only)
+      - DIRECTUS_TOKEN=${DIRECTUS_TOKEN}
+      - DIRECTUS_PUBLIC_TOKEN=${DIRECTUS_PUBLIC_TOKEN}
+      - DIRECTUS_FORM_TOKEN=${DIRECTUS_FORM_TOKEN}
+      - DRAFT_MODE_SECRET=${DRAFT_MODE_SECRET}
+      - INSTAGRAM_ACCESS_TOKEN=${INSTAGRAM_ACCESS_TOKEN}
+      - INSTAGRAM_USER_ID=${INSTAGRAM_USER_ID}
+      - URL_SIGNING_SECRET=${URL_SIGNING_SECRET}
+    env_file:
+      - .env
+
+# Secrets sourced from environment variables
+secrets:
+  DIRECTUS_TOKEN:
+    environment: DIRECTUS_TOKEN
+  DIRECTUS_PUBLIC_TOKEN:
+    environment: DIRECTUS_PUBLIC_TOKEN
+  INSTAGRAM_ACCESS_TOKEN:
+    environment: INSTAGRAM_ACCESS_TOKEN
+  INSTAGRAM_USER_ID:
+    environment: INSTAGRAM_USER_ID
+  URL_SIGNING_SECRET:
+    environment: URL_SIGNING_SECRET

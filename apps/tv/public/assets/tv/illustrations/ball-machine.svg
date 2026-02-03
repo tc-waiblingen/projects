@@ -1,0 +1,95 @@
+<!-- Tennis Ball Machine (slim, flat back) + visible balls in hopper
+     Ball trajectory adjusted higher -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+	<defs>
+		<radialGradient id="machineGrad" cx="45%" cy="30%" r="80%">
+			<stop offset="0%" stop-color="#DDD5C0" />
+			<stop offset="100%" stop-color="#D0C4A8" />
+		</radialGradient>
+
+		<radialGradient id="ballGrad" cx="35%" cy="30%" r="70%">
+			<stop offset="0%" stop-color="#DDD5C0" />
+			<stop offset="100%" stop-color="#D0C4A8" />
+		</radialGradient>
+
+		<!-- clip so hopper balls stay inside -->
+		<clipPath id="hopperClip">
+			<path d="M132 132
+               H206
+               Q210 110 190 98
+               H148
+               Q128 110 132 132Z" />
+		</clipPath>
+	</defs>
+
+	<g stroke="#887050" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+		<!-- Slim machine body -->
+		<g>
+			<!-- main housing -->
+			<path d="M124 200
+               V132
+               H214
+               Q232 136 232 158
+               V210
+               Q232 238 206 244
+               H144
+               Q124 240 124 210
+               Z" fill="url(#machineGrad)" />
+
+			<!-- hopper / basket -->
+			<path d="M132 132
+               H206
+               Q210 110 190 98
+               H148
+               Q128 110 132 132Z" fill="url(#machineGrad)" />
+
+			<!-- balls inside hopper -->
+			<g clip-path="url(#hopperClip)">
+				<circle cx="150" cy="120" r="9" fill="url(#ballGrad)" />
+				<circle cx="170" cy="112" r="9" fill="url(#ballGrad)" />
+				<circle cx="190" cy="120" r="9" fill="url(#ballGrad)" />
+				<circle cx="160" cy="100" r="9" fill="url(#ballGrad)" />
+				<circle cx="180" cy="100" r="9" fill="url(#ballGrad)" />
+
+				<path d="M143 120 C147 114 157 114 161 120" />
+				<path d="M163 112 C167 106 177 106 181 112" />
+				<path d="M183 120 C187 114 197 114 201 120" />
+			</g>
+
+			<!-- subtle face seams -->
+			<path d="M138 156 H214" opacity="0.45" />
+			<path d="M138 172 H214" opacity="0.35" />
+
+			<!-- flush exit notch -->
+			<path d="M232 168
+               Q228 166 224 168
+               Q220 170 220 176
+               Q220 182 224 184
+               Q228 186 232 184" />
+			<path d="M226 170 Q223 176 226 182" opacity="0.6" />
+
+			<!-- control panel -->
+			<rect x="140" y="182" width="28" height="20" rx="4" />
+			<path d="M144 188 H164" />
+			<path d="M144 196 H158" />
+
+			<!-- wheels -->
+			<circle cx="150" cy="256" r="10" />
+			<circle cx="200" cy="256" r="10" />
+			<path d="M138 256 H212" />
+		</g>
+
+		<!-- trajectory (higher launch angle) -->
+		<path d="M232 172
+             C252 150 278 146 304 160" stroke-dasharray="2 8" />
+
+		<!-- flying tennis ball (raised position) -->
+		<g>
+			<circle cx="314" cy="160" r="14" fill="url(#ballGrad)" />
+			<path d="M304 156 C312 142 336 142 344 156" />
+			<path d="M304 164 C312 178 336 178 344 164" />
+			<path d="M298 146 Q290 142 284 144" opacity="0.6" />
+			<path d="M298 174 Q290 178 284 176" opacity="0.6" />
+		</g>
+	</g>
+</svg>

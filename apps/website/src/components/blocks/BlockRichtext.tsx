@@ -1,0 +1,72 @@
+import type { BlockRichtext as BlockRichtextType, DirectusFile } from "@/types/directus-schema"
+import { DocumentCentered } from "@/components/sections/document-centered"
+import { DocumentLeftAligned } from "@/components/sections/document-left-aligned"
+import { sanitizeHtml } from "@/lib/sanitize"
+import { transformRichtextAssets } from "@/lib/transform-richtext-assets"
+import { RichtextContent } from "@/components/elements/richtext-content"
+import { fetchFilesByIds } from "@/lib/directus/fetchers"
+import { getEditAttr } from "@/lib/visual-editing"
+
+interface BlockRichtextProps {
+  data: BlockRichtextType
+}
+
+/** Extract Directus file IDs from raw HTML content before URL transformation */
+function extractDirectusFileIds(html: string): string[] {
+  const regex = /https:\/\/cms\.tc-waiblingen\.de\/assets\/([\w-]+)/g
+  const ids: string[] = []
+  let match
+  while ((match = regex.exec(html)) !== null) {
+    if (match[1]) ids.push(match[1])
+  }
+  return [...new Set(ids)]
+}
+
+export async function BlockRichtext({ data }: BlockRichtextProps) {
+  const { id, headline, tagline, content, alignment } = data
+
+  // Extract file IDs from raw content before transformation
+  const fileIds = content ? extractDirectusFileIds(content) : []
+  const files = await fetchFilesByIds(fileIds)
+  const fileMetadata: Record<string, DirectusFile> = Object.fromEntries(
+    files.map((f) => [f.id, f])
+  )
+
+  const subheadline = tagline ? (
+    <p data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "tagline" })}>
+      {tagline}
+    </p>
+  ) : undefined
+  const processedContent = content
+    ? sanitizeHtml(transformRichtextAssets(content))
+    : undefined
+
+  const wrappedHeadline = headline ? (
+    <span data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "headline" })}>
+      {headline}
+    </span>
+  ) : null
+
+  if (alignment === "center") {
+    return (
+      <DocumentCentered headline={wrappedHeadline} headlineLevel="h2" subheadline={subheadline}>
+        {processedContent && (
+          <div data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "content" })}>
+            <RichtextContent html={processedContent} fileMetadata={fileMetadata} />
+          </div>
+        )}
+      </DocumentCentered>
+    )
+  }
+
+  // Default: left-aligned
+  return (
+    <DocumentLeftAligned headline={wrappedHeadline} headlineLevel="h2" subheadline={subheadline}>
+      {processedContent && (
+        <div data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "content" })}>
+          <RichtextContent html={processedContent} fileMetadata={fileMetadata} />
+        </div>
+      )}
+    </DocumentLeftAligned>
+  )
+}

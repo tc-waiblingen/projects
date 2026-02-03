@@ -1,0 +1,93 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <!-- Gradient for backgrounds -->
+    <radialGradient id="bgGradient" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" style="stop-color:#DDD5C0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D0C4A8;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+
+  <!-- Calendar centered -->
+  <g transform="translate(200, 150)">
+    <!-- Calendar background (rounded rectangle) -->
+    <rect x="-75" y="-90" width="150" height="180" rx="12" ry="12" fill="url(#bgGradient)" stroke="#887050"
+      stroke-width="3" />
+
+    <!-- Header section (red bar at top, like Apple Calendar) -->
+    <rect x="-75" y="-90" width="150" height="35" rx="12" ry="12" fill="#C8685D" stroke="none" />
+    <!-- Cover bottom corners of header to make it rectangular -->
+    <rect x="-75" y="-67" width="150" height="12" fill="#C8685D" stroke="none" />
+
+    <!-- Month text in header -->
+    <text id="calendar-month" x="0" y="-64" font-family="Open Sans, sans-serif" font-size="16" font-weight="bold"
+      fill="#DDD5C0" text-anchor="middle">DEZEMBER</text>
+
+    <!-- Separator line below header -->
+    <line x1="-75" y1="-55" x2="75" y2="-55" stroke="#887050" stroke-width="2.5" />
+
+    <!-- Large date number -->
+    <text id="calendar-day" x="0" y="35" font-family="Open Sans, sans-serif" font-size="70" font-weight="bold"
+      fill="#887050" text-anchor="middle">22</text>
+
+    <!-- Weekday text -->
+    <text id="calendar-weekday" x="0" y="-30" font-family="Open Sans, sans-serif" font-size="18" fill="#887050"
+      text-anchor="middle">Montag</text>
+
+    <!-- Small calendar grid at bottom -->
+    <g transform="translate(0, 60)">
+      <!-- Week row indicators -->
+      <circle cx="-50" cy="-5" r="3" fill="#A89878" />
+      <circle cx="-30" cy="-5" r="3" fill="#A89878" />
+      <circle cx="-10" cy="-5" r="3" fill="#A89878" />
+      <circle cx="10" cy="-5" r="3" fill="#A89878" />
+      <circle cx="30" cy="-5" r="3" fill="#A89878" />
+      <circle cx="50" cy="-5" r="3" fill="#A89878" />
+
+      <circle cx="-50" cy="10" r="3" fill="#A89878" />
+      <circle cx="-30" cy="10" r="3" fill="#A89878" />
+      <circle cx="-10" cy="10" r="3" fill="#A89878" />
+      <circle cx="10" cy="10" r="3" fill="#A89878" />
+      <circle cx="30" cy="10" r="3" fill="#A89878" />
+      <circle cx="50" cy="10" r="3" fill="#A89878" />
+    </g>
+
+    <!-- Ring binder holes at top -->
+    <circle cx="-40" cy="-80" r="4" fill="none" stroke="#887050" stroke-width="2.5" />
+    <circle cx="0" cy="-80" r="4" fill="none" stroke="#887050" stroke-width="2.5" />
+    <circle cx="40" cy="-80" r="4" fill="none" stroke="#887050" stroke-width="2.5" />
+  </g>
+
+  <!-- Script to update calendar with current date -->
+  <script type="text/javascript">
+    <![CDATA[
+    (function() {
+      const now = new Date();
+
+      // German month names
+      const months = [
+        'JANUAR', 'FEBRUAR', 'MÄRZ', 'APRIL', 'MAI', 'JUNI',
+        'JULI', 'AUGUST', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DEZEMBER'
+      ];
+
+      // German weekday names
+      const weekdays = [
+        'Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
+        'Donnerstag', 'Freitag', 'Samstag'
+      ];
+
+      const day = now.getDate();
+      const month = months[now.getMonth()];
+      const weekday = weekdays[now.getDay()];
+
+      // Update SVG text elements
+      const monthEl = document.getElementById('calendar-month');
+      const dayEl = document.getElementById('calendar-day');
+      const weekdayEl = document.getElementById('calendar-weekday');
+
+      if (monthEl) monthEl.textContent = month;
+      if (dayEl) dayEl.textContent = day;
+      if (weekdayEl) weekdayEl.textContent = weekday;
+    })();
+    ]]>
+  </script>
+</svg>

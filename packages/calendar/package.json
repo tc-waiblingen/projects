@@ -1,0 +1,28 @@
+{
+  "name": "@tcw/calendar",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "peerDependencies": {
+    "@directus/sdk": "^21.0.0"
+  },
+  "dependencies": {
+    "ical-expander": "^3.2.0",
+    "node-html-parser": "^7.0.2"
+  },
+  "devDependencies": {
+    "@directus/sdk": "^21.0.0",
+    "typescript": "^5.7.3"
+  }
+}

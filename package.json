@@ -1,0 +1,15 @@
+{
+  "name": "tcw-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev:website": "pnpm --filter @tcw/website dev",
+    "dev:tv": "pnpm --filter @tcw/tv dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  }
+}

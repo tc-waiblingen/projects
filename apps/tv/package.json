@@ -1,0 +1,63 @@
+{
+  "name": "@tcw/tv",
+  "version": "0.0.1",
+  "description": "TV kiosk display for Tennis-Club Waiblingen",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "clean": "rm -rf .next/cache",
+    "generate:types": "tsx ./src/lib/directus/generateDirectusTypes.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "printWidth": 120,
+    "plugins": [
+      "prettier-plugin-organize-imports",
+      "prettier-plugin-tailwindcss"
+    ],
+    "tailwindStylesheet": "./src/app/globals.css",
+    "tailwindFunctions": [
+      "clsx"
+    ]
+  },
+  "dependencies": {
+    "@directus/sdk": "^21.0.0",
+    "@tcw/calendar": "workspace:*",
+    "clsx": "^2.1.1",
+    "libphonenumber-js": "^1.12.34",
+    "next": "^16",
+    "p-queue": "^9.1.0",
+    "qrcode": "^1.5.4",
+    "react": "^19",
+    "react-dom": "^19",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^25",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.1.2",
+    "directus-sdk-typegen": "^0.2.1",
+    "eslint": "^9",
+    "eslint-config-next": "^16",
+    "jsdom": "^27.4.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "vitest": "^4.0.18"
+  }
+}

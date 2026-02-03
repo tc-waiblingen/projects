@@ -1,0 +1,59 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <!-- Gradient for backgrounds -->
+    <radialGradient id="bgGradient" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" style="stop-color:#DDD5C0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D0C4A8;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+
+  <!-- Instagram camera icon (left side) -->
+  <g transform="translate(110, 150)">
+    <!-- Rounded square background -->
+    <rect x="-50" y="-50" width="100" height="100" rx="22" ry="22"
+          fill="url(#bgGradient)" stroke="#887050" stroke-width="3"/>
+
+    <!-- Camera lens (large circle) -->
+    <circle cx="0" cy="5" r="28" fill="none" stroke="#887050" stroke-width="3"/>
+    <circle cx="0" cy="5" r="20" fill="none" stroke="#887050" stroke-width="2.5"/>
+
+    <!-- Camera flash/viewfinder (small circle top right) -->
+    <circle cx="28" cy="-28" r="6" fill="#A89878" stroke="#887050" stroke-width="2.5"/>
+
+    <!-- Camera details -->
+    <circle cx="0" cy="5" r="10" fill="none" stroke="#887050" stroke-width="2"/>
+  </g>
+
+  <!-- Newspaper/News icon (right side) -->
+  <g transform="translate(270, 150)">
+    <!-- Newspaper outline -->
+    <rect x="-45" y="-55" width="90" height="110" rx="4" ry="4"
+          fill="url(#bgGradient)" stroke="#887050" stroke-width="3"/>
+
+    <!-- Headline (thick line at top) -->
+    <line x1="-35" y1="-40" x2="35" y2="-40" stroke="#887050" stroke-width="4" stroke-linecap="round"/>
+
+    <!-- News columns - left column -->
+    <line x1="-35" y1="-25" x2="-5" y2="-25" stroke="#887050" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-35" y1="-17" x2="-5" y2="-17" stroke="#887050" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-35" y1="-9" x2="-5" y2="-9" stroke="#887050" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-35" y1="-1" x2="-5" y2="-1" stroke="#887050" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- News columns - right column -->
+    <line x1="5" y1="-25" x2="35" y2="-25" stroke="#887050" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="-17" x2="35" y2="-17" stroke="#887050" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="-9" x2="35" y2="-9" stroke="#887050" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="-1" x2="35" y2="-1" stroke="#887050" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Image placeholder box -->
+    <rect x="-35" y="10" width="70" height="35" rx="2" ry="2"
+          fill="#A89878" stroke="#887050" stroke-width="2.5"/>
+  </g>
+
+  <!-- Connecting element - arrow or line between them -->
+  <g>
+    <!-- Arrow pointing from Instagram to News -->
+    <path d="M 165 150 L 220 150" stroke="#887050" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 210 143 L 220 150 L 210 157" fill="none" stroke="#887050" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
