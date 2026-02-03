@@ -13,3 +13,13 @@ args = ["run", "dev:website"]
 description = "Run the TV in development mode"
 run = "pnpm"
 args = ["run", "dev:tv"]
+
+[tasks.lint]
+description = "Run the linter"
+run = "pnpm"
+args = ["run", "lint"]
+
+[tasks.build]
+description = "Build all projects"
+run = "pnpm"
+args = ["run", "build"]
