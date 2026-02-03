@@ -9,10 +9,15 @@ const SCREEN_TITLE = 'Vereinskalender'
 const SCREEN_DURATION = 30000
 const SHORT_DURATION = 2000
 
+const CALENDAR_URL = 'https://tc-waiblingen.de/kalender'
+
 export default async function ClubSchedulePage() {
   const schedule = await fetchScheduleData()
   const today = new Date()
   const nextIndex = getNextScreenIndex(SCREEN_URL)
+
+  // Generate QR code for website calendar
+  const calendarQrCode = await generateQrCodeForView(CALENDAR_URL, 'large', true)
 
   // Pre-generate QR codes for events that need them
   const dayPanelsWithQr = await Promise.all(
@@ -50,6 +55,13 @@ export default async function ClubSchedulePage() {
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={duration}>
       <div className="relative h-screen overflow-hidden">
+        <div className="absolute bottom-8 right-8 z-20 flex items-center gap-3 rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-black/50">
+          <QrCode linkUrl={CALENDAR_URL} qrCodeDataUrl={calendarQrCode} size="large" />
+          <span className="tv-small">
+            Vereinskalender auf <br /> Webseite
+          </span>
+        </div>
+
         <div className="relative z-10 h-full px-16 pb-6 pt-36">
           {!schedule.hasEvents && (
             <div className="flex h-full items-center justify-center text-center">
