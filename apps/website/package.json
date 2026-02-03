@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "pagefind --site .next/standalone/.next/server/app --output-path public/_pagefind --force-language de",
+    "postbuild": "pagefind --site .next/standalone/apps/website/.next/server/app --output-path public/_pagefind --force-language de",
     "start": "next start",
     "lint": "eslint",
     "clean": "rm -rf .next/cache",
