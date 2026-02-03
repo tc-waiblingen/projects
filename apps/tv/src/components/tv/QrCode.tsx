@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import Image from 'next/image'
 
 interface QrCodeProps {
   linkUrl: string
@@ -11,6 +12,7 @@ interface QrCodeProps {
  * QR Code component that displays a clickable QR code with optional label.
  */
 export function QrCode({ linkUrl, qrCodeDataUrl, label, size = 'small' }: QrCodeProps) {
+  const dimension = size === 'large' ? 64 : 48
   return (
     <a
       href={linkUrl}
@@ -18,9 +20,12 @@ export function QrCode({ linkUrl, qrCodeDataUrl, label, size = 'small' }: QrCode
       rel="noopener noreferrer"
       className="flex flex-col items-center gap-1 transition-opacity hover:opacity-70"
     >
-      <img
+      <Image
         src={qrCodeDataUrl}
         alt={label || 'QR Code'}
+        width={dimension}
+        height={dimension}
+        unoptimized
         className={clsx('rounded-md border-2 border-white/70 bg-white', size === 'large' ? 'h-16 w-16' : 'h-12 w-12')}
       />
       {label && (

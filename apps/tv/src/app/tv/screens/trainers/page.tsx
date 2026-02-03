@@ -1,6 +1,7 @@
 import { EmailAddress, PhoneNumber, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchTrainers, getNextScreenIndex } from '@/lib/tv'
 import { getDirectusAssetURL } from '@/lib/directus/directus-utils'
+import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,12 +28,13 @@ export default async function TrainersPage() {
                 className="flex flex-col items-center gap-4 rounded-3xl border border-white/70 bg-white/70 px-4 py-8 shadow-sm"
               >
                 {/* Banner */}
-                <div className="flex h-58 w-full items-center justify-center overflow-hidden rounded-2xl bg-neutral-200">
+                <div className="relative flex h-58 w-full items-center justify-center overflow-hidden rounded-2xl bg-neutral-200">
                   {trainer.banner && typeof trainer.banner !== 'string' && trainer.banner.id ? (
-                    <img
+                    <Image
                       src={getDirectusAssetURL(trainer.banner)}
                       alt={trainer.name ?? ''}
-                      className="h-full w-full object-contain p-4"
+                      fill
+                      className="object-contain p-4"
                     />
                   ) : (
                     <span className="tv-body-lg font-bold text-neutral-400">(Bild folgt)</span>

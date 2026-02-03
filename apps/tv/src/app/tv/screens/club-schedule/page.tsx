@@ -1,5 +1,6 @@
 import { LocationPin, QrCode, ScreenAutoAdvance, StarBadge, TvScreenLayout } from '@/components/tv'
 import { fetchScheduleData, formatTimeRange, generateQrCodeForView, getNextScreenIndex, getRelativeDateText, isImportantEvent } from '@/lib/tv'
+import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
 
@@ -145,11 +146,13 @@ export default async function ClubSchedulePage() {
                                   )}
                                 </div>
                                 {event.source === 'app' && event.imageUrl && (
-                                  <img
+                                  <Image
                                     src={event.imageUrl}
                                     alt=""
+                                    width={48}
+                                    height={48}
                                     className="h-12 w-12 shrink-0 rounded-md border border-white/70 bg-white object-cover"
-                                    loading="lazy"
+                                    unoptimized
                                   />
                                 )}
                                 {event.source === 'match' && event.groupUrl && 'groupQrCode' in event && event.groupQrCode && (

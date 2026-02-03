@@ -1,6 +1,7 @@
 import { ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchTeamMembers, getNextScreenIndex } from '@/lib/tv'
 import { getDirectusAssetURL } from '@/lib/directus/directus-utils'
+import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,12 +33,13 @@ export default async function TeamPage() {
                 className="flex flex-col items-center gap-4 rounded-3xl border border-white/70 bg-white/70 px-6 py-8 shadow-sm"
               >
                 {/* Photo */}
-                <div className="flex h-60 w-40 items-center justify-center overflow-hidden rounded-2xl bg-neutral-200">
+                <div className="relative flex h-60 w-40 items-center justify-center overflow-hidden rounded-2xl bg-neutral-200">
                   {member.picture && typeof member.picture !== 'string' && member.picture.id ? (
-                    <img
+                    <Image
                       src={getDirectusAssetURL(member.picture)}
                       alt={member.name ?? ''}
-                      className="h-full w-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   ) : (
                     <span className="tv-initials font-bold text-neutral-400">{getInitials(member.name ?? '')}</span>

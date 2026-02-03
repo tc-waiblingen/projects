@@ -61,10 +61,10 @@ function getCalendarConfig(): CalendarFetcherConfig {
       return getDirectusAssetURL(file)
     },
     directus: {
-      request: (query) => directus.request(query as Parameters<typeof directus.request>[0]),
+      request: <T>(query: unknown) => directus.request(query as Parameters<typeof directus.request>[0]) as Promise<T>,
     },
-    readItems: (collection, query) =>
-      readItems(collection as 'calendar', query as Parameters<typeof readItems<'calendar'>>[1]),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    readItems: (collection, query) => (readItems as any)(collection, query),
   }
 }
 

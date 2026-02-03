@@ -3,6 +3,7 @@ import { getVisibleScreens, isHatSeasonInBerlin, isChampagneSeasonInBerlin } fro
 import { HomeAutoTransition } from './HomeAutoTransition'
 import { Snowflakes } from './Snowflakes'
 import { Fireworks } from './Fireworks'
+import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
 
@@ -102,9 +103,11 @@ export default function TvHomePage() {
         <div className="relative flex flex-col items-center">
           <div className="relative flex h-[20vh] items-center justify-center">
             {isHatSeason && (
-              <img
+              <Image
                 src="/assets/tv/graphics/christmas-hat.svg"
                 alt="Christmas hat"
+                width={240}
+                height={240}
                 className="animate-fade-in-scale absolute z-20 w-[24vh] translate-x-[9vh] -translate-y-[22vh] rotate-12 [animation-delay:120ms]"
               />
             )}
@@ -144,7 +147,7 @@ export default function TvHomePage() {
             {isCalendarIllustration ? (
               <CalendarIllustration className="h-auto w-full" />
             ) : (
-              <img src={illustrationPath} alt={illustrationAlt} className="h-auto w-full" />
+              <Image src={illustrationPath} alt={illustrationAlt} width={256} height={256} className="h-auto w-full" />
             )}
           </a>
         )

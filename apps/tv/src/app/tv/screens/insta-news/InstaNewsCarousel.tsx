@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { QrCode } from '@/components/tv'
+import Image from 'next/image'
 
 const IMAGE_DURATION = 8000 // 8 seconds per image
 
@@ -165,7 +166,7 @@ export function InstaNewsCarousel({ content, nextIndex }: InstaNewsCarouselProps
                   onEnded={triggerHomeTransition}
                 />
               ) : (
-                <img src={item.media_url} alt="Instagram content" className="h-full w-full object-cover" />
+                <Image src={item.media_url} alt="Instagram content" fill className="object-cover" unoptimized />
               )}
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-600">
                 <div className="h-1 bg-white" style={{ width: `${progress}%` }} />
@@ -230,7 +231,7 @@ export function InstaNewsCarousel({ content, nextIndex }: InstaNewsCarouselProps
                   {item.media_type === 'VIDEO' ? (
                     <>
                       {item.thumbnail_url && !isActive && (
-                        <img src={item.thumbnail_url} alt="Video thumbnail" className="absolute inset-0 h-full w-full object-cover" />
+                        <Image src={item.thumbnail_url} alt="Video thumbnail" fill className="object-cover" unoptimized />
                       )}
                       <video
                         ref={isActive ? videoRef : undefined}
@@ -242,7 +243,7 @@ export function InstaNewsCarousel({ content, nextIndex }: InstaNewsCarouselProps
                       />
                     </>
                   ) : (
-                    <img src={item.media_url} alt="Instagram content" className="h-full w-full object-cover" />
+                    <Image src={item.media_url} alt="Instagram content" fill className="object-cover" unoptimized />
                   )}
                   {isActive && (
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-600">
