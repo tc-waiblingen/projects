@@ -3,3 +3,13 @@ node = "25.2.1"
 
 [env]
 _.file = ".env"
+
+[tasks."dev:website"]
+description = "Run the website in development mode"
+run = "pnpm"
+args = ["run", "dev:website"]
+
+[tasks."dev:tv"]
+description = "Run the TV in development mode"
+run = "pnpm"
+args = ["run", "dev:tv"]
