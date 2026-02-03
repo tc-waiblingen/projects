@@ -164,7 +164,9 @@ export async function fetchAppCalendarEvents(
   config: CalendarFetcherConfig,
   options: FetchCalendarOptions = {}
 ): Promise<CalendarEvent[]> {
+  console.log('[fetchAppCalendarEvents] Function called')
   const calendarConfig = await config.fetchCalendarConfig()
+  console.log('[fetchAppCalendarEvents] Calendar config:', calendarConfig.appCalendarUrl ? 'URL configured' : 'NO URL')
 
   if (!calendarConfig.appCalendarUrl) {
     console.warn('App calendar URL not configured')
@@ -181,6 +183,7 @@ export async function fetchAppCalendarEvents(
     }
 
     const icsData = await response.text()
+    console.log('[fetchAppCalendarEvents] Fetched iCal data, length:', icsData.length)
 
     // Parse attachments from raw iCal data
     const attachmentsMap = parseIcalAttachments(icsData)
@@ -192,6 +195,8 @@ export async function fetchAppCalendarEvents(
     const to = options.to ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year ahead
 
     const { events, occurrences } = expander.between(from, to)
+    console.log('[fetchAppCalendarEvents] Date range:', from.toISOString(), 'to', to.toISOString())
+    console.log('[fetchAppCalendarEvents] Found events:', events.length, 'occurrences:', occurrences.length)
 
     const calendarEvents: CalendarEvent[] = []
 
@@ -310,6 +315,10 @@ export async function fetchAppCalendarEvents(
       })
     }
 
+    console.log('[fetchAppCalendarEvents] Returning', calendarEvents.length, 'events')
+    if (calendarEvents.length > 0) {
+      console.log('[fetchAppCalendarEvents] Sample event:', calendarEvents[0]?.title, calendarEvents[0]?.metadata)
+    }
     return calendarEvents
   } catch (error) {
     console.error('Error fetching app calendar events:', error)
@@ -1017,6 +1026,7 @@ export async function fetchAllCalendarEvents(
   config: CalendarFetcherConfig,
   options: FetchCalendarOptions = {}
 ): Promise<CalendarEvent[]> {
+  console.log('[fetchAllCalendarEvents] Starting fetch with options:', options)
   const results = await Promise.allSettled([
     fetchAppCalendarEvents(config, options),
     fetchClubEvents(config, options),
@@ -1026,11 +1036,14 @@ export async function fetchAllCalendarEvents(
 
   const allEvents: CalendarEvent[] = []
 
-  for (const result of results) {
+  const sources = ['app', 'club', 'match', 'tournament']
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i]!
     if (result.status === 'fulfilled') {
+      console.log(`[fetchAllCalendarEvents] ${sources[i]}: ${result.value.length} events`)
       allEvents.push(...result.value)
     } else {
-      console.error('Calendar fetch failed:', result.reason)
+      console.error(`[fetchAllCalendarEvents] ${sources[i]} failed:`, result.reason)
     }
   }
 

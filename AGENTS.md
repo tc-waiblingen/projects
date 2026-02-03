@@ -44,6 +44,12 @@ npm run generate:types   # Regenerate Directus types
 - **Turbo** for build orchestration — `build` tasks depend on `^build` (packages first)
 - Package scopes: `@tcw/website`, `@tcw/tv`, `@tcw/calendar`
 
+**Important:** Shared packages (e.g., `@tcw/calendar`) must be rebuilt after making changes for apps to pick up the updates:
+```bash
+pnpm --filter @tcw/calendar build
+```
+The apps import from the compiled `dist/` folder, not the source files directly.
+
 ## App-Specific Documentation
 
 Each app has detailed documentation in its `AGENTS.md` file covering architecture, testing patterns, visual editing, component organization, and code standards:

@@ -402,7 +402,26 @@ describe('schedule-transformer', () => {
       expect(isImportantEvent(event, today)).toBe(false)
     })
 
-    it('returns true for app events in Veranstaltungen category within cutoff', () => {
+    it('returns true for app events in Wichtig category within cutoff', () => {
+      const event = {
+        id: 'app-1',
+        source: 'app' as const,
+        title: 'App Event',
+        description: null,
+        location: null,
+        startDate: new Date(2025, 0, 25),
+        displayDate: new Date(2025, 0, 25),
+        startTime: null,
+        endTime: null,
+        isAllDay: false,
+        isMultiDay: false,
+        categories: ['Wichtig'],
+      }
+
+      expect(isImportantEvent(event, today)).toBe(true)
+    })
+
+    it('returns false for app events not in Wichtig category', () => {
       const event = {
         id: 'app-1',
         source: 'app' as const,
@@ -416,25 +435,6 @@ describe('schedule-transformer', () => {
         isAllDay: false,
         isMultiDay: false,
         categories: ['Veranstaltungen'],
-      }
-
-      expect(isImportantEvent(event, today)).toBe(true)
-    })
-
-    it('returns false for app events not in Veranstaltungen category', () => {
-      const event = {
-        id: 'app-1',
-        source: 'app' as const,
-        title: 'App Event',
-        description: null,
-        location: null,
-        startDate: new Date(2025, 0, 25),
-        displayDate: new Date(2025, 0, 25),
-        startTime: null,
-        endTime: null,
-        isAllDay: false,
-        isMultiDay: false,
-        categories: ['Training'],
       }
 
       expect(isImportantEvent(event, today)).toBe(false)

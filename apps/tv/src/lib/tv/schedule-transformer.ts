@@ -128,14 +128,14 @@ function isImportantEvent(event: TvEvent, today: Date): boolean {
     return true
   }
 
-  // App events in "Veranstaltungen" category
+  // App events in "Wichtig" category
   if (event.source === 'app') {
     const categories = (event.categories || [])
       .flatMap((category) => String(category || '').split(','))
       .map((category) => category.trim().toLowerCase())
       .filter(Boolean)
-    const isVeranstaltung = categories.includes('veranstaltungen') || categories.includes('veranstaltung')
-    if (!isVeranstaltung) {
+    const isWichtig = categories.includes('wichtig')
+    if (!isWichtig) {
       return false
     }
     const cutoff = new Date(today.getFullYear(), today.getMonth() + 10, today.getDate())
@@ -171,9 +171,16 @@ function groupAndPrioritize(events: TvEvent[], maxPanels: number, maxPerDay: num
       const dateParts = dateKey.split('-').map(Number)
       const dayDate = new Date(dateParts[0]!, dateParts[1]! - 1, dateParts[2]!)
       const sorted = dayEvents.slice().sort((a, b) => {
-        const timeA = a.startDate.getTime()
-        const timeB = b.startDate.getTime()
-        if (timeA !== timeB) return timeA - timeB
+        // All-day events come first
+        if (a.isAllDay !== b.isAllDay) {
+          return a.isAllDay ? -1 : 1
+        }
+        // Then sort by start time
+        if (a.startTime && b.startTime) {
+          const comparison = a.startTime.localeCompare(b.startTime)
+          if (comparison !== 0) return comparison
+        }
+        // Finally by title
         return a.title.localeCompare(b.title)
       })
       const visibleEvents = sorted.slice(0, maxPerDay)
