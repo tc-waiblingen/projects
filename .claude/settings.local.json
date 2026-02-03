@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/ts/Developer/TCW/projects log --oneline -10)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "next-devtools"
+  ]
+}

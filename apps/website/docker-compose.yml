@@ -1,14 +1,13 @@
 services:
   web:
     build:
-      context: .
+      context: ../..  # Monorepo root
+      dockerfile: apps/website/Dockerfile
       args:
-        # Build-time variables (NEXT_PUBLIC_* are inlined during build)
         - NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
         - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
         - NEXT_PUBLIC_ENABLE_VISUAL_EDITING=${NEXT_PUBLIC_ENABLE_VISUAL_EDITING}
       secrets:
-        # Build-time secrets (for fetching content during static generation)
         - DIRECTUS_TOKEN
         - DIRECTUS_PUBLIC_TOKEN
         - INSTAGRAM_ACCESS_TOKEN
@@ -18,7 +17,6 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # Runtime variables (server-side only)
       - DIRECTUS_TOKEN=${DIRECTUS_TOKEN}
       - DIRECTUS_PUBLIC_TOKEN=${DIRECTUS_PUBLIC_TOKEN}
       - DIRECTUS_FORM_TOKEN=${DIRECTUS_FORM_TOKEN}
@@ -29,7 +27,6 @@ services:
     env_file:
       - .env
 
-# Secrets sourced from environment variables
 secrets:
   DIRECTUS_TOKEN:
     environment: DIRECTUS_TOKEN

@@ -1,8 +1,0 @@
-[env]
-_.file = ".env"
-
-[tasks.docker-build]
-run = "docker build -f Dockerfile -t tcw/tv-wall:latest ."
-
-[tasks.docker-shell]
-run = "docker run -it --rm --env-file .env --entrypoint /bin/ash tcw/tv-wall:latest"
