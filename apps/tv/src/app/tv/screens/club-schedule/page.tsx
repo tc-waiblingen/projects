@@ -50,7 +50,7 @@ export default async function ClubSchedulePage() {
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={duration}>
       <div className="relative h-screen overflow-hidden">
-        <div className="relative z-10 h-full px-16 pb-10 pt-44">
+        <div className="relative z-10 h-full px-16 pb-6 pt-36">
           {!schedule.hasEvents && (
             <div className="flex h-full items-center justify-center text-center">
               <div className="max-w-2xl">
@@ -61,9 +61,9 @@ export default async function ClubSchedulePage() {
           )}
 
           {dayPanelsWithQr.length > 0 && (
-            <div className="grid h-full content-center gap-4 grid-cols-2 grid-rows-3 grid-flow-col">
+            <div className="grid h-full content-start gap-4 grid-cols-2 grid-rows-3 grid-flow-col">
               {dayPanelsWithQr.map((panel) => (
-                <div key={panel.dateKey} className="flex gap-4 rounded-3xl border border-white/70 bg-white/70 px-4 py-3 shadow-sm">
+                <div key={panel.dateKey} className="flex gap-4 rounded-3xl border border-white/70 bg-white/70 px-4 py-4 shadow-sm">
                   <div className="min-w-0 flex-1">
                     <p className="tv-body font-semibold text-neutral-900">
                       {panel.date.toLocaleDateString('de-DE', {
