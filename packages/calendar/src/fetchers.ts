@@ -282,6 +282,13 @@ export async function fetchAppCalendarEvents(
         organizer: event.organizer || undefined,
       }
 
+      // Extract categories
+      const categories = event.component.getAllProperties('categories')
+      if (categories.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        metadata.categories = categories.flatMap((cat: any) => (cat.getValues() as string[]).map(String))
+      }
+
       // Get image URL from attachments map
       const imageUrl = attachmentsMap.get(event.uid) || null
 
@@ -315,11 +322,20 @@ export async function fetchAppCalendarEvents(
       })
     }
 
-    console.log('[fetchAppCalendarEvents] Returning', calendarEvents.length, 'events')
-    if (calendarEvents.length > 0) {
-      console.log('[fetchAppCalendarEvents] Sample event:', calendarEvents[0]?.title, calendarEvents[0]?.metadata)
+    // Filter out events with "Tischreservierung" category
+    const filteredEvents = calendarEvents.filter((event) => {
+      const categories = (event.metadata as AppEventMetadata).categories || []
+      const normalizedCategories = categories
+        .flatMap((cat) => String(cat || '').split(','))
+        .map((cat) => cat.trim().toLowerCase())
+      return !normalizedCategories.includes('tischreservierung')
+    })
+
+    console.log('[fetchAppCalendarEvents] Returning', filteredEvents.length, 'events (filtered from', calendarEvents.length, ')')
+    if (filteredEvents.length > 0) {
+      console.log('[fetchAppCalendarEvents] Sample event:', filteredEvents[0]?.title, filteredEvents[0]?.metadata)
     }
-    return calendarEvents
+    return filteredEvents
   } catch (error) {
     console.error('Error fetching app calendar events:', error)
     return []
