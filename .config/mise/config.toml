@@ -4,22 +4,22 @@ node = "25.2.1"
 [env]
 _.file = ".env"
 
-[tasks."dev:website"]
-description = "Run the website in development mode"
-run = "pnpm"
-args = ["run", "dev:website"]
-
 [tasks."dev:tv"]
 description = "Run the TV in development mode"
-run = "pnpm"
-args = ["run", "dev:tv"]
+run = "pnpm run dev:tv"
+alias = "dev-tv"
+
+[tasks."dev:website"]
+description = "Run the website in development mode"
+run = "pnpm run dev:website"
+alias = "dev-website"
 
 [tasks.lint]
 description = "Run the linter"
-run = "pnpm"
-args = ["run", "lint"]
+run = "pnpm run lint"
+alias = "lint"
 
 [tasks.build]
 description = "Build all projects"
-run = "pnpm"
-args = ["run", "build"]
+run = "pnpm run build"
+alias = "build"
