@@ -56,6 +56,7 @@ export interface CalendarEvent {
   url: string | null
   imageUrl: string | null
   metadata: CalendarEventMetadata
+  displayWeight: number // 1 = compact (title only), 2 = medium, 3 = large (long description)
 }
 
 export interface FetchCalendarOptions {

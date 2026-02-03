@@ -6,7 +6,7 @@
 import type { CalendarEvent, AppEventMetadata, ClubEventMetadata, MatchEventMetadata, TournamentEventMetadata } from '@tcw/calendar'
 
 const MAX_DAY_PANELS = 6
-const MAX_EVENTS_PER_DAY = 2
+const MAX_WEIGHT_PER_DAY = 7
 
 export interface TvEvent {
   id: string
@@ -21,6 +21,8 @@ export interface TvEvent {
   endTime: string | null
   isAllDay: boolean
   isMultiDay: boolean
+  /** Display weight: 1 = compact, 2 = medium, 3 = large */
+  displayWeight: number
   important?: boolean
   categories?: string[]
   matchType?: string
@@ -58,6 +60,7 @@ function normalizeEvent(event: ExpandedCalendarEvent): TvEvent | null {
     endTime: event.endTime,
     isAllDay: event.isAllDay,
     isMultiDay: event.isMultiDay,
+    displayWeight: event.displayWeight,
     imageUrl: event.imageUrl,
   }
 
@@ -148,7 +151,7 @@ function isImportantEvent(event: TvEvent, today: Date): boolean {
 /**
  * Group events by date and apply display prioritization.
  */
-function groupAndPrioritize(events: TvEvent[], maxPanels: number, maxPerDay: number): DayPanel[] {
+function groupAndPrioritize(events: TvEvent[], maxPanels: number, maxWeight: number): DayPanel[] {
   const today = new Date()
 
   // Group by displayDate (using local date components to avoid UTC shift)
@@ -183,7 +186,19 @@ function groupAndPrioritize(events: TvEvent[], maxPanels: number, maxPerDay: num
         // Finally by title
         return a.title.localeCompare(b.title)
       })
-      const visibleEvents = sorted.slice(0, maxPerDay)
+
+      // Select events by weight instead of count
+      const visibleEvents: TvEvent[] = []
+      let currentWeight = 0
+      for (const event of sorted) {
+        if (currentWeight + event.displayWeight <= maxWeight) {
+          visibleEvents.push(event)
+          currentWeight += event.displayWeight
+        } else {
+          break
+        }
+      }
+
       const hasImportant = sorted.some((event) => isImportantEvent(event, today))
 
       return {
@@ -274,7 +289,7 @@ export function transformScheduleForTv(events: CalendarEvent[]): ScheduleData {
     .sort((a, b) => a.displayDate.getTime() - b.displayDate.getTime())
 
   // Group by date and prioritize
-  const dayPanels = groupAndPrioritize(tvEvents, MAX_DAY_PANELS, MAX_EVENTS_PER_DAY)
+  const dayPanels = groupAndPrioritize(tvEvents, MAX_DAY_PANELS, MAX_WEIGHT_PER_DAY)
 
   return {
     dayPanels,

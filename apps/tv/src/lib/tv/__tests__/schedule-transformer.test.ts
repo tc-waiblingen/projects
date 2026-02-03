@@ -18,6 +18,7 @@ function createMockEvent(overrides: Partial<CalendarEvent> = {}): CalendarEvent 
     url: null,
     imageUrl: null,
     metadata: { important: false, showOnTv: true },
+    displayWeight: 1, // Default to lightweight (title only)
     ...overrides,
   }
 }
@@ -194,18 +195,29 @@ describe('schedule-transformer', () => {
       expect(result.dayPanels[0]!.events[0]!.id).toBe('today')
     })
 
-    it('limits to maximum of 2 events per day', () => {
-      const events: CalendarEvent[] = [
-        createMockEvent({ id: 'e1', startDate: new Date(2025, 0, 21, 9, 0, 0) }),
-        createMockEvent({ id: 'e2', startDate: new Date(2025, 0, 21, 12, 0, 0) }),
-        createMockEvent({ id: 'e3', startDate: new Date(2025, 0, 21, 15, 0, 0) }),
-        createMockEvent({ id: 'e4', startDate: new Date(2025, 0, 21, 18, 0, 0) }),
+    it('limits events per day based on total weight (max 7)', () => {
+      // 4 lightweight events (weight 1 each) = total weight 4, all should fit
+      const lightweightEvents: CalendarEvent[] = [
+        createMockEvent({ id: 'e1', startDate: new Date(2025, 0, 21, 9, 0, 0), displayWeight: 1 }),
+        createMockEvent({ id: 'e2', startDate: new Date(2025, 0, 21, 12, 0, 0), displayWeight: 1 }),
+        createMockEvent({ id: 'e3', startDate: new Date(2025, 0, 21, 15, 0, 0), displayWeight: 1 }),
+        createMockEvent({ id: 'e4', startDate: new Date(2025, 0, 21, 18, 0, 0), displayWeight: 1 }),
       ]
 
-      const result = transformScheduleForTv(events)
+      const result1 = transformScheduleForTv(lightweightEvents)
+      expect(result1.dayPanels[0]!.events).toHaveLength(4)
+      expect(result1.dayPanels[0]!.overflow).toBe(0)
 
-      expect(result.dayPanels[0]!.events).toHaveLength(2)
-      expect(result.dayPanels[0]!.overflow).toBe(2)
+      // 3 heavy events (weight 3 each) = only 2 can fit (weight 6), 1 overflows
+      const heavyEvents: CalendarEvent[] = [
+        createMockEvent({ id: 'e1', startDate: new Date(2025, 0, 21, 9, 0, 0), displayWeight: 3 }),
+        createMockEvent({ id: 'e2', startDate: new Date(2025, 0, 21, 12, 0, 0), displayWeight: 3 }),
+        createMockEvent({ id: 'e3', startDate: new Date(2025, 0, 21, 15, 0, 0), displayWeight: 3 }),
+      ]
+
+      const result2 = transformScheduleForTv(heavyEvents)
+      expect(result2.dayPanels[0]!.events).toHaveLength(2)
+      expect(result2.dayPanels[0]!.overflow).toBe(1)
     })
 
     it('limits to maximum of 6 day panels', () => {
@@ -223,15 +235,18 @@ describe('schedule-transformer', () => {
 
     it('sorts events within a day by start time', () => {
       const events: CalendarEvent[] = [
-        createMockEvent({ id: 'late', title: 'Late', startDate: new Date(2025, 0, 21, 18, 0, 0) }),
-        createMockEvent({ id: 'early', title: 'Early', startDate: new Date(2025, 0, 21, 9, 0, 0) }),
-        createMockEvent({ id: 'mid', title: 'Mid', startDate: new Date(2025, 0, 21, 12, 0, 0) }),
+        createMockEvent({ id: 'late', title: 'Late', startDate: new Date(2025, 0, 21, 18, 0, 0), startTime: '18:00', displayWeight: 1 }),
+        createMockEvent({ id: 'early', title: 'Early', startDate: new Date(2025, 0, 21, 9, 0, 0), startTime: '09:00', displayWeight: 1 }),
+        createMockEvent({ id: 'mid', title: 'Mid', startDate: new Date(2025, 0, 21, 12, 0, 0), startTime: '12:00', displayWeight: 1 }),
       ]
 
       const result = transformScheduleForTv(events)
 
+      // All 3 lightweight events (weight 1 each = 3 total) fit within max weight of 7
+      expect(result.dayPanels[0]!.events).toHaveLength(3)
       expect(result.dayPanels[0]!.events[0]!.title).toBe('Early')
       expect(result.dayPanels[0]!.events[1]!.title).toBe('Mid')
+      expect(result.dayPanels[0]!.events[2]!.title).toBe('Late')
     })
   })
 
@@ -255,6 +270,7 @@ describe('schedule-transformer', () => {
           endDate: new Date(2025, 0, 24, 18, 0, 0), // Jan 24
           isMultiDay: true,
           isAllDay: true,
+          displayWeight: 2, // Tournaments always have weight 2
           metadata: {
             category: 'open',
             registrationUrl: 'https://example.com/register',
@@ -285,6 +301,7 @@ describe('schedule-transformer', () => {
           startDate: new Date(2025, 0, 22, 9, 0, 0),
           endDate: new Date(2025, 0, 24, 18, 0, 0),
           isMultiDay: true,
+          displayWeight: 2,
           metadata: {},
         }),
       ]
@@ -309,6 +326,7 @@ describe('schedule-transformer', () => {
           startDate: new Date(2025, 0, 19, 9, 0, 0), // Jan 19 (yesterday)
           endDate: new Date(2025, 0, 21, 18, 0, 0), // Jan 21 (tomorrow)
           isMultiDay: true,
+          displayWeight: 2,
           metadata: {},
         }),
       ]
@@ -330,6 +348,7 @@ describe('schedule-transformer', () => {
           startDate: new Date(2025, 0, 22, 9, 0, 0),
           endDate: null,
           isMultiDay: false,
+          displayWeight: 2,
           metadata: {},
         }),
       ]
@@ -377,6 +396,7 @@ describe('schedule-transformer', () => {
         endTime: null,
         isAllDay: false,
         isMultiDay: false,
+        displayWeight: 1,
         important: true,
       }
 
@@ -396,6 +416,7 @@ describe('schedule-transformer', () => {
         endTime: null,
         isAllDay: false,
         isMultiDay: false,
+        displayWeight: 1,
         important: false,
       }
 
@@ -415,6 +436,7 @@ describe('schedule-transformer', () => {
         endTime: null,
         isAllDay: false,
         isMultiDay: false,
+        displayWeight: 1,
         categories: ['Wichtig'],
       }
 
@@ -434,6 +456,7 @@ describe('schedule-transformer', () => {
         endTime: null,
         isAllDay: false,
         isMultiDay: false,
+        displayWeight: 1,
         categories: ['Veranstaltungen'],
       }
 
@@ -453,6 +476,7 @@ describe('schedule-transformer', () => {
         endTime: null,
         isAllDay: false,
         isMultiDay: false,
+        displayWeight: 2,
       }
 
       expect(isImportantEvent(event, today)).toBe(false)

@@ -2,6 +2,7 @@ import { parse as parseHTML } from 'node-html-parser'
 import IcalExpander from 'ical-expander'
 import type {
   CalendarEvent,
+  CalendarEventSource,
   FetchCalendarOptions,
   AppEventMetadata,
   ClubEventMetadata,
@@ -10,6 +11,28 @@ import type {
   CalendarFetcherConfig,
   DirectusCalendarItem,
 } from './types'
+
+/** Threshold for short vs long description (characters) */
+const SHORT_DESCRIPTION_THRESHOLD = 100
+
+/**
+ * Calculate display weight based on event source and description length.
+ * Weight determines how much space an event takes in the TV display:
+ * - 1 = compact (title only)
+ * - 2 = medium (title + short description or match/tournament)
+ * - 3 = large (title + long description)
+ */
+function calculateDisplayWeight(source: CalendarEventSource, description: string | null): number {
+  if (source === 'match' || source === 'tournament') {
+    return 2
+  }
+  // Club and App events
+  if (!description || description.trim() === '') {
+    return 1
+  }
+  const length = description.trim().length
+  return length <= SHORT_DESCRIPTION_THRESHOLD ? 2 : 3
+}
 
 /** Common DirectusFile fields needed for image display */
 export const DIRECTUS_FILE_FIELDS = [
@@ -245,11 +268,12 @@ export async function fetchAppCalendarEvents(
           startDate.getDate() !== endDate.getDate())
       )
 
+      const description = event.description ? decodeHtmlText(event.description) : null
       calendarEvents.push({
         id: `app-${event.uid}`,
         source: 'app',
         title: event.summary || 'Untitled Event',
-        description: event.description ? decodeHtmlText(event.description) : null,
+        description,
         location: event.location || null,
         startDate,
         endDate,
@@ -260,6 +284,7 @@ export async function fetchAppCalendarEvents(
         url: eventUrl,
         imageUrl,
         metadata,
+        displayWeight: calculateDisplayWeight('app', description),
       })
     }
 
@@ -304,11 +329,12 @@ export async function fetchAppCalendarEvents(
           startDate.getDate() !== endDate.getDate())
       )
 
+      const description = event.description ? decodeHtmlText(event.description) : null
       calendarEvents.push({
         id: `app-${event.uid}-${occurrence.recurrenceId?.toString() ?? startDate.toISOString()}`,
         source: 'app',
         title: event.summary || 'Untitled Event',
-        description: event.description ? decodeHtmlText(event.description) : null,
+        description,
         location: event.location || null,
         startDate,
         endDate,
@@ -319,6 +345,7 @@ export async function fetchAppCalendarEvents(
         url: eventUrl,
         imageUrl,
         metadata,
+        displayWeight: calculateDisplayWeight('app', description),
       })
     }
 
@@ -397,11 +424,13 @@ export async function fetchClubEvents(
         category: event.category ?? null,
       }
 
+      const description = event.description || null
+
       return {
         id: `club-${event.id}`,
         source: 'club',
         title: event.title || 'Untitled Event',
-        description: event.description || null,
+        description,
         location: event.location || null,
         startDate: start.date,
         endDate: end?.date ?? null,
@@ -413,6 +442,7 @@ export async function fetchClubEvents(
         url: event.website || null,
         imageUrl: event.logo ? config.getDirectusAssetURL(event.logo) : null,
         metadata,
+        displayWeight: calculateDisplayWeight('club', description),
       }
     })
   } catch (error) {
@@ -678,6 +708,7 @@ export async function fetchMatches(
           url: null,
           imageUrl: null,
           metadata,
+          displayWeight: 2, // Matches always have weight 2
         })
 
         pageEvents++
@@ -996,6 +1027,7 @@ export async function fetchTournaments(
         url: registrationUrl,
         imageUrl: null,
         metadata,
+        displayWeight: 2, // Tournaments always have weight 2
       })
     }
 
