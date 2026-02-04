@@ -15,7 +15,7 @@ services:
         - URL_SIGNING_SECRET
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       - DIRECTUS_TOKEN=${DIRECTUS_TOKEN}
       - DIRECTUS_PUBLIC_TOKEN=${DIRECTUS_PUBLIC_TOKEN}
