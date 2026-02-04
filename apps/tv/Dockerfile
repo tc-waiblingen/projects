@@ -2,8 +2,9 @@
 
 FROM node:25-alpine AS base
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
+# Install Corepack and download and install pnpm
+RUN npm install -g --force corepack && \
+    corepack enable pnpm
 
 # Install dependencies only when needed
 FROM base AS deps
