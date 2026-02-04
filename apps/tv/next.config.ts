@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
     root: path.resolve(import.meta.dirname, '../..'),
   },
   images: {
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     localPatterns: [
       {
         pathname: '/api/images/**',
