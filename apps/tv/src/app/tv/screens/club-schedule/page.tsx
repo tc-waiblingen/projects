@@ -56,7 +56,7 @@ export default async function ClubSchedulePage() {
     <TvScreenLayout title={SCREEN_TITLE} duration={duration}>
       <div className="relative h-screen overflow-hidden">
         {calendarQrCode && (
-          <div className="absolute bottom-8 right-8 z-20 flex items-center gap-3 rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-black/50">
+          <div className="absolute bottom-8 left-8 z-20 flex items-center gap-3 rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-black/50">
             <QrCode linkUrl={CALENDAR_URL} qrCodeDataUrl={calendarQrCode} size="large" />
             <span className="tv-small">
               Zum gesamten <br /> Vereinskalender
