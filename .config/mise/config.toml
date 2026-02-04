@@ -33,3 +33,7 @@ alias = "build-website"
 description = "Build the TV project"
 run = "pnpm run build:tv"
 alias = "build-tv"
+
+[tasks."docker:context"]
+description = "Starts `ncdu` with patterns specified in `.dockerignore` excluded."
+run = "ncdu -X .dockerignore"
