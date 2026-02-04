@@ -1,42 +1,42 @@
 # Dependencies (reinstalled in container)
-node_modules
+**/node_modules
 .pnpm-store
 
 # Build outputs
-.next
-dist
-out
-build
-coverage
+**/.next
+**/dist
+**/out
+**/build
+**/coverage
 
 # Caches
-.turbo
-.cache
-*.tsbuildinfo
+**/.turbo
+**/.cache
+**/*.tsbuildinfo
 
 # Git
 .git
 .gitignore
 
 # IDE
-.vscode
-.idea
-*.swp
-*.swo
+**/.vscode
+**/.idea
+**/*.swp
+**/*.swo
 
 # Environment files
-.env
-.env.*
+**/.env
+**/.env.*
 
 # OS
-.DS_Store
-Thumbs.db
+**/.DS_Store
+**/Thumbs.db
 
 # Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-pnpm-debug.log*
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/pnpm-debug.log*
 
 # Generated files
 apps/website/public/downloads
