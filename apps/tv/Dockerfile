@@ -73,12 +73,15 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/apps/tv/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/apps/tv/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/tv/.next/static ./.next/static
-RUN mkdir -p .next/cache && chown nextjs:nodejs .next/cache
+COPY --from=builder --chown=nextjs:nodejs /app/apps/tv/.next/static ./apps/tv/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/tv/public ./apps/tv/public
+RUN chmod -R a+rX apps/tv/public && \
+    mkdir -p apps/tv/.next/cache && chown nextjs:nodejs apps/tv/.next/cache
 
 USER nextjs
+
+WORKDIR /app/apps/tv
 
 EXPOSE 3000
 
