@@ -75,14 +75,14 @@ function parseQueryState(): Partial<FilterState> {
   return state
 }
 
-function buildQueryString(state: FilterState): string {
+function buildQueryString(state: FilterState, isLocked = false): string {
   const params = new URLSearchParams()
 
   if (!state.futureOnly) {
     params.set('future', '0')
   }
 
-  if (state.category !== 'all') {
+  if (!isLocked && state.category !== 'all') {
     params.set('category', state.category)
   }
 
@@ -98,10 +98,17 @@ interface CalendarClientProps {
   events: CalendarEvent[]
   groupNames: string[]
   serverNow: number
+  filterCategory?: CategoryFilter
+  style?: 'default' | 'list'
+  alignment?: 'left' | 'center'
 }
 
-export function CalendarClient({ events, groupNames, serverNow }: CalendarClientProps) {
-  const [state, setState] = useState<FilterState>(DEFAULT_STATE)
+export function CalendarClient({ events, groupNames, serverNow, filterCategory, style = 'default', alignment = 'left' }: CalendarClientProps) {
+  const isLocked = !!filterCategory && filterCategory !== 'all'
+  const [state, setState] = useState<FilterState>({
+    ...DEFAULT_STATE,
+    ...(isLocked ? { category: filterCategory } : {}),
+  })
   const [isHydrated, setIsHydrated] = useState(false)
   const isHashUpdate = useRef(false)
   const { refresh } = useTocSafe()
@@ -112,8 +119,15 @@ export function CalendarClient({ events, groupNames, serverNow }: CalendarClient
   // Apply query state after hydration to avoid mismatch
   // This subscribes to the URL search params as an external data source
   useEffect(() => {
+    if (style === 'list') {
+      setIsHydrated(true)
+      return
+    }
     migrateHashParams()
     const queryState = parseQueryState()
+    if (isLocked) {
+      delete queryState.category
+    }
     const applyState = () => {
       if (Object.keys(queryState).length > 0) {
         setState((prev) => ({ ...prev, ...queryState }))
@@ -127,27 +141,33 @@ export function CalendarClient({ events, groupNames, serverNow }: CalendarClient
 
   // Update query params on state change (skip until hydrated)
   useEffect(() => {
+    if (style === 'list') return
     if (!isHydrated || isHashUpdate.current) {
       isHashUpdate.current = false
       return
     }
 
-    const queryString = buildQueryString(state)
+    const queryString = buildQueryString(state, isLocked)
     const newUrl = window.location.pathname + queryString + window.location.hash
     window.history.replaceState(null, '', newUrl)
-  }, [state, isHydrated])
+  }, [state, isHydrated, style, isLocked])
 
   // Listen for popstate to handle browser navigation
   useEffect(() => {
+    if (style === 'list') return
+
     const handlePopState = () => {
       isHashUpdate.current = true
       const queryState = parseQueryState()
-      setState({ ...DEFAULT_STATE, ...queryState })
+      if (isLocked) {
+        delete queryState.category
+      }
+      setState({ ...DEFAULT_STATE, ...queryState, ...(isLocked ? { category: filterCategory } : {}) })
     }
 
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
-  }, [])
+  }, [style, isLocked, filterCategory])
 
   const filteredEvents = useMemo(() => {
     return events.filter((event) => {
@@ -218,23 +238,25 @@ export function CalendarClient({ events, groupNames, serverNow }: CalendarClient
 
   return (
     <>
-      <FilterControls
-        futureOnly={state.futureOnly}
-        onFutureOnlyChange={(value) => setState((prev) => ({ ...prev, futureOnly: value }))}
-        category={state.category}
-        onCategoryChange={(value) => setState((prev) => ({ ...prev, category: value }))}
-        group={state.group}
-        onGroupChange={(value) =>
-          setState((prev) => ({ ...prev, group: value, ...(value ? { category: 'all' } : {}) }))
-        }
-        groupNames={groupNames}
-      />
+      {!isLocked && (
+        <FilterControls
+          futureOnly={state.futureOnly}
+          onFutureOnlyChange={(value) => setState((prev) => ({ ...prev, futureOnly: value }))}
+          category={state.category}
+          onCategoryChange={(value) => setState((prev) => ({ ...prev, category: value }))}
+          group={state.group}
+          onGroupChange={(value) =>
+            setState((prev) => ({ ...prev, group: value, ...(value ? { category: 'all' } : {}) }))
+          }
+          groupNames={groupNames}
+        />
+      )}
       {filteredEvents.length === 0 ? (
         <p className="text-tcw-accent-900 dark:text-white">
           Keine Termine für die gewählten Filter vorhanden.
         </p>
       ) : (
-        <EventList events={filteredEvents} />
+        <EventList events={filteredEvents} style={style} alignment={alignment} />
       )}
     </>
   )

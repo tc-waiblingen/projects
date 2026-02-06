@@ -36,7 +36,7 @@ function extractGroupNames(events: CalendarEvent[]): string[] {
 }
 
 export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
-  const { id, headline, tagline, alignment } = data
+  const { id, headline, tagline, alignment, filter_category, style } = data
 
   const dateRange = getCalendarDateRange()
   const events = await fetchAllCalendarEvents(dateRange)
@@ -57,7 +57,14 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
 
   return (
     <Section headline={headlineEl} eyebrow={eyebrowEl} alignment={alignment}>
-      <CalendarClient events={events} groupNames={groupNames} serverNow={serverNow} />
+      <CalendarClient
+        events={events}
+        groupNames={groupNames}
+        serverNow={serverNow}
+        filterCategory={filter_category ?? undefined}
+        style={style ?? 'default'}
+        alignment={alignment ?? 'left'}
+      />
     </Section>
   )
 }

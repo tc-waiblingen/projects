@@ -220,6 +220,39 @@ function EventItem({ event }: { event: CalendarEvent }) {
   )
 }
 
+function formatCompactDate(date: Date): string {
+  const weekday = date.toLocaleDateString('de-DE', { weekday: 'short' })
+  const day = date.getDate()
+  const month = date.getMonth() + 1
+  return `${weekday}, ${day}.${month}.`
+}
+
+export function CompactEventRow({ event }: { event: CalendarEvent }) {
+  const isMatch = event.source === 'match'
+  const metadata = isMatch ? (event.metadata as MatchEventMetadata) : null
+
+  const title = isMatch && metadata
+    ? `${metadata.homeTeam} – ${metadata.awayTeam}`
+    : event.title
+
+  const time = event.isAllDay
+    ? 'Ganztägig'
+    : event.startTime
+      ? `${event.startTime} Uhr`
+      : null
+
+  return (
+    <div className="flex items-baseline gap-3 py-1.5 text-sm">
+      <span className="w-24 shrink-0 text-muted">{formatCompactDate(event.startDate)}</span>
+      <span className="w-20 shrink-0 tabular-nums text-muted">{time}</span>
+      <span className="min-w-0 truncate font-medium text-body">{title}</span>
+      {event.location && (
+        <span className="ml-auto shrink-0 text-muted">📍 {event.location}</span>
+      )}
+    </div>
+  )
+}
+
 interface DayCardProps {
   date: Date
   events: CalendarEvent[]
