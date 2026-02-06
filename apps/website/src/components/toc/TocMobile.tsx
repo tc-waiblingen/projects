@@ -95,7 +95,7 @@ export function TocMobile({ isOpen, onClose }: TocMobileProps) {
         </DialogTitle>
 
         <nav className="flex-1 overflow-y-auto">
-          <ul className="space-y-1">
+          <ul className="list-none space-y-1">
             {headings.map((heading) => (
               <li key={heading.id}>
                 <button

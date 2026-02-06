@@ -64,7 +64,7 @@ export function TocMenu({ onCollapse, autoFocus }: TocMenuProps) {
       <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-taupe-500 dark:text-taupe-400">
         Inhaltsverzeichnis
       </div>
-      <ul className="space-y-1">
+      <ul className="list-none space-y-1">
         {headings.map((heading) => (
           <li key={heading.id}>
             <button
