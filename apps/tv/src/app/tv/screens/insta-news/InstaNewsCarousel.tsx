@@ -192,21 +192,6 @@ export function InstaNewsCarousel({ content, nextIndex }: InstaNewsCarouselProps
           </div>
         </div>
 
-        {/* Transition overlay */}
-        <div
-          id="transition-overlay"
-          className="pointer-events-none fixed z-50"
-          style={{
-            left: '50%',
-            top: '50%',
-            width: '256px',
-            height: '256px',
-            borderRadius: '50%',
-            backgroundColor: '#DDD5C0',
-            transform: 'translate(-50%, -50%) scale(0)',
-            opacity: '1',
-          }}
-        />
       </div>
     )
   }
@@ -274,21 +259,6 @@ export function InstaNewsCarousel({ content, nextIndex }: InstaNewsCarouselProps
         })}
       </div>
 
-      {/* Transition overlay */}
-      <div
-        id="transition-overlay"
-        className="pointer-events-none fixed z-50"
-        style={{
-          left: '50%',
-          top: '50%',
-          width: '256px',
-          height: '256px',
-          borderRadius: '50%',
-          backgroundColor: '#DDD5C0',
-          transform: 'translate(-50%, -50%) scale(0)',
-          opacity: '1',
-        }}
-      />
     </div>
   )
 }

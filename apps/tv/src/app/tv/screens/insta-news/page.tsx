@@ -1,4 +1,4 @@
-import { QrCode, TvScreenLayout } from '@/components/tv'
+import { QrCode, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchInstagramFeedData, generateQrCodeForView, getNextScreenIndex } from '@/lib/tv'
 import { InstaNewsCarousel } from './InstaNewsCarousel'
 
@@ -63,6 +63,8 @@ export default async function InstaNewsPage() {
         )}
 
         {hasContent && <InstaNewsCarousel content={contentWithQr} nextIndex={nextIndex} />}
+
+        <ScreenAutoAdvance currentUrl={SCREEN_URL} nextIndex={nextIndex} duration={duration} />
       </div>
     </TvScreenLayout>
   )
