@@ -18,13 +18,43 @@ const DEFAULT_STATE: FilterState = {
   group: null,
 }
 
-function parseHashState(): Partial<FilterState> {
+const KNOWN_FILTER_KEYS = ['future', 'category', 'group']
+
+/** Migrate legacy hash params (#future=0&category=matches) to query params */
+function migrateHashParams(): void {
+  if (typeof window === 'undefined') return
+  const hash = window.location.hash.slice(1)
+  if (!hash) return
+
+  const hashParams = new URLSearchParams(hash)
+  const keysToMigrate = KNOWN_FILTER_KEYS.filter((key) => hashParams.has(key))
+  if (keysToMigrate.length === 0) return
+
+  const searchParams = new URLSearchParams(window.location.search)
+  for (const key of keysToMigrate) {
+    if (!searchParams.has(key)) {
+      searchParams.set(key, hashParams.get(key)!)
+    }
+    hashParams.delete(key)
+  }
+
+  const queryString = searchParams.toString()
+  const remainingHash = hashParams.toString()
+  window.history.replaceState(
+    null,
+    '',
+    window.location.pathname +
+      (queryString ? `?${queryString}` : '') +
+      (remainingHash ? `#${remainingHash}` : ''),
+  )
+}
+
+function parseQueryState(): Partial<FilterState> {
   if (typeof window === 'undefined') return {}
 
-  const hash = window.location.hash.slice(1)
-  if (!hash) return {}
+  const params = new URLSearchParams(window.location.search)
+  if (params.size === 0) return {}
 
-  const params = new URLSearchParams(hash)
   const state: Partial<FilterState> = {}
 
   const futureParam = params.get('future')
@@ -45,7 +75,7 @@ function parseHashState(): Partial<FilterState> {
   return state
 }
 
-function buildHashString(state: FilterState): string {
+function buildQueryString(state: FilterState): string {
   const params = new URLSearchParams()
 
   if (!state.futureOnly) {
@@ -60,8 +90,8 @@ function buildHashString(state: FilterState): string {
     params.set('group', state.group)
   }
 
-  const hashString = params.toString()
-  return hashString ? `#${hashString}` : ''
+  const queryString = params.toString()
+  return queryString ? `?${queryString}` : ''
 }
 
 interface CalendarClientProps {
@@ -79,13 +109,14 @@ export function CalendarClient({ events, groupNames, serverNow }: CalendarClient
   // Use server timestamp to avoid hydration mismatch
   const now = useMemo(() => new Date(serverNow), [serverNow])
 
-  // Apply hash state after hydration to avoid mismatch
-  // This subscribes to the URL hash as an external data source
+  // Apply query state after hydration to avoid mismatch
+  // This subscribes to the URL search params as an external data source
   useEffect(() => {
-    const hashState = parseHashState()
+    migrateHashParams()
+    const queryState = parseQueryState()
     const applyState = () => {
-      if (Object.keys(hashState).length > 0) {
-        setState((prev) => ({ ...prev, ...hashState }))
+      if (Object.keys(queryState).length > 0) {
+        setState((prev) => ({ ...prev, ...queryState }))
       }
       setIsHydrated(true)
     }
@@ -94,15 +125,15 @@ export function CalendarClient({ events, groupNames, serverNow }: CalendarClient
     return () => cancelAnimationFrame(rafId)
   }, [])
 
-  // Update hash on state change (skip until hydrated)
+  // Update query params on state change (skip until hydrated)
   useEffect(() => {
     if (!isHydrated || isHashUpdate.current) {
       isHashUpdate.current = false
       return
     }
 
-    const hashString = buildHashString(state)
-    const newUrl = window.location.pathname + window.location.search + hashString
+    const queryString = buildQueryString(state)
+    const newUrl = window.location.pathname + queryString + window.location.hash
     window.history.replaceState(null, '', newUrl)
   }, [state, isHydrated])
 
@@ -110,8 +141,8 @@ export function CalendarClient({ events, groupNames, serverNow }: CalendarClient
   useEffect(() => {
     const handlePopState = () => {
       isHashUpdate.current = true
-      const hashState = parseHashState()
-      setState({ ...DEFAULT_STATE, ...hashState })
+      const queryState = parseQueryState()
+      setState({ ...DEFAULT_STATE, ...queryState })
     }
 
     window.addEventListener('popstate', handlePopState)
