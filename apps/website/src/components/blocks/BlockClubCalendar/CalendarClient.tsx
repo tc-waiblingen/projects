@@ -224,7 +224,9 @@ export function CalendarClient({ events, groupNames, serverNow }: CalendarClient
         category={state.category}
         onCategoryChange={(value) => setState((prev) => ({ ...prev, category: value }))}
         group={state.group}
-        onGroupChange={(value) => setState((prev) => ({ ...prev, group: value }))}
+        onGroupChange={(value) =>
+          setState((prev) => ({ ...prev, group: value, ...(value ? { category: 'all' } : {}) }))
+        }
         groupNames={groupNames}
       />
       {filteredEvents.length === 0 ? (
