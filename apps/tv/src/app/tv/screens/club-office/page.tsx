@@ -1,8 +1,6 @@
 import { EmailAddress, PhoneNumber, QrCode, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchGlobals, fetchOfficeData, generateQrCodeForView, getNextScreenIndex } from '@/lib/tv'
 
-export const dynamic = 'force-dynamic'
-
 const SCREEN_URL = '/tv/screens/club-office'
 const SCREEN_TITLE = 'Geschäftsstelle'
 const SCREEN_DURATION = 15000

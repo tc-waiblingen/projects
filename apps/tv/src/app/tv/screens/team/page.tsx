@@ -3,8 +3,6 @@ import { fetchTeamMembers, getNextScreenIndex } from '@/lib/tv'
 import { getDirectusAssetURL } from '@/lib/directus/directus-utils'
 import Image from 'next/image'
 
-export const dynamic = 'force-dynamic'
-
 const SCREEN_URL = '/tv/screens/team'
 const SCREEN_TITLE = 'Vorstands-Team'
 const SCREEN_DURATION = 10000

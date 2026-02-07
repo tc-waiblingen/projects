@@ -2,8 +2,6 @@ import { LocationPin, QrCode, ScreenAutoAdvance, StarBadge, TvScreenLayout } fro
 import { fetchScheduleData, formatTimeRange, generateQrCodeForView, getNextScreenIndex, getRelativeDateText, isImportantEvent } from '@/lib/tv'
 import Image from 'next/image'
 
-export const dynamic = 'force-dynamic'
-
 const SCREEN_URL = '/tv/screens/club-schedule'
 const SCREEN_TITLE = 'Vereinskalender'
 const SCREEN_DURATION = 30000

@@ -2,8 +2,6 @@ import clsx from 'clsx'
 import { LocationPin, QrCode, ScoreBoard, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchMatchResultsData, generateQrCodeForView, getNextScreenIndex } from '@/lib/tv'
 
-export const dynamic = 'force-dynamic'
-
 const SCREEN_URL = '/tv/screens/match-results'
 const SCREEN_TITLE = 'Neueste Spielergebnisse'
 const SCREEN_DURATION = 20000

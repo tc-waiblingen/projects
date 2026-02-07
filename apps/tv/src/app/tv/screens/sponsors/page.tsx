@@ -3,8 +3,6 @@ import { fetchSponsors, getNextScreenIndex } from '@/lib/tv'
 import { getDirectusAssetURL } from '@/lib/directus/directus-utils'
 import Image from 'next/image'
 
-export const dynamic = 'force-dynamic'
-
 const SCREEN_URL = '/tv/screens/sponsors'
 const SCREEN_TITLE = 'Vielen Dank!'
 const SCREEN_DURATION = 10000

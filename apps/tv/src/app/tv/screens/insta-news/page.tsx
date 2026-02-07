@@ -2,8 +2,6 @@ import { QrCode, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchInstagramFeedData, generateQrCodeForView, getNextScreenIndex } from '@/lib/tv'
 import { InstaNewsCarousel } from './InstaNewsCarousel'
 
-export const dynamic = 'force-dynamic'
-
 const SCREEN_URL = '/tv/screens/insta-news'
 const SCREEN_TITLE = 'Insta-News'
 const SCREEN_DURATION = 35000

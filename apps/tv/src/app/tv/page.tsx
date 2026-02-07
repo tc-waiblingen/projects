@@ -5,8 +5,6 @@ import { Snowflakes } from './Snowflakes'
 import { Fireworks } from './Fireworks'
 import Image from 'next/image'
 
-export const dynamic = 'force-dynamic'
-
 export default function TvHomePage() {
   const screens = getVisibleScreens()
   const isHatSeason = isHatSeasonInBerlin()
