@@ -68,3 +68,4 @@ Each app has detailed documentation in its `AGENTS.md` file covering architectur
 ## Version Control
 
 - Do not add `Co-Authored-By` lines to commits
+- Follow (Conventional Commits)[https://www.conventionalcommits.org/en/v1.0.0/] when writing commit messages.
