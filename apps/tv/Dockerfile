@@ -2,6 +2,9 @@
 
 FROM node:25-alpine AS base
 
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add curl
+
 # Install Corepack and download and install pnpm
 RUN npm install -g --force corepack && \
     corepack enable pnpm
