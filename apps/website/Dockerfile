@@ -26,9 +26,7 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/calendar/node_modules ./packages/calendar/node_modules
-COPY --from=deps /app/apps/website/node_modules ./apps/website/node_modules
+COPY --from=deps /app ./
 
 # Copy shared package source and build it
 COPY packages/calendar ./packages/calendar
