@@ -7,6 +7,14 @@ const SCREEN_TITLE = 'Neueste Spielergebnisse'
 const SCREEN_DURATION = 20000
 const SHORT_DURATION = 2000
 
+function getGridConfig(count: number) {
+  if (count <= 1) return { cols: 'grid-cols-1', flow: '', cardWidth: 'w-[42vw]', teamText: 'tv-heading' }
+  if (count <= 2) return { cols: 'grid-cols-2', flow: '', cardWidth: 'w-[42vw]', teamText: 'tv-heading' }
+  if (count <= 4) return { cols: 'grid-cols-2', flow: 'grid-flow-col', cardWidth: 'w-[42vw]', teamText: 'tv-heading' }
+  if (count <= 6) return { cols: 'grid-cols-3', flow: 'grid-flow-col', cardWidth: 'w-full', teamText: 'tv-body' }
+  return { cols: 'grid-cols-4', flow: 'grid-flow-col', cardWidth: 'w-full', teamText: 'tv-body' }
+}
+
 export default async function MatchResultsPage() {
   const matchResults = await fetchMatchResultsData()
   const nextIndex = getNextScreenIndex(SCREEN_URL)
@@ -21,6 +29,7 @@ export default async function MatchResultsPage() {
   )
 
   const duration = !matchResults.hasResults ? SHORT_DURATION : SCREEN_DURATION
+  const { cols, flow, cardWidth, teamText } = getGridConfig(matchesWithQr.length)
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={duration}>
@@ -38,8 +47,8 @@ export default async function MatchResultsPage() {
           {matchesWithQr.length > 0 && (
             <div
               className={clsx(
-                'grid h-full content-center gap-10 grid-rows-2 grid-flow-col',
-                matchesWithQr.length <= 4 ? 'grid-cols-2' : 'grid-cols-3'
+                'grid h-full content-center gap-10 grid-rows-2',
+                cols, flow
               )}
             >
               {matchesWithQr.map((match) => {
@@ -48,7 +57,10 @@ export default async function MatchResultsPage() {
                 return (
                   <div
                     key={match.id}
-                    className="flex h-full w-[42vw] flex-col gap-2 justify-self-center rounded-3xl border border-white/70 bg-white/70 px-3 py-2 shadow-sm"
+                    className={clsx(
+                      'flex h-full flex-col gap-2 justify-self-center rounded-3xl border border-white/70 bg-white/70 px-3 py-2 shadow-sm',
+                      cardWidth
+                    )}
                   >
                     {/* Date */}
                     {match.dateString && (
@@ -68,7 +80,7 @@ export default async function MatchResultsPage() {
                       <div className="mx-auto flex w-[90%] items-center justify-center gap-6 text-center">
                         <span
                           className={clsx(
-                            'flex-1 text-right tv-heading font-medium line-clamp-2',
+                            `flex-1 text-right ${teamText} font-medium line-clamp-2`,
                             match.isHome ? 'text-neutral-900' : 'text-neutral-700',
                             match.homeWins && 'underline'
                           )}
@@ -80,7 +92,7 @@ export default async function MatchResultsPage() {
                         )}
                         <span
                           className={clsx(
-                            'flex-1 text-left tv-heading font-medium line-clamp-2',
+                            `flex-1 text-left ${teamText} font-medium line-clamp-2`,
                             !match.isHome ? 'text-neutral-900' : 'text-neutral-700',
                             match.guestWins && 'underline'
                           )}

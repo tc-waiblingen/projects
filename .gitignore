@@ -38,6 +38,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Screenshots
+screenshots/
+
 # Misc
 *.tgz
 .npmrc.local

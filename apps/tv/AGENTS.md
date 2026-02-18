@@ -235,6 +235,40 @@ Use these classes instead of raw `text-*` size classes in TV components. This al
 - All clickable or interactive elements must have `cursor-pointer`
 - Links to external URLs (or likely external) must have `rel="noopener noreferrer nofollow"`
 
+## Screenshots with Rodney
+
+Use `rodney` (Chrome automation CLI) to take screenshots of TV screens for visual testing.
+
+### TV Screen URLs
+
+All screens are at `http://localhost:3001/tv/screens/<name>`:
+
+| Screen | URL |
+|--------|-----|
+| Match Results | `/tv/screens/match-results` |
+| Club Schedule | `/tv/screens/club-schedule` |
+| Club Office | `/tv/screens/club-office` |
+| Team | `/tv/screens/team` |
+| Trainers | `/tv/screens/trainers` |
+| Sponsors | `/tv/screens/sponsors` |
+| Instagram News | `/tv/screens/insta-news` |
+
+### Query Parameters
+
+- `?stay=true` — Disable auto-transition to next screen (keeps the current screen visible)
+
+### Taking Screenshots
+
+```bash
+rodney start --show
+rodney open "http://localhost:3001/tv/screens/match-results?stay=true"
+rodney waitstable
+rodney screenshot -w 1920 -h 1080 screenshots/match-results.png
+rodney stop
+```
+
+Screenshots are saved to `screenshots/` (gitignored).
+
 ## Version Control
 
 - The project uses git.
