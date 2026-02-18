@@ -1,4 +1,6 @@
 [tools]
+"github:simonw/rodney" = "latest"
+"github:simonw/showboat" = "latest"
 node = "25.2.1"
 
 [env]
