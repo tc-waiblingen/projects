@@ -9,7 +9,8 @@
     "build:website": "turbo run build --filter @tcw/website",
     "build:tv": "turbo run build --filter @tcw/tv",
     "lint": "turbo run lint",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "generate:types": "pnpm -r generate:types"
   },
   "devDependencies": {
     "turbo": "^2.8.3"

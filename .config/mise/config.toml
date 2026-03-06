@@ -39,3 +39,7 @@ alias = "build-tv"
 [tasks."docker:context"]
 description = "Starts `ncdu` with patterns specified in `.dockerignore` excluded."
 run = "ncdu -X .dockerignore"
+
+[tasks."generate:types"]
+description = "Generate Types from the Directus Schema"
+run = "pnpm run generate:types"
