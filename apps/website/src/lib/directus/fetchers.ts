@@ -481,6 +481,29 @@ export async function fetchFilesByIds(fileIds: string[]): Promise<DirectusFile[]
   }
 }
 
+export const fetchPostsByGroup = async (groupId: number, limit?: number) => {
+  const { directus, readItems } = getDirectus()
+
+  try {
+    const posts = await directus.request(
+      readItems("posts", {
+        filter: {
+          status: { _eq: "published" },
+          group: { _eq: groupId },
+        },
+        sort: ["published_at"],
+        limit: limit ?? -1,
+        fields: ["id", "title", "slug", "published_at"],
+      }),
+    )
+
+    return posts as Post[]
+  } catch (error) {
+    console.error("Error fetching posts by group:", error)
+    throw new Error("Failed to fetch posts by group")
+  }
+}
+
 export async function fetchCourtsWithSponsors() {
   const { directus, readItems } = getDirectus()
 

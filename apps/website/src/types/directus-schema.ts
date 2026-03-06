@@ -663,6 +663,7 @@ export interface Post {
 	user_updated?: string | null;
 	imported_from_wordpress?: boolean | null;
 	show_toc?: boolean | null;
+	group?: number | null;
 }
 
 export interface Redirect {

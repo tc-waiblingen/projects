@@ -11,6 +11,7 @@ import { checkVisibility } from '@/lib/visibility'
 import { PreviewBadge } from '@/components/elements/preview-badge'
 import { VisualEditingWrapper } from '@/components/visual-editing/VisualEditingWrapper'
 import { getEditAttr } from '@/lib/visual-editing'
+import { RelatedGroupPosts } from '@/components/elements/related-group-posts'
 
 interface PageProps {
   params: Promise<{ params: string[] }>
@@ -152,6 +153,9 @@ export default async function PostPage({ params }: PageProps) {
           </DocumentLeftAligned>
           {showToc && <TableOfContents />}
         </TocProvider>
+        {post.group && typeof post.group === 'number' && (
+          <RelatedGroupPosts groupId={post.group} currentPostId={post.id} />
+        )}
       </div>
     </VisualEditingWrapper>
   )
