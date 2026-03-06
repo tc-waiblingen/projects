@@ -52,7 +52,7 @@ export async function RelatedGroupPosts({ groupId, currentPostId }: RelatedGroup
             return (
               <li key={post.id} className="flex items-baseline gap-3">
                 {dateEl}
-                <Link href={href} className="text-body cursor-pointer hover:underline">
+                <Link href={href} className="text-body text-link">
                   {post.title}
                 </Link>
               </li>

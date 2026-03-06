@@ -212,6 +212,23 @@
   }
 }
 
+@layer components {
+  .text-link {
+    cursor: pointer;
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-tcw-accent-400);
+    text-underline-offset: 2px;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      text-decoration-color: var(--color-tcw-accent-700);
+    }
+  }
+}
+
 @utility scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
