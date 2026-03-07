@@ -977,9 +977,9 @@ export async function fetchTournaments(
   try {
     console.log('[fetchTournaments] Fetching initial page...')
 
-    // Step 1: Fetch initial page to get the form (no cache — contains session tokens)
+    // Step 1: Fetch initial page to get the form
     const initialResponse = await fetch(calendarConfig.wtbTournamentsUrl, {
-      next: { revalidate: 0 },
+      next: { revalidate: 14400 }, // Cache for 4 hours
     } as RequestInit)
 
     if (!initialResponse.ok) {
@@ -1057,7 +1057,7 @@ export async function fetchTournaments(
       method: 'POST',
       headers: postHeaders,
       body: formData.toString(),
-      cache: 'no-store',
+      next: { revalidate: 14400 },
     } as RequestInit)
 
     if (!response.ok) {
