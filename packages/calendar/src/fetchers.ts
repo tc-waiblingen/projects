@@ -977,9 +977,9 @@ export async function fetchTournaments(
   try {
     console.log('[fetchTournaments] Fetching initial page...')
 
-    // Step 1: Fetch initial page to get the form
+    // Step 1: Fetch initial page to get the form (no cache — contains session tokens)
     const initialResponse = await fetch(calendarConfig.wtbTournamentsUrl, {
-      next: { revalidate: 14400 }, // Cache for 4 hours
+      next: { revalidate: 0 },
     } as RequestInit)
 
     if (!initialResponse.ok) {
@@ -999,13 +999,27 @@ export async function fetchTournaments(
 
     const formActionUrl = new URL(formAction, calendarConfig.wtbTournamentsUrl).toString()
 
-    // Extract base form data (hidden fields)
+    // Forward cookies from initial response (e.g. PHPSESSID)
+    const setCookies = initialResponse.headers.getSetCookie?.() ?? []
+    const cookieHeader = setCookies.map((c) => c.split(';')[0]).join('; ')
+
+    // Extract base form data (hidden fields + select defaults)
+    // Skip unchecked checkboxes — browsers only send checked ones
     const baseFormData: Record<string, string> = {}
     const inputs = formNode.querySelectorAll('input[name]')
     for (const input of inputs) {
       const name = input.getAttribute('name')
+      if (!name) continue
+      const type = (input.getAttribute('type') ?? '').toLowerCase()
+      if (type === 'checkbox' && !input.hasAttribute('checked')) continue
+      baseFormData[name] = input.getAttribute('value') ?? ''
+    }
+    const selects = formNode.querySelectorAll('select[name]')
+    for (const select of selects) {
+      const name = select.getAttribute('name')
       if (name) {
-        baseFormData[name] = input.getAttribute('value') ?? ''
+        const selected = select.querySelector('option[selected]')
+        baseFormData[name] = selected?.getAttribute('value') ?? ''
       }
     }
 
@@ -1019,6 +1033,8 @@ export async function fetchTournaments(
 
     // Add filter parameters
     formData.set('tx_nuportalrs_tournaments[tournamentsFilter][ageCategory]', '')
+    formData.set('tx_nuportalrs_tournaments[tournamentsFilter][ageGroupJuniors]', '')
+    formData.set('tx_nuportalrs_tournaments[tournamentsFilter][ageGroupSeniors]', '')
     formData.set('tx_nuportalrs_tournaments[tournamentsFilter][fedRank]', '')
     formData.set('tx_nuportalrs_tournaments[tournamentsFilter][region]', '')
     formData.set('tx_nuportalrs_tournaments[tournamentsFilter][circuit]', '')
@@ -1026,14 +1042,22 @@ export async function fetchTournaments(
     formData.set('tx_nuportalrs_tournaments[tournamentsFilter][city]', 'Waiblingen')
     formData.set('tx_nuportalrs_tournaments[tournamentsFilter][startDate]', formatDateDE(startDate))
     formData.set('tx_nuportalrs_tournaments[tournamentsFilter][endDate]', formatDateDE(endDate))
+    formData.set('tx_nuportalrs_tournaments[tournamentsFilter][firstResult]', '0')
+    formData.set('tx_nuportalrs_tournaments[tournamentsFilter][maxResults]', '300')
+
+    const postHeaders: Record<string, string> = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Referer': calendarConfig.wtbTournamentsUrl,
+    }
+    if (cookieHeader) {
+      postHeaders['Cookie'] = cookieHeader
+    }
 
     const response = await fetch(formActionUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+      headers: postHeaders,
       body: formData.toString(),
-      next: { revalidate: 14400 },
+      cache: 'no-store',
     } as RequestInit)
 
     if (!response.ok) {
