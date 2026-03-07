@@ -28,7 +28,8 @@ export async function checkVisibility(
   // Fast path: published content with past/null date is always visible
   // Avoids calling draftMode() which forces dynamic rendering
   if (status === 'published') {
-    if (!publishedAt || new Date(publishedAt) <= new Date()) {
+    const date = new Date(publishedAt)
+    if (!publishedAt || isNaN(date.getTime()) || date <= new Date()) {
       return { visible: true, previewReason: null }
     }
   }

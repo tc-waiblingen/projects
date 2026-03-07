@@ -120,8 +120,8 @@ export function CalendarClient({ events, groupNames, serverNow, filterCategory, 
   // This subscribes to the URL search params as an external data source
   useEffect(() => {
     if (style === 'list') {
-      setIsHydrated(true)
-      return
+      const rafId = requestAnimationFrame(() => setIsHydrated(true))
+      return () => cancelAnimationFrame(rafId)
     }
     migrateHashParams()
     const queryState = parseQueryState()
