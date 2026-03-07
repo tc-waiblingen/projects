@@ -15,6 +15,11 @@ function getInstagramConfig() {
   const userId = process.env.INSTAGRAM_USER_ID
 
   if (!accessToken || !userId) {
+    const missing = [
+      !accessToken && 'INSTAGRAM_ACCESS_TOKEN',
+      !userId && 'INSTAGRAM_USER_ID',
+    ].filter(Boolean)
+    console.warn(`Instagram config missing env vars: ${missing.join(', ')}`)
     return null
   }
 
@@ -34,6 +39,7 @@ export async function fetchInstagramPosts(limit = 12): Promise<InstagramPost[]> 
   const { accessToken, userId } = config
   const fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,timestamp'
   const url = `${INSTAGRAM_API_BASE}/${userId}/media?fields=${fields}&limit=${limit}&access_token=${accessToken}`
+  console.info(`Instagram posts: fetching from ${url.replace(accessToken, '[REDACTED]')}`)
 
   try {
     const response = await fetch(url, {
@@ -46,7 +52,9 @@ export async function fetchInstagramPosts(limit = 12): Promise<InstagramPost[]> 
     }
 
     const data: InstagramFeedResponse = await response.json()
-    return data.data || []
+    const posts = data.data || []
+    console.info(`Instagram posts: fetched ${posts.length} posts`)
+    return posts
   } catch (error) {
     console.error('Failed to fetch Instagram posts:', error)
     return []
@@ -60,12 +68,14 @@ export async function fetchInstagramPosts(limit = 12): Promise<InstagramPost[]> 
 export async function fetchInstagramStories(): Promise<InstagramStory[]> {
   const config = getInstagramConfig()
   if (!config) {
+    console.warn('Instagram stories: skipping fetch, config missing')
     return []
   }
 
   const { accessToken, userId } = config
   const fields = 'id,media_type,media_url,thumbnail_url,timestamp'
   const url = `${INSTAGRAM_API_BASE}/${userId}/stories?fields=${fields}&access_token=${accessToken}`
+  console.info(`Instagram stories: fetching from ${url.replace(accessToken, '[REDACTED]')}`)
 
   try {
     const response = await fetch(url, {
@@ -73,14 +83,16 @@ export async function fetchInstagramStories(): Promise<InstagramStory[]> {
     })
 
     if (!response.ok) {
-      // Stories endpoint may fail if no permission - fail silently
+      console.warn(`Instagram stories: API returned ${response.status}`)
       return []
     }
 
     const data: InstagramStoriesResponse = await response.json()
-    return data.data || []
-  } catch {
-    // Stories fail silently if no permission
+    const stories = data.data || []
+    console.info(`Instagram stories: fetched ${stories.length} stories`)
+    return stories
+  } catch (error) {
+    console.warn('Instagram stories: fetch failed', error)
     return []
   }
 }
@@ -110,5 +122,7 @@ export async function fetchInstagramFeed(options: InstagramFeedOptions = {}): Pr
   }
 
   // Limit total items
-  return items.slice(0, limit)
+  const result = items.slice(0, limit)
+  console.info(`Instagram feed: ${result.length} items (${posts.length} posts, ${stories.length} stories)`)
+  return result
 }
