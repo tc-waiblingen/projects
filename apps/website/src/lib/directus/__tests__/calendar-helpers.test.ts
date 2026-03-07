@@ -11,6 +11,7 @@ const {
   absoluteUrl,
   parseGermanDateTime,
   parseTournamentDateRange,
+  parseTournamentHtml,
 } = _testHelpers
 
 describe('calendar-helpers', () => {
@@ -430,6 +431,119 @@ END:VEVENT`
     it('pads single-digit days and months', () => {
       const result = parseTournamentDateRange('1.2.2026')
       expect(result?.start).toBe('2026-02-01')
+    })
+  })
+
+  describe('parseTournamentHtml', () => {
+    const baseUrl = 'https://wtb.de'
+
+    // 3-column WTB layout with nested competition table in column 3
+    const wtbHtml = `<table class="tournaments">
+<thead><tr><th>Datum</th><th>Turnier</th><th>Konkurrenz</th></tr></thead>
+<tbody>
+<tr>
+  <td class="daterange"><span>Sa, 24.1.</span> – <span class="enddate">So, 8.2.2026</span></td>
+  <td>
+    <h2><a href="/tournament/1" class="mybigpoint">1. STS-Cup Jugendturnier 2026</a></h2>
+    <p>Veranstalter: TC Waiblingen <br>Austragungsort: Waiblingen <br> Offen für: Deutschland <br> <a target="_blank" href="/doc/817670"><span class="glyphicon glyphicon-file"></span> Ausschreibung</a></p>
+  </td>
+  <td class="competitionAbbr">
+    <table class="table table-condensed">
+      <tbody>
+        <tr><td class="name"><span title="J-2">U14 m Einzel</span></td><td class="fedRank"></td><td class="result">Hauptfeld</td></tr>
+        <tr><td class="name"><span title="J-2">U14 w Einzel</span></td><td class="fedRank"></td><td class="result">Qualifikation</td></tr>
+      </tbody>
+    </table>
+  </td>
+</tr>
+<tr>
+  <td class="daterange"><span>Sa, 7.3.2026</span></td>
+  <td>
+    <h2><a href="/tournament/2" class="mybigpoint">51. Waiblinger Hallenturnier um den Lorinser-Cup 2026 - LK-Tagesturnier</a></h2>
+    <p>Veranstalter: TC Waiblingen <br>Austragungsort: Waiblingen <br> Meldeschluss: 04.03.2026 <br> <a target="_blank" href="/doc/820000"><span class="glyphicon glyphicon-file"></span> Ausschreibung</a></p>
+  </td>
+  <td class="competitionAbbr">
+    <table class="table table-condensed">
+      <tbody>
+        <tr><td class="name">Herren Einzel</td><td class="fedRank"></td><td class="result"></td></tr>
+      </tbody>
+    </table>
+  </td>
+</tr>
+</tbody>
+</table>`
+
+    it('parses tournaments from 3-column WTB layout with nested tables', () => {
+      const events = parseTournamentHtml(wtbHtml, baseUrl)
+
+      expect(events).toHaveLength(2)
+      expect(events.map((e) => e.title)).toEqual([
+        '1. STS-Cup Jugendturnier 2026',
+        '51. Waiblinger Hallenturnier um den Lorinser-Cup 2026 - LK-Tagesturnier',
+      ])
+    })
+
+    it('extracts Lorinser-Cup tournament correctly', () => {
+      const events = parseTournamentHtml(wtbHtml, baseUrl)
+      const lorinser = events.find((e) => e.title.includes('Lorinser'))
+
+      expect(lorinser).toBeDefined()
+      expect(lorinser!.startDate).toEqual(new Date(2026, 2, 7))
+      expect(lorinser!.isMultiDay).toBe(false)
+      expect(lorinser!.url).toBe('https://wtb.de/tournament/2')
+      expect(lorinser!.source).toBe('tournament')
+    })
+
+    it('extracts multi-day tournament with correct date range', () => {
+      const events = parseTournamentHtml(wtbHtml, baseUrl)
+      const stsCup = events.find((e) => e.title.includes('STS-Cup'))
+
+      expect(stsCup).toBeDefined()
+      expect(stsCup!.startDate).toEqual(new Date(2026, 0, 24))
+      expect(stsCup!.endDate).toEqual(new Date(2026, 1, 8))
+      expect(stsCup!.isMultiDay).toBe(true)
+    })
+
+    it('extracts Ausschreibung link', () => {
+      const events = parseTournamentHtml(wtbHtml, baseUrl)
+      const lorinser = events.find((e) => e.title.includes('Lorinser'))
+      const metadata = lorinser!.metadata as { callForEntriesUrl?: string }
+
+      expect(metadata.callForEntriesUrl).toBe('https://wtb.de/doc/820000')
+    })
+
+    it('extracts registration deadline', () => {
+      const events = parseTournamentHtml(wtbHtml, baseUrl)
+      const lorinser = events.find((e) => e.title.includes('Lorinser'))
+      const metadata = lorinser!.metadata as { registrationDeadline?: string }
+
+      expect(metadata.registrationDeadline).toContain('04.03.2026')
+    })
+
+    it('skips tournaments not organized by TC Waiblingen', () => {
+      const html = `<table class="tournaments"><tbody>
+<tr>
+  <td class="daterange"><span>Sa, 7.3.2026</span></td>
+  <td>
+    <h2><a href="/t/1">Some Other Tournament</a></h2>
+    <p>Veranstalter: TV Stuttgart <br>Austragungsort: Stuttgart</p>
+  </td>
+  <td class="competitionAbbr"></td>
+</tr>
+</tbody></table>`
+
+      const events = parseTournamentHtml(html, baseUrl)
+      expect(events).toHaveLength(0)
+    })
+
+    it('respects date range filter', () => {
+      const events = parseTournamentHtml(wtbHtml, baseUrl, {
+        from: new Date(2026, 2, 1),
+        to: new Date(2026, 2, 31),
+      })
+
+      expect(events).toHaveLength(1)
+      expect(events[0].title).toContain('Lorinser')
     })
   })
 })

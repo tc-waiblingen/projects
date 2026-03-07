@@ -801,6 +801,149 @@ function parseTournamentDateRange(raw: string): { start: string; end?: string } 
 }
 
 /**
+ * Parses tournament HTML from WTB into CalendarEvent objects.
+ * Extracted for testability — used by fetchTournaments.
+ */
+function parseTournamentHtml(
+  html: string,
+  baseUrl: string,
+  options: FetchCalendarOptions = {}
+): CalendarEvent[] {
+  const root = parseHTML(html)
+  const calendarEvents: CalendarEvent[] = []
+  const rows = root.querySelectorAll('table.tournaments > tbody > tr')
+
+  const from = options.from ?? new Date(0)
+  const to = options.to ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+
+  for (const row of rows) {
+    const cells = row.querySelectorAll('td')
+    if (cells.length < 2) continue
+
+    // First column: date range (must have daterange class)
+    const dateCell = cells[0]
+    if (!dateCell) continue
+    const dateCellClass = dateCell.getAttribute('class') || ''
+    if (!dateCellClass.includes('daterange')) continue
+
+    const dateText = dateCell.text?.replace(/\s+/g, ' ').trim()
+    if (!dateText) continue
+
+    // Second column: tournament details
+    const detailsCell = cells[1]
+    const h2 = detailsCell?.querySelector('h2')
+    const link = h2?.querySelector('a')
+    const p = detailsCell?.querySelector('p')
+
+    if (!h2 || !link || !p) continue
+
+    const pText = p.text?.trim() || ''
+
+    // Only keep tournaments organized by TC Waiblingen
+    if (!pText.includes('Veranstalter: TC Waiblingen')) continue
+
+    const title = link.text?.replace(/\s+/g, ' ').trim() || ''
+    const registrationUrl = link.getAttribute('href')
+      ? new URL(link.getAttribute('href')!, baseUrl).toString()
+      : null
+
+    // Extract "Ausschreibung" link if present
+    let callForEntriesUrl: string | null = null
+    const ausschreibungLinks = p.querySelectorAll('a')
+    for (const aLink of ausschreibungLinks) {
+      const linkText = aLink.text?.replace(/\s+/g, ' ').trim() || ''
+      if (linkText === 'Ausschreibung') {
+        const href = aLink.getAttribute('href')
+        if (href) {
+          callForEntriesUrl = new URL(href, baseUrl).toString()
+        }
+        break
+      }
+    }
+
+    // Parse date range
+    const dateRange = parseTournamentDateRange(dateText)
+    if (!dateRange) continue
+
+    const startParts = dateRange.start.split('-').map(Number)
+    const year = startParts[0]
+    const month = startParts[1]
+    const day = startParts[2]
+    if (year === undefined || month === undefined || day === undefined) continue
+    const tournamentStartDate = new Date(year, month - 1, day)
+
+    let tournamentEndDate: Date | null = null
+    if (dateRange.end) {
+      const endParts = dateRange.end.split('-').map(Number)
+      const endYear = endParts[0]
+      const endMonth = endParts[1]
+      const endDay = endParts[2]
+      if (endYear !== undefined && endMonth !== undefined && endDay !== undefined) {
+        tournamentEndDate = new Date(endYear, endMonth - 1, endDay)
+      }
+    }
+
+    // Filter by date range
+    if (tournamentStartDate < from || tournamentStartDate > to) continue
+
+    // Extract registration deadline from details
+    const deadlineMatch = /Meldeschluss:\s*([^(]+)/.exec(pText)
+    const registrationDeadline = deadlineMatch?.[1]?.trim()
+
+    // Extract category/age group from details
+    const categoryMatch = /Kategorie:\s*([^,\n]+)/.exec(pText)
+    const category = categoryMatch?.[1]?.trim()
+
+    // Build description: only keep lines starting with "Meldeschluss:"
+    // and remove "(Offen für: xxx)" text
+    let description: string | null =
+      pText
+        .split(/\n/g)
+        .filter((line) => line.trim().startsWith('Meldeschluss:'))
+        .join(', ') || null
+
+    if (description) {
+      description = description.replace(/\(Offen für:.*?\)/g, '').trim() || null
+    }
+
+    const metadata: TournamentEventMetadata = {
+      category,
+      registrationDeadline,
+      callForEntriesUrl: callForEntriesUrl || undefined,
+      registrationUrl: registrationUrl || undefined,
+    }
+
+    // Check if tournament spans multiple days
+    const isMultiDay = !!(
+      tournamentEndDate &&
+      (tournamentStartDate.getFullYear() !== tournamentEndDate.getFullYear() ||
+        tournamentStartDate.getMonth() !== tournamentEndDate.getMonth() ||
+        tournamentStartDate.getDate() !== tournamentEndDate.getDate())
+    )
+
+    calendarEvents.push({
+      id: `tournament-${dateRange.start}-${title}`.replace(/\s+/g, '-'),
+      source: 'tournament',
+      title,
+      description,
+      location: 'Tennis-Club Waiblingen e.V.',
+      startDate: tournamentStartDate,
+      endDate: tournamentEndDate,
+      startTime: null,
+      endTime: null,
+      isAllDay: true,
+      isMultiDay,
+      url: registrationUrl,
+      imageUrl: null,
+      metadata,
+      displayWeight: 2, // Tournaments always have weight 2
+    })
+  }
+
+  return calendarEvents
+}
+
+/**
  * Fetches tournament data from WTB by scraping the HTML
  * Uses form-based filtering to get tournaments in Waiblingen
  */
@@ -898,138 +1041,7 @@ export async function fetchTournaments(
     }
 
     const html = await response.text()
-    const root = parseHTML(html)
-
-    // Parse tournament table
-    const calendarEvents: CalendarEvent[] = []
-    const rows = root.querySelectorAll('table.tournaments tr')
-
-    const from = options.from ?? new Date(0)
-    const to = options.to ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-
-    for (const row of rows) {
-      const cells = row.querySelectorAll('td')
-      if (cells.length < 2) continue
-
-      // First column: date range (must have daterange class)
-      const dateCell = cells[0]
-      if (!dateCell) continue
-      const dateCellClass = dateCell.getAttribute('class') || ''
-      if (!dateCellClass.includes('daterange')) continue
-
-      const dateText = dateCell.text?.replace(/\s+/g, ' ').trim()
-      if (!dateText) continue
-
-      // Second column: tournament details
-      const detailsCell = cells[1]
-      const h2 = detailsCell?.querySelector('h2')
-      const link = h2?.querySelector('a')
-      const p = detailsCell?.querySelector('p')
-
-      if (!h2 || !link || !p) continue
-
-      const pText = p.text?.trim() || ''
-
-      // Only keep tournaments organized by TC Waiblingen
-      if (!pText.includes('Veranstalter: TC Waiblingen')) continue
-
-      const title = link.text?.replace(/\s+/g, ' ').trim() || ''
-      const registrationUrl = link.getAttribute('href')
-        ? new URL(link.getAttribute('href')!, baseUrl).toString()
-        : null
-
-      // Extract "Ausschreibung" link if present
-      let callForEntriesUrl: string | null = null
-      const ausschreibungLinks = p.querySelectorAll('a')
-      for (const aLink of ausschreibungLinks) {
-        const linkText = aLink.text?.replace(/\s+/g, ' ').trim() || ''
-        if (linkText === 'Ausschreibung') {
-          const href = aLink.getAttribute('href')
-          if (href) {
-            callForEntriesUrl = new URL(href, baseUrl).toString()
-          }
-          break
-        }
-      }
-
-      // Parse date range
-      const dateRange = parseTournamentDateRange(dateText)
-      if (!dateRange) continue
-
-      const startParts = dateRange.start.split('-').map(Number)
-      const year = startParts[0]
-      const month = startParts[1]
-      const day = startParts[2]
-      if (year === undefined || month === undefined || day === undefined) continue
-      const tournamentStartDate = new Date(year, month - 1, day)
-
-      let tournamentEndDate: Date | null = null
-      if (dateRange.end) {
-        const endParts = dateRange.end.split('-').map(Number)
-        const endYear = endParts[0]
-        const endMonth = endParts[1]
-        const endDay = endParts[2]
-        if (endYear !== undefined && endMonth !== undefined && endDay !== undefined) {
-          tournamentEndDate = new Date(endYear, endMonth - 1, endDay)
-        }
-      }
-
-      // Filter by date range
-      if (tournamentStartDate < from || tournamentStartDate > to) continue
-
-      // Extract registration deadline from details
-      const deadlineMatch = /Meldeschluss:\s*([^(]+)/.exec(pText)
-      const registrationDeadline = deadlineMatch?.[1]?.trim()
-
-      // Extract category/age group from details
-      const categoryMatch = /Kategorie:\s*([^,\n]+)/.exec(pText)
-      const category = categoryMatch?.[1]?.trim()
-
-      // Build description: only keep lines starting with "Meldeschluss:"
-      // and remove "(Offen für: xxx)" text
-      let description: string | null =
-        pText
-          .split(/\n/g)
-          .filter((line) => line.trim().startsWith('Meldeschluss:'))
-          .join(', ') || null
-
-      if (description) {
-        description = description.replace(/\(Offen für:.*?\)/g, '').trim() || null
-      }
-
-      const metadata: TournamentEventMetadata = {
-        category,
-        registrationDeadline,
-        callForEntriesUrl: callForEntriesUrl || undefined,
-        registrationUrl: registrationUrl || undefined,
-      }
-
-      // Check if tournament spans multiple days
-      const isMultiDay = !!(
-        tournamentEndDate &&
-        (tournamentStartDate.getFullYear() !== tournamentEndDate.getFullYear() ||
-          tournamentStartDate.getMonth() !== tournamentEndDate.getMonth() ||
-          tournamentStartDate.getDate() !== tournamentEndDate.getDate())
-      )
-
-      calendarEvents.push({
-        id: `tournament-${dateRange.start}-${title}`.replace(/\s+/g, '-'),
-        source: 'tournament',
-        title,
-        description,
-        location: 'Tennis-Club Waiblingen e.V.',
-        startDate: tournamentStartDate,
-        endDate: tournamentEndDate,
-        startTime: null,
-        endTime: null,
-        isAllDay: true,
-        isMultiDay,
-        url: registrationUrl,
-        imageUrl: null,
-        metadata,
-        displayWeight: 2, // Tournaments always have weight 2
-      })
-    }
+    const calendarEvents = parseTournamentHtml(html, baseUrl, options)
 
     console.log(`[fetchTournaments] Parsed ${calendarEvents.length} tournaments`)
     return calendarEvents
@@ -1112,4 +1124,5 @@ export const _testHelpers = {
   absoluteUrl,
   parseGermanDateTime,
   parseTournamentDateRange,
+  parseTournamentHtml,
 }
