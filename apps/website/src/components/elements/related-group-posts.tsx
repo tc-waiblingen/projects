@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { draftMode } from 'next/headers'
 import { fetchPostsByGroup } from '@/lib/directus/fetchers'
 import { Container } from './container'
 
@@ -8,7 +9,8 @@ interface RelatedGroupPostsProps {
 }
 
 export async function RelatedGroupPosts({ groupId, currentPostId }: RelatedGroupPostsProps) {
-  const posts = await fetchPostsByGroup(groupId)
+  const preview = (await draftMode()).isEnabled
+  const posts = await fetchPostsByGroup(groupId, undefined, preview)
 
   if (posts.length < 2) {
     return null
@@ -35,11 +37,22 @@ export async function RelatedGroupPosts({ groupId, currentPostId }: RelatedGroup
               </time>
             ) : null
 
+            const badgeEl = preview ? (() => {
+              if (post.status !== 'published') {
+                return <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-900 dark:text-amber-100">Entwurf</span>
+              }
+              if (post.published_at && new Date(post.published_at) > new Date()) {
+                return <span className="rounded bg-tcw-red-100 px-1.5 py-0.5 text-xs font-medium text-tcw-red-900 dark:bg-tcw-red-900 dark:text-tcw-red-100">Geplant</span>
+              }
+              return null
+            })() : null
+
             if (isCurrent) {
               return (
                 <li key={post.id} className="flex items-baseline gap-3">
                   {dateEl}
                   <span className="text-body font-bold">{post.title}</span>
+                  {badgeEl}
                 </li>
               )
             }
@@ -55,6 +68,7 @@ export async function RelatedGroupPosts({ groupId, currentPostId }: RelatedGroup
                 <Link href={href} className="text-body text-link">
                   {post.title}
                 </Link>
+                {badgeEl}
               </li>
             )
           })}

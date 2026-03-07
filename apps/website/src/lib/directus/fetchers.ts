@@ -481,19 +481,26 @@ export async function fetchFilesByIds(fileIds: string[]): Promise<DirectusFile[]
   }
 }
 
-export const fetchPostsByGroup = async (groupId: number, limit?: number) => {
+export const fetchPostsByGroup = async (groupId: number, limit?: number, preview = false) => {
   const { directus, readItems } = getDirectus()
 
   try {
     const posts = await directus.request(
       readItems("posts", {
-        filter: {
-          status: { _eq: "published" },
-          group: { _eq: groupId },
-        },
+        filter: preview
+          ? { group: { _eq: groupId } }
+          : {
+              status: { _eq: "published" },
+              group: { _eq: groupId },
+              _or: [
+                { published_at: { _null: true } },
+                { published_at: { _lte: '$NOW' } },
+              ],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't type _or with mixed filters
+            } as any,
         sort: ["published_at"],
         limit: limit ?? -1,
-        fields: ["id", "title", "slug", "published_at"],
+        fields: ["id", "title", "slug", "published_at", "status"],
       }),
     )
 
