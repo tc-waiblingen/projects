@@ -31,7 +31,7 @@ export function EventList({ events, style = 'default', alignment = 'left' }: Eve
             <div className="flex flex-col divide-y divide-tcw-accent-100 dark:divide-tcw-accent-700">
               {monthGroup.days.flatMap((dayGroup) =>
                 sortDayEvents(dayGroup.events).map((event) => (
-                  <CompactEventRow key={event.id} event={event} />
+                  <CompactEventRow key={`${dayGroup.dateKey}-${event.id}`} event={event} displayDate={dayGroup.date} />
                 ))
               )}
             </div>

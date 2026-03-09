@@ -227,13 +227,27 @@ function formatCompactDate(date: Date): string {
   return `${weekday}, ${day}.${month}.`
 }
 
-export function CompactEventRow({ event }: { event: CalendarEvent }) {
+function formatCompactDateRange(start: Date, end: Date): string {
+  const startDay = start.getDate()
+  const startMonth = start.getMonth() + 1
+  const endDay = end.getDate()
+  const endMonth = end.getMonth() + 1
+
+  if (startMonth === endMonth) {
+    return `${startDay}.\u202F\u2013\u202F${endDay}.${endMonth}.`
+  }
+  return `${startDay}.${startMonth}.\u202F\u2013\u202F${endDay}.${endMonth}.`
+}
+
+export function CompactEventRow({ event, displayDate }: { event: CalendarEvent; displayDate?: Date }) {
   const isMatch = event.source === 'match'
   const metadata = isMatch ? (event.metadata as MatchEventMetadata) : null
 
   const title = isMatch && metadata
     ? `${metadata.homeTeam} – ${metadata.awayTeam}`
     : event.title
+
+  const hasDateRange = event.endDate && event.endDate > event.startDate
 
   const time = event.isAllDay
     ? 'Ganztägig'
@@ -243,9 +257,14 @@ export function CompactEventRow({ event }: { event: CalendarEvent }) {
 
   return (
     <div className="flex items-baseline gap-3 py-1.5 text-sm">
-      <span className="w-24 shrink-0 text-muted">{formatCompactDate(event.startDate)}</span>
+      <span className="w-24 shrink-0 text-muted">{formatCompactDate(displayDate ?? event.startDate)}</span>
       <span className="w-20 shrink-0 tabular-nums text-muted">{time}</span>
-      <span className="min-w-0 truncate font-medium text-body">{title}</span>
+      <span className="min-w-0 truncate font-medium text-body">
+        {title}
+        {hasDateRange && (
+          <span className="font-normal text-muted"> ({formatCompactDateRange(event.startDate, event.endDate!)})</span>
+        )}
+      </span>
       {event.location && (
         <span className="ml-auto shrink-0 text-muted">📍 {event.location}</span>
       )}
