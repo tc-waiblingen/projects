@@ -637,6 +637,38 @@ export interface Page {
 	blocks?: PageBlock[] | string[];
 }
 
+export interface PostBlock {
+	/** @primaryKey */
+	id: number;
+	sort?: number | null;
+	user_created?: string | null;
+	date_created?: string | null;
+	user_updated?: string | null;
+	date_updated?: string | null;
+	post?: Post | string | null;
+	/** @description Temporarily hide this block on the website without having to remove it from your page. */
+	hide_block?: boolean | null;
+	/** @description Background color for the block to create contrast. Does not control dark or light mode for the entire site. */
+	background?: 'default' | 'light' | 'dark' | null;
+	item?: BlockHero | BlockRichtext | BlockForm | BlockPost | BlockGallery | BlockPricing | BlockButtonGroup | BlockAttachment | BlockTeam | BlockClubCalendar | BlockMatchResult | BlockSponsor | BlockInstagram | BlockIframe | BlockTrainer | BlockNavMenu | string | null;
+	collection?: string | null;
+}
+
+export interface PostGroup {
+	/** @primaryKey */
+	id: number;
+	status?: 'published' | 'draft' | 'archived';
+	sort?: number | null;
+	user_created?: string | null;
+	date_created?: string | null;
+	user_updated?: string | null;
+	date_updated?: string | null;
+	slug?: string;
+	name?: string | null;
+	description?: string | null;
+	posts?: Post[] | string[];
+}
+
 export interface Post {
 	content?: string | null;
 	/** @primaryKey */
@@ -663,7 +695,9 @@ export interface Post {
 	user_updated?: string | null;
 	imported_from_wordpress?: boolean | null;
 	show_toc?: boolean | null;
-	group?: number | null;
+	group?: PostGroup | string | null;
+	/** @description Create and arrange different content blocks (like text, images, or videos) to build your post. */
+	blocks?: PostBlock[] | string[];
 }
 
 export interface Redirect {
@@ -880,6 +914,8 @@ export interface Schema {
 	office_hours: OfficeHour[];
 	page_blocks: PageBlock[];
 	pages: Page[];
+	post_blocks: PostBlock[];
+	post_groups: PostGroup[];
 	posts: Post[];
 	redirects: Redirect[];
 	sponsors: Sponsor[];
@@ -927,6 +963,8 @@ export enum CollectionNames {
 	office_hours = 'office_hours',
 	page_blocks = 'page_blocks',
 	pages = 'pages',
+	post_blocks = 'post_blocks',
+	post_groups = 'post_groups',
 	posts = 'posts',
 	redirects = 'redirects',
 	sponsors = 'sponsors',

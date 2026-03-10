@@ -8,6 +8,7 @@ async function generateTypes() {
     console.error("Error: NEXT_PUBLIC_DIRECTUS_URL or DIRECTUS_TOKEN is missing in the .env file.")
     process.exit(1)
   }
+  console.info(`Connecting to Directus at ${directusUrl} ...`)
   try {
     await generateDirectusTypes({
       outputPath: "./src/types/directus-schema.ts",

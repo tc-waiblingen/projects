@@ -1,6 +1,6 @@
 import { clsx } from "clsx/lite"
 import type {
-  PageBlock,
+  PageBlock, PostBlock,
   BlockHero as BlockHeroType,
   BlockRichtext as BlockRichtextType,
   BlockForm as BlockFormType,
@@ -36,7 +36,7 @@ import { BlockButtonGroupBlock } from "./BlockButtonGroupBlock"
 import { BlockNavMenu } from "./BlockNavMenu"
 
 interface BlockRendererProps {
-  blocks: PageBlock[]
+  blocks: (PageBlock | PostBlock)[]
   currentPath?: string
 }
 
@@ -76,7 +76,7 @@ function BlockWrapper({
   )
 }
 
-function Block({ block, currentPath }: { block: PageBlock; currentPath?: string }) {
+function Block({ block, currentPath }: { block: PageBlock | PostBlock; currentPath?: string }) {
   const { collection, item } = block
 
   if (!item || typeof item === "string") {

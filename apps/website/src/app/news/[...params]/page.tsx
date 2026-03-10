@@ -3,7 +3,8 @@ import Image from "next/image"
 import { notFound, redirect } from "next/navigation"
 import { fetchAllPublishedPosts, fetchPostForPreview } from "@/lib/directus/fetchers"
 import { DocumentLeftAligned } from "@/components/sections/document-left-aligned"
-import type { DirectusFile } from "@/types/directus-schema"
+import type { DirectusFile, PostBlock } from "@/types/directus-schema"
+import { BlockRenderer } from "@/components/blocks/BlockRenderer"
 import { TocProvider, TableOfContents } from '@/components/toc'
 import { sanitizeHtml } from "@/lib/sanitize"
 import { calculatePostWeight } from "@/lib/pagefind-weight"
@@ -124,6 +125,7 @@ export default async function PostPage({ params }: PageProps) {
 
   const showToc = post.show_toc ?? false
   const postWeight = calculatePostWeight(published_at)
+  const blocks = (post.blocks ?? []).filter((b): b is PostBlock => typeof b !== 'string')
 
   const headlineEl = title ? (
     <span data-directus={getEditAttr({ collection: 'posts', item: String(post.id), fields: 'title' })}>
@@ -151,6 +153,7 @@ export default async function PostPage({ params }: PageProps) {
               />
             )}
           </DocumentLeftAligned>
+          {blocks.length > 0 && <BlockRenderer blocks={blocks} />}
           {showToc && <TableOfContents />}
         </TocProvider>
         {post.group && typeof post.group === 'number' && (

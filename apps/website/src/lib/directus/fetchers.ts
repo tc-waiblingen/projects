@@ -269,7 +269,16 @@ export const fetchPostBySlug = async (slug: string, year?: string) => {
           slug: { _eq: slug },
         },
         limit: 1,
-        fields: ["*", { image: [...DIRECTUS_FILE_FIELDS], author: ["first_name", "last_name"] }],
+        fields: [
+          "*",
+          "blocks.*",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
+          "blocks.item.*.*.*.*" as any,
+          { image: [...DIRECTUS_FILE_FIELDS], author: ["first_name", "last_name"] },
+        ],
+        deep: {
+          blocks: { _sort: ["sort"], _filter: { hide_block: { _neq: true } } },
+        },
       }),
     )
 
@@ -308,7 +317,16 @@ export const fetchPostForPreview = async (slug: string, year?: string) => {
           slug: { _eq: slug },
         },
         limit: 1,
-        fields: ["*", { image: [...DIRECTUS_FILE_FIELDS], author: ["first_name", "last_name"] }],
+        fields: [
+          "*",
+          "blocks.*",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
+          "blocks.item.*.*.*.*" as any,
+          { image: [...DIRECTUS_FILE_FIELDS], author: ["first_name", "last_name"] },
+        ],
+        deep: {
+          blocks: { _sort: ["sort"], _filter: { hide_block: { _neq: true } } },
+        },
       }),
     )
 
