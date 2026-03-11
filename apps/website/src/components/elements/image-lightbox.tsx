@@ -221,7 +221,7 @@ export function ImageLightbox({
 
             {/* Description subtitle (fixed height to prevent layout shift) */}
             {hasAnyDescription && (
-              <p className="line-clamp-3 h-[3.75rem] max-w-prose text-center text-sm leading-5 text-white/80">
+              <p className="line-clamp-3 h-[3.75rem] max-w-prose whitespace-pre-line text-center text-sm leading-5 text-white/80">
                 {currentImage.description}
               </p>
             )}
