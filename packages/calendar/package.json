@@ -12,7 +12,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "peerDependencies": {
     "@directus/sdk": "^21.0.0"
@@ -23,6 +25,7 @@
   },
   "devDependencies": {
     "@directus/sdk": "^21.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }

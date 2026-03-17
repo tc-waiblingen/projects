@@ -123,6 +123,12 @@ export interface GroupEventsByMonthOptions {
    * Default: includes all days.
    */
   multiDayFilter?: (event: CalendarEvent, date: Date) => boolean
+  /**
+   * Whether to expand multi-day events across all days they span.
+   * When false, multi-day events only appear on their start date.
+   * Default: true.
+   */
+  expandDays?: boolean
 }
 
 /**
@@ -144,7 +150,7 @@ export function groupEventsByMonth(
   events: CalendarEvent[],
   options: GroupEventsByMonthOptions = {}
 ): MonthGroup[] {
-  const { multiDayFilter = defaultMultiDayFilter } = options
+  const { multiDayFilter = defaultMultiDayFilter, expandDays = true } = options
   const monthsMap = new Map<string, { monthDate: Date; daysMap: Map<string, DayGroup> }>()
 
   for (const event of events) {
@@ -153,7 +159,7 @@ export function groupEventsByMonth(
     }
 
     // For multi-day events, add to each day they span
-    if (event.isMultiDay && event.endDate && isValidDate(event.endDate)) {
+    if (expandDays && event.isMultiDay && event.endDate && isValidDate(event.endDate)) {
       const currentDate = new Date(event.startDate)
       const endTime = event.endDate.getTime()
 
