@@ -378,6 +378,7 @@ export interface Calendar {
 	/** @description Bleibt dieses Feld leer, findet der Termin beim TCW statt. */
 	location?: string | null;
 	category?: 'beginners' | 'children' | null;
+	expand_days?: boolean;
 }
 
 export interface Court {
