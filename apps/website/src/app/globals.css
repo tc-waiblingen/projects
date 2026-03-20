@@ -123,6 +123,15 @@
     }
   }
 
+  h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  a {
+    overflow-wrap: break-word;
+  }
+
   /* H1 - page/hero titles */
   h1 {
     font-family: var(--font-sans);

@@ -210,7 +210,7 @@ function EventItem({ event }: { event: CalendarEvent }) {
             type="website"
             value={event.url}
             title="Mehr Details"
-            className="text-sm text-muted hover:text-body"
+            className="text-sm text-muted hover:text-body break-all"
           />
         )}
         <TournamentLinks event={event} />
