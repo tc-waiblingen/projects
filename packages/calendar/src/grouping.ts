@@ -159,7 +159,8 @@ export function groupEventsByMonth(
     }
 
     // For multi-day events, add to each day they span
-    if (expandDays && event.isMultiDay && event.endDate && isValidDate(event.endDate)) {
+    const shouldExpand = event.expandDays ?? expandDays
+    if (shouldExpand && event.isMultiDay && event.endDate && isValidDate(event.endDate)) {
       const currentDate = new Date(event.startDate)
       const endTime = event.endDate.getTime()
 

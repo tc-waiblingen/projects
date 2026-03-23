@@ -284,6 +284,7 @@ export async function fetchAppCalendarEvents(
         url: eventUrl,
         imageUrl,
         metadata,
+        expandDays: true,
         displayWeight: calculateDisplayWeight('app', description),
       })
     }
@@ -345,6 +346,7 @@ export async function fetchAppCalendarEvents(
         url: eventUrl,
         imageUrl,
         metadata,
+        expandDays: true,
         displayWeight: calculateDisplayWeight('app', description),
       })
     }
@@ -442,6 +444,7 @@ export async function fetchClubEvents(
         url: event.website || null,
         imageUrl: event.logo ? config.getDirectusAssetURL(event.logo) : null,
         metadata,
+        expandDays: event.expand_days ?? true,
         displayWeight: calculateDisplayWeight('club', description),
       }
     })
@@ -708,6 +711,7 @@ export async function fetchMatches(
           url: null,
           imageUrl: null,
           metadata,
+          expandDays: true,
           displayWeight: 2, // Matches always have weight 2
         })
 
@@ -936,6 +940,7 @@ function parseTournamentHtml(
       url: registrationUrl,
       imageUrl: null,
       metadata,
+      expandDays: true,
       displayWeight: 2, // Tournaments always have weight 2
     })
   }

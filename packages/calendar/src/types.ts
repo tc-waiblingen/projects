@@ -53,6 +53,7 @@ export interface CalendarEvent {
   endTime: string | null // HH:MM
   isAllDay: boolean
   isMultiDay: boolean
+  expandDays?: boolean
   url: string | null
   imageUrl: string | null
   metadata: CalendarEventMetadata
@@ -109,4 +110,5 @@ export interface DirectusCalendarItem {
   show_on_tv?: boolean
   category?: 'beginners' | 'children' | null
   logo?: { id: string } | string | null
+  expand_days?: boolean
 }

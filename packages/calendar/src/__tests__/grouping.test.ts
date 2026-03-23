@@ -32,6 +32,7 @@ describe('groupEventsByMonth', () => {
       endDate: new Date(2025, 2, 13), // March 13
       isMultiDay: true,
       isAllDay: true,
+      expandDays: undefined,
     })
 
     it('expands multi-day events by default', () => {
@@ -69,6 +70,27 @@ describe('groupEventsByMonth', () => {
       expect(result[0].days[0].dateKey).toBe('2025-03-10')
       expect(result[0].days[0].events).toHaveLength(1)
       expect(result[0].days[0].events[0].id).toBe('multi')
+    })
+
+    it('respects per-event expandDays: false even when global expandDays is true', () => {
+      const noExpandEvent = makeEvent({
+        id: 'no-expand',
+        title: 'No Expand Event',
+        startDate: new Date(2025, 2, 10),
+        endDate: new Date(2025, 2, 13),
+        isMultiDay: true,
+        isAllDay: true,
+        expandDays: false,
+      })
+
+      const result = groupEventsByMonth([noExpandEvent], {
+        expandDays: true,
+        multiDayFilter: () => true,
+      })
+
+      expect(result).toHaveLength(1)
+      expect(result[0].days).toHaveLength(1)
+      expect(result[0].days[0].dateKey).toBe('2025-03-10')
     })
 
     it('still handles single-day events normally when expandDays is false', () => {
