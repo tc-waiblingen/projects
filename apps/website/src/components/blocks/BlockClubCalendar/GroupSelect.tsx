@@ -61,11 +61,11 @@ export function GroupSelect({ value, onChange, groupEntries }: GroupSelectProps)
       <ListboxOptions
         anchor="bottom start"
         transition
-        className="z-50 mt-1 min-w-64 rounded-xl bg-white p-1.5 shadow-lg transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0 data-leave:duration-75 data-leave:ease-in dark:bg-taupe-800 md:min-w-72"
+        className="z-50 mt-1 min-w-64 rounded-xl bg-white p-1.5 shadow-lg transition-all duration-100 ease-out data-closed:scale-95 data-closed:opacity-0 data-leave:duration-75 data-leave:ease-in dark:bg-taupe-800 md:min-w-72"
       >
         <ListboxOption
           value=""
-          className="cursor-pointer rounded-lg px-3 py-1.5 text-xs italic text-taupe-500 hover:bg-taupe-100 data-focus:bg-taupe-100 dark:text-taupe-400 dark:hover:bg-taupe-700 dark:data-focus:bg-taupe-700"
+          className="cursor-pointer rounded-lg px-3 py-1.5 text-xs text-taupe-900 hover:bg-taupe-100 data-focus:bg-taupe-100 data-selected:bg-taupe-100 data-selected:font-semibold dark:text-taupe-100 dark:hover:bg-taupe-700 dark:data-focus:bg-taupe-700 dark:data-selected:bg-taupe-700"
         >
           Alle anzeigen
         </ListboxOption>
@@ -91,7 +91,7 @@ export function GroupSelect({ value, onChange, groupEntries }: GroupSelectProps)
                     value={entry.value}
                     className={clsx(
                       'cursor-pointer rounded-lg py-1.5 pl-6 pr-3 text-xs',
-                      'text-taupe-900 hover:bg-taupe-100 data-focus:bg-taupe-100 data-selected:font-semibold dark:text-taupe-100 dark:hover:bg-taupe-700 dark:data-focus:bg-taupe-700',
+                      'text-taupe-900 hover:bg-taupe-100 data-focus:bg-taupe-100 data-selected:bg-taupe-100 data-selected:font-semibold dark:text-taupe-100 dark:hover:bg-taupe-700 dark:data-focus:bg-taupe-700 dark:data-selected:bg-taupe-700',
                     )}
                   >
                     {entry.league}
@@ -111,7 +111,7 @@ export function GroupSelect({ value, onChange, groupEntries }: GroupSelectProps)
                 value={entry.value}
                 className={clsx(
                   'cursor-pointer rounded-lg px-3 py-1.5 text-xs',
-                  'text-taupe-900 hover:bg-taupe-100 data-focus:bg-taupe-100 data-selected:font-semibold dark:text-taupe-100 dark:hover:bg-taupe-700 dark:data-focus:bg-taupe-700',
+                  'text-taupe-900 hover:bg-taupe-100 data-focus:bg-taupe-100 data-selected:bg-taupe-100 data-selected:font-semibold dark:text-taupe-100 dark:hover:bg-taupe-700 dark:data-focus:bg-taupe-700 dark:data-selected:bg-taupe-700',
                 )}
               >
                 {entry.league}
