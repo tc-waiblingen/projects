@@ -39,7 +39,7 @@ export function GroupSelect({ value, onChange, groupEntries }: GroupSelectProps)
 
   // Single unnamed season = flat list, no headers
   const showSeasonHeaders =
-    sortedSeasons.length > 1 || (sortedSeasons.length === 1 && sortedSeasons[0][0] !== '')
+    sortedSeasons.length > 1 || (sortedSeasons.length === 1 && sortedSeasons[0]?.[0] !== '')
 
   return (
     <Listbox
