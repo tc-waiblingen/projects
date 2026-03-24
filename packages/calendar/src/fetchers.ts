@@ -664,6 +664,7 @@ export async function fetchMatches(
       // Parse table rows
       const rows = root.querySelectorAll('table tr')
       let pageEvents = 0
+      let rawDataRows = 0
 
       // Build column index map from header row (server may omit columns like Spielort)
       const columnMap: Record<string, number> = {}
@@ -689,6 +690,8 @@ export async function fetchMatches(
       for (const row of rows) {
         const cells = row.querySelectorAll('td')
         if (cells.length < minCols) continue
+
+        rawDataRows++
 
         const dateText = normalizeText(cells[colDate]?.text)
         if (!dateText) continue
@@ -764,10 +767,10 @@ export async function fetchMatches(
         pageEvents++
       }
 
-      console.log(`[fetchMatches] Page ${pageCount}: parsed ${pageEvents} events`)
+      console.log(`[fetchMatches] Page ${pageCount}: ${rawDataRows} rows, parsed ${pageEvents} events`)
 
-      // Check if there are more results
-      if (pageEvents === 0 || pageEvents < 100) {
+      // Check if there are more results (use raw row count, not filtered count)
+      if (rawDataRows < 100) {
         hasMoreResults = false
       }
 
