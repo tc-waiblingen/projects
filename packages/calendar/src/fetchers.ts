@@ -695,6 +695,9 @@ export async function fetchMatches(
         const reportLink = resultCell?.querySelector('a')
         const reportUrl = absoluteUrl(reportLink?.getAttribute('href'), sourceUrl)
 
+        const reportText = normalizeText(resultCell?.text)
+        if (reportText.toLowerCase().includes('zurückgezogen')) continue
+
         if (!homeTeam || !guestTeam) continue
 
         // Filter by date range (using options, not query range)
