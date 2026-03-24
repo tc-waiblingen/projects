@@ -83,6 +83,14 @@ The "Alle anzeigen" option uses `value=""`. The `onChange` handler maps empty st
 - Add `@headlessui/react` to `apps/website/package.json`
 - Compatible with React 19 (peer dependency)
 
+## Implementation Notes
+
+**District data:** The current `GroupEntry.label` is a pre-formatted string like `"Herren 50 (Bezirk)"`. The visual design shows team name and district as separate elements (`Herren 50 · Bezirk`). To support this, `GroupEntry` should be extended with separate `league` and `district` fields alongside the existing `label` (which remains for the trigger button text). The extraction logic in `BlockClubCalendar/index.tsx` already has access to both values.
+
+**Single season edge case:** When there's only one season with no name, render a flat list without season headers (matching current behavior).
+
+**Dark mode:** Derive dropdown panel dark mode styles from existing conventions — `dark:bg-taupe-800` for panel background, `dark:bg-taupe-700` for season headers, `dark:text-taupe-200` for text.
+
 ## Files Changed
 
 | File | Change |
