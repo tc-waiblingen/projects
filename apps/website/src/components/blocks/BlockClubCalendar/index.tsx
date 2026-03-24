@@ -32,7 +32,13 @@ function extractGroupEntries(events: CalendarEvent[]): GroupEntry[] {
       const key = `${meta.season ?? ''}|${league}|${meta.district ?? ''}`
       if (!seen.has(key)) {
         const label = meta.district ? `${league} (${meta.district})` : league
-        seen.set(key, { value: league, label, season: meta.season })
+        seen.set(key, {
+          value: league,
+          label,
+          league: meta.leagueFull || meta.league!,
+          district: meta.district ?? undefined,
+          season: meta.season,
+        })
       }
     }
   }

@@ -7,9 +7,11 @@ import { ICalButton } from './ICalButton'
 export type CategoryFilter = 'all' | 'matches' | 'tournaments' | 'club' | 'beginners' | 'children'
 
 export interface GroupEntry {
-  value: string   // leagueFull || league — used for filtering
-  label: string   // "{league} ({district})" — displayed in dropdown
-  season?: string // used for optgroup grouping
+  value: string      // leagueFull || league — used for filtering
+  label: string      // "{league} ({district})" — displayed in trigger button
+  league: string     // league name only — displayed in dropdown options
+  district?: string  // district name — displayed as secondary text
+  season?: string    // used for season grouping
 }
 
 interface FilterControlsProps {
