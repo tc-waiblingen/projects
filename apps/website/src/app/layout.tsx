@@ -97,6 +97,7 @@ export default async function RootLayout({
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="msapplication-config" content="/assets/favicons/browserconfig.xml" />
         <meta name="theme-color" content="#ffffff" />
+        <meta name="apple-itunes-app" content="app-id=6444000701" />
       </head>
       <body>
         <>
