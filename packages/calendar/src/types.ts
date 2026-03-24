@@ -22,7 +22,10 @@ export interface MatchEventMetadata {
   result?: string
   reportUrl?: string
   league?: string
+  leagueFull?: string
   leagueUrl?: string
+  district?: string
+  season?: string
   isHome: boolean
 }
 

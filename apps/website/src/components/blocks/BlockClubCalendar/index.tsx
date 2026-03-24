@@ -4,6 +4,7 @@ import { Section } from '@/components/elements/section'
 import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
 import { getEditAttr } from '@/lib/visual-editing'
 import { CalendarClient } from './CalendarClient'
+import type { GroupEntry } from './FilterControls'
 
 interface BlockClubCalendarProps {
   data: BlockClubCalendarType
@@ -20,19 +21,23 @@ function getCalendarDateRange(): { from: Date; to: Date; now: Date } {
   return { from, to, now }
 }
 
-function extractGroupNames(events: CalendarEvent[]): string[] {
-  const groupSet = new Set<string>()
+function extractGroupEntries(events: CalendarEvent[]): GroupEntry[] {
+  const seen = new Map<string, GroupEntry>()
 
   for (const event of events) {
     if (event.source === 'match') {
-      const metadata = event.metadata as MatchEventMetadata
-      if (metadata.league) {
-        groupSet.add(metadata.league)
+      const meta = event.metadata as MatchEventMetadata
+      const league = meta.leagueFull || meta.league
+      if (!league) continue
+      const key = `${meta.season ?? ''}|${league}|${meta.district ?? ''}`
+      if (!seen.has(key)) {
+        const label = meta.district ? `${league} (${meta.district})` : league
+        seen.set(key, { value: league, label, season: meta.season })
       }
     }
   }
 
-  return Array.from(groupSet).sort((a, b) => a.localeCompare(b, 'de'))
+  return Array.from(seen.values()).sort((a, b) => a.label.localeCompare(b.label, 'de'))
 }
 
 export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
@@ -40,7 +45,7 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
 
   const dateRange = getCalendarDateRange()
   const events = await fetchAllCalendarEvents(dateRange)
-  const groupNames = extractGroupNames(events)
+  const groupEntries = extractGroupEntries(events)
   const serverNow = dateRange.now.getTime()
 
   const headlineEl = headline ? (
@@ -59,7 +64,7 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
     <Section headline={headlineEl} eyebrow={eyebrowEl} alignment={alignment}>
       <CalendarClient
         events={events}
-        groupNames={groupNames}
+        groupEntries={groupEntries}
         serverNow={serverNow}
         filterCategory={filter_category ?? undefined}
         style={style ?? 'default'}

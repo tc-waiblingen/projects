@@ -87,7 +87,7 @@ function normalizeEvent(event: ExpandedCalendarEvent): TvEvent | null {
       return {
         ...base,
         location: normalizedLocation,
-        groupName: meta.league,
+        groupName: meta.leagueFull || meta.league,
         groupUrl: meta.leagueUrl,
         matchType: meta.isHome ? 'Heimspiel' : 'Auswärtsspiel',
       }

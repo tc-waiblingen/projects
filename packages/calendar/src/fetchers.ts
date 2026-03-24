@@ -485,6 +485,28 @@ function absoluteUrl(href: string | null | undefined, baseUrl: string): string |
 }
 
 /**
+ * Normalize a season string to "Winter YYYY/YYYY" or "Sommer YYYY"
+ */
+function normalizeSeason(raw: string): string {
+  const toFourDigitYear = (y: string) =>
+    y.length === 2 ? `20${y}` : y
+
+  // Winter: two numbers separated by "/" (e.g. "Winter 25/26", "25/26")
+  const winterMatch = raw.match(/(\d{2,4})\/(\d{2,4})/)
+  if (winterMatch) {
+    return `Winter ${toFourDigitYear(winterMatch[1])}/${toFourDigitYear(winterMatch[2])}`
+  }
+
+  // Summer: four-digit year starting with "20" (e.g. "Sommer 2026", "2026")
+  const summerMatch = raw.match(/(20\d{2})/)
+  if (summerMatch) {
+    return `Sommer ${summerMatch[1]}`
+  }
+
+  return raw
+}
+
+/**
  * Extract form data from a form node
  */
 function extractFormData(formNode: ReturnType<typeof parseHTML>): Record<string, string> {
@@ -759,6 +781,69 @@ export async function fetchMatches(
     }
 
     console.log(`[fetchMatches] Total: ${allEvents.length} events from ${pageCount} pages`)
+
+    // Fetch full group names from group pages
+    const groupUrls = new Map<string, string>()
+    for (const event of allEvents) {
+      const meta = event.metadata as MatchEventMetadata
+      if (meta.leagueUrl && meta.league && !groupUrls.has(meta.leagueUrl)) {
+        groupUrls.set(meta.leagueUrl, meta.league)
+      }
+    }
+
+    if (groupUrls.size > 0) {
+      const groupFullNames = new Map<string, { groupName: string; district?: string; season?: string }>()
+
+      await Promise.allSettled(
+        Array.from(groupUrls.entries()).map(async ([url, shortName]) => {
+          try {
+            const response = await fetch(url, {
+              next: { revalidate: 86400 },
+            } as RequestInit)
+            if (!response.ok) return
+            const html = await response.text()
+            const root = parseHTML(html)
+            const h1 = root.querySelector('h1')
+            if (!h1) return
+            const small = h1.querySelector('small')
+            const smallText = small ? normalizeText(small.text) : ''
+            const parts = h1.innerHTML.split(/<br\s*\/?>/i)
+            if (parts.length < 2) return
+            const groupName = normalizeText(parts[1].replace(/<[^>]*>/g, ''))
+            if (!groupName) return
+            // Parse district and season from small text (e.g. "Bezirk B - Winter 25/26" or "RLSW 2026")
+            let district: string | undefined
+            let season: string | undefined
+            const smallParts = smallText.split('-').map((s) => s.trim())
+            if (smallParts.length > 1) {
+              district = smallParts[0] || undefined
+              season = smallParts.slice(1).join('-').trim() || undefined
+            } else if (smallText.includes('RLSW')) {
+              district = 'RLSW'
+              season = smallText.replace('RLSW', '').trim() || undefined
+            }
+            if (season) season = normalizeSeason(season)
+            groupFullNames.set(url, { groupName, district, season })
+          } catch (error) {
+            console.warn(`[fetchMatches] Failed to fetch group page for ${shortName}:`, error)
+          }
+        })
+      )
+
+      for (const event of allEvents) {
+        const meta = event.metadata as MatchEventMetadata
+        if (meta.leagueUrl) {
+          const info = groupFullNames.get(meta.leagueUrl)
+          if (info) {
+            meta.leagueFull = info.groupName
+            meta.district = info.district
+            meta.season = info.season
+          }
+        }
+      }
+
+      console.log(`[fetchMatches] Resolved ${groupFullNames.size}/${groupUrls.size} full group names`)
+    }
 
     return allEvents
   } catch (error) {

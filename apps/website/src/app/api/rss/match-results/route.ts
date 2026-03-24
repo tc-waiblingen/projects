@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     const results = group
       ? allResults.filter((match) => {
         const metadata = match.metadata as MatchEventMetadata
-        return metadata.league === group
+        return metadata.league === group || metadata.leagueFull === group
       })
       : allResults
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import type { CalendarEvent, ClubEventMetadata, MatchEventMetadata } from '@tcw/calendar'
-import { FilterControls, type CategoryFilter } from './FilterControls'
+import { FilterControls, type CategoryFilter, type GroupEntry } from './FilterControls'
 import { EventList } from './EventList'
 import { useTocSafe } from '@/components/toc'
 
@@ -96,14 +96,14 @@ function buildQueryString(state: FilterState, isLocked = false): string {
 
 interface CalendarClientProps {
   events: CalendarEvent[]
-  groupNames: string[]
+  groupEntries: GroupEntry[]
   serverNow: number
   filterCategory?: CategoryFilter
   style?: 'default' | 'list'
   alignment?: 'left' | 'center'
 }
 
-export function CalendarClient({ events, groupNames, serverNow, filterCategory, style = 'default', alignment = 'left' }: CalendarClientProps) {
+export function CalendarClient({ events, groupEntries, serverNow, filterCategory, style = 'default', alignment = 'left' }: CalendarClientProps) {
   const isLocked = !!filterCategory && filterCategory !== 'all'
   const [state, setState] = useState<FilterState>({
     ...DEFAULT_STATE,
@@ -219,7 +219,7 @@ export function CalendarClient({ events, groupNames, serverNow, filterCategory, 
           return false
         }
         const metadata = event.metadata as MatchEventMetadata
-        if (metadata.league !== state.group) {
+        if ((metadata.leagueFull || metadata.league) !== state.group) {
           return false
         }
       }
@@ -248,7 +248,7 @@ export function CalendarClient({ events, groupNames, serverNow, filterCategory, 
           onGroupChange={(value) =>
             setState((prev) => ({ ...prev, group: value, ...(value ? { category: 'all' } : {}) }))
           }
-          groupNames={groupNames}
+          groupEntries={groupEntries}
         />
       )}
       {filteredEvents.length === 0 ? (

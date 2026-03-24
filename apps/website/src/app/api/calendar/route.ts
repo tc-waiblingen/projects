@@ -73,8 +73,8 @@ function filterEvents(
   if (group) {
     filtered = filtered.filter((e) => {
       if (e.source !== 'match') return false
-      const meta = e.metadata as { league?: string }
-      return meta.league === group
+      const meta = e.metadata as MatchEventMetadata
+      return meta.league === group || meta.leagueFull === group
     })
   }
 
