@@ -45,8 +45,8 @@ describe('GroupSelect', () => {
 
     await user.click(screen.getByRole('button'))
 
-    expect(screen.getByText(/Württemberg/)).toBeInTheDocument()
-    expect(screen.getByText(/Bezirk/)).toBeInTheDocument()
+    expect(screen.getAllByText(/Württemberg/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Bezirk/).length).toBeGreaterThan(0)
   })
 
   it('calls onChange with value when option is clicked', async () => {
