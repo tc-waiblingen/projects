@@ -603,7 +603,8 @@ export async function fetchMatches(
     console.log('[fetchMatches] Form action URL:', formActionUrl)
     console.log('[fetchMatches] Base form fields:', Object.keys(baseFormData).length)
 
-    // Step 2: Fetch matches with pagination
+
+// Step 2: Fetch matches with pagination
     const allEvents: CalendarEvent[] = []
     let offset = 0
     let hasMoreResults = true
@@ -642,20 +643,40 @@ export async function fetchMatches(
       const rows = root.querySelectorAll('table tr')
       let pageEvents = 0
 
+      // Build column index map from header row (server may omit columns like Spielort)
+      const columnMap: Record<string, number> = {}
+      const headerRow = rows[0]
+      if (headerRow) {
+        const ths = headerRow.querySelectorAll('th')
+        ths.forEach((th, i) => {
+          const text = normalizeText(th.text).toLowerCase()
+          columnMap[text] = i
+        })
+      }
+
+      const colDate = columnMap['datum'] ?? 0
+      const colGroup = columnMap['gruppe'] ?? 1
+      const colHome = columnMap['heimmannschaft'] ?? 2
+      const colGuest = columnMap['gastmannschaft'] ?? 3
+      const colLocation = columnMap['spielort'] ?? -1
+      const colMatches = columnMap['matches'] ?? (colLocation >= 0 ? 5 : 4)
+      const colReport = columnMap['spielbericht'] ?? (Object.keys(columnMap).length - 1)
+
+      const minCols = Math.max(colDate, colGroup, colHome, colGuest, colReport) + 1
+
       for (const row of rows) {
         const cells = row.querySelectorAll('td')
-        if (cells.length < 9) continue
+        if (cells.length < minCols) continue
 
-        // Table columns: Date | Group | Home | Guest | Location | Matches | Sets | Games | Status
-        const dateText = normalizeText(cells[0]?.text)
+        const dateText = normalizeText(cells[colDate]?.text)
         if (!dateText) continue
 
         const parsed = parseGermanDateTime(dateText)
         if (!parsed.jsDate || !parsed.date) continue
 
-        const groupCell = cells[1]
-        const homeCell = cells[2]
-        const guestCell = cells[3]
+        const groupCell = cells[colGroup]
+        const homeCell = cells[colHome]
+        const guestCell = cells[colGuest]
 
         const groupName = normalizeText(groupCell?.text)
         const groupUrl = absoluteUrl(groupCell?.querySelector('a')?.getAttribute('href'), sourceUrl)
@@ -668,9 +689,9 @@ export async function fetchMatches(
         const guestTeam = normalizeText(guestLink?.text || guestCell?.text)
         const guestTeamUrl = absoluteUrl(guestLink?.getAttribute('href'), sourceUrl)
 
-        const location = normalizeText(cells[4]?.text)
-        const matchesScore = normalizeText(cells[5]?.text)
-        const resultCell = cells[8]
+        const location = colLocation >= 0 ? normalizeText(cells[colLocation]?.text) : ''
+        const matchesScore = normalizeText(cells[colMatches]?.text)
+        const resultCell = cells[colReport]
         const reportLink = resultCell?.querySelector('a')
         const reportUrl = absoluteUrl(reportLink?.getAttribute('href'), sourceUrl)
 
