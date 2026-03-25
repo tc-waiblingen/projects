@@ -72,7 +72,12 @@ export function BlockIframe({ data }: BlockIframeProps) {
     height === "fixed" && height_px ? { height: `${height_px}px` } : undefined
 
   // fit-content gets min-height fallback in case postMessage isn't supported
-  const fitContentClass = height === "fit-content" ? "min-h-[400px]" : ""
+  const heightClass =
+    height === "fit-content"
+      ? "min-h-[400px]"
+      : height === "viewport"
+        ? "h-[calc(100dvh-var(--scroll-padding-top)-4rem)]"
+        : ""
 
   return (
     <Section eyebrow={eyebrowEl} headline={headlineEl} alignment={alignment}>
@@ -80,7 +85,7 @@ export function BlockIframe({ data }: BlockIframeProps) {
         ref={iframeRef}
         src={url}
         style={heightStyle}
-        className={`w-full rounded-lg border-0 ${fitContentClass}`}
+        className={`w-full rounded-lg border-0 ${heightClass}`}
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
         allowFullScreen
