@@ -46,3 +46,4 @@ screenshots/
 .npmrc.local
 
 .claude/settings.local.json
+.superpowers/brainstorm/
