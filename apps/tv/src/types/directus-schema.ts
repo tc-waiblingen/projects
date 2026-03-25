@@ -179,7 +179,7 @@ export interface BlockIframe {
 	/** @description Larger main headline for this page section. */
 	headline?: string | null;
 	url?: string | null;
-	height?: 'fixed' | `fit-content` | null;
+	height?: 'fixed' | `fit-content` | 'viewport' | null;
 	height_px?: number | null;
 	/** @description Controls how the content block is positioned on the page. Choose "Left" to align the block against the left margin or "Center" to position the block in the middle of the page. This setting affects the entire content block's placement, not the text alignment within it. */
 	alignment?: 'left' | 'center' | null;
@@ -619,9 +619,9 @@ export interface Page {
 	/** @primaryKey */
 	id: string;
 	sort?: number | null;
-	/** @description The title of this page. @required */
+	/** @description Der Titel dieser Seite. @required */
 	title: string;
-	/** @description Unique URL for this page (start with `/`, can have multiple segments `/about/me`)). @required */
+	/** @description Eindeutige URL für diese Seite (beginnt mit `/`, kann mehrere Segmente enthalten, z.B.  `/angebote/schnupper-tennis`)). @required */
 	permalink: string;
 	/** @description Is this page published? */
 	status?: 'draft' | 'in_review' | 'published';
