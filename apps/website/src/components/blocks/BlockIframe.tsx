@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import type { BlockIframe as BlockIframeType } from "@/types/directus-schema"
 import { Section } from "@/components/elements/section"
 import { getEditAttr } from "@/lib/visual-editing"
@@ -13,23 +13,43 @@ export function BlockIframe({ data }: BlockIframeProps) {
   const { id, headline, tagline, url, height, height_px, alignment } = data
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
-  // Listen for postMessage resize events (for fit-content)
+  const iframeOrigin = useMemo(() => {
+    try {
+      return url ? new URL(url).origin : null
+    } catch {
+      return null
+    }
+  }, [url])
+
+  // Listen for postMessage events from the iframe
   useEffect(() => {
-    if (height !== "fit-content") return
+    if (!iframeOrigin) return
 
     function handleMessage(event: MessageEvent) {
-      if (
-        event.data?.type === "resize" &&
-        typeof event.data.height === "number" &&
-        iframeRef.current
-      ) {
-        iframeRef.current.style.height = `${event.data.height}px`
+      if (event.origin !== iframeOrigin) return
+
+      switch (event.data?.type) {
+        case "resize":
+          if (
+            height === "fit-content" &&
+            typeof event.data.height === "number" &&
+            iframeRef.current
+          ) {
+            iframeRef.current.style.height = `${event.data.height}px`
+          }
+          break
+        case "ebusy.frame-scroll":
+          console.debug("[BlockIframe] frame-scroll event received")
+          break
+        case "ebusy.redirect":
+          console.debug("[BlockIframe] redirect event received:", event.data.url)
+          break
       }
     }
 
     window.addEventListener("message", handleMessage)
     return () => window.removeEventListener("message", handleMessage)
-  }, [height])
+  }, [height, iframeOrigin])
 
   if (!url) {
     return null
