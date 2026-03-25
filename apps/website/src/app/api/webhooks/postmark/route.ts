@@ -102,7 +102,7 @@ function buildWtbPost(parsed: ParsedInboundEmail) {
 
   // Quote all lines
   const quoted = lines.map(l => `> ${l}`)
-  const content = markdownToHtml(`Neuigkeiten vom WTB:\n\n${quoted.join('\n')}`)
+  const content = markdownToHtml(`Der WTB teilt mit:\n\n${quoted.join('\n')}`)
 
   const subject = parsed.original.subject
   const originalDate = parseGermanDate(parsed.original.date)
@@ -113,7 +113,7 @@ function buildWtbPost(parsed: ParsedInboundEmail) {
     content,
     status: 'in_review' as const,
     published_at: originalDate?.toISOString() ?? undefined,
-    slug: `${year}/wtb-news-${slugify(subject)}`,
+    slug: `${year}-wtb-news-${slugify(subject)}`,
     group: '2',
   }
 }
