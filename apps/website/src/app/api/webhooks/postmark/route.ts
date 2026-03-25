@@ -109,7 +109,7 @@ function buildWtbPost(parsed: ParsedInboundEmail) {
   const year = originalDate?.getFullYear() ?? new Date().getFullYear()
 
   return {
-    title: `[WTB-News] ${subject}`,
+    title: `WTB-News: ${subject}`,
     content,
     status: 'in_review' as const,
     published_at: originalDate?.toISOString() ?? undefined,
