@@ -240,6 +240,22 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1(@types/node@25.5.0)(jsdom@29.0.1)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0))
 
+  packages/email:
+    dependencies:
+      node-html-parser:
+        specifier: ^7.1.0
+        version: 7.1.0
+    devDependencies:
+      tsx:
+        specifier: ^4.19.4
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.1
+        version: 4.1.1(@types/node@25.5.0)(jsdom@29.0.1)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0))
+
 packages:
 
   '@adobe/css-tools@4.4.4':

@@ -1,0 +1,28 @@
+{
+  "name": "@tcw/email",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "parse": "tsx scripts/test-parse.ts"
+  },
+  "dependencies": {
+    "node-html-parser": "^7.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.4",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.1"
+  }
+}

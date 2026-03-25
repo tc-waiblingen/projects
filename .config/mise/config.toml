@@ -43,3 +43,7 @@ run = "ncdu -X .dockerignore"
 [tasks."generate:types"]
 description = "Generate Types from the Directus Schema"
 run = "pnpm run generate:types"
+
+[tasks."email:parse"]
+description = "Parse a Postmark inbound email webhook payload"
+run = "cd packages/email && npx tsx scripts/test-parse.ts {{option(name='file')}}"
