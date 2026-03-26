@@ -3,6 +3,7 @@ import Link from "next/link"
 import type { BlockPost as BlockPostType, DirectusFile, Post } from "@/types/directus-schema"
 import { Section } from "@/components/elements/section"
 import { fetchPosts, fetchPostsPaginated } from "@/lib/directus/fetchers"
+import { getEditAttr } from "@/lib/visual-editing"
 import { BlockPostsArchive } from "./BlockPostsArchive"
 
 interface BlockPostsProps {
@@ -70,7 +71,15 @@ function PostCard({ post }: { post: Post }) {
 
   return (
     <Link href={href} className="group interactive-group">
-      <article className="flex flex-col gap-4">
+      <article
+        className="flex flex-col gap-4"
+        data-directus={getEditAttr({
+          collection: 'posts',
+          item: String(post.id),
+          fields: ['title', 'description', 'image', 'published_at'],
+          mode: 'modal',
+        })}
+      >
         {image && typeof image !== "string" && (
           <PostImage file={image} />
         )}
