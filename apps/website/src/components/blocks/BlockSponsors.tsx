@@ -160,19 +160,15 @@ async function SitePlanView({
 
 function SponsorsTable({ sponsors }: { sponsors: Sponsor[] }) {
   return (
-    <div className="mx-auto max-w-2xl overflow-x-auto">
-      <table className="min-w-full">
-        <tbody className="divide-y divide-tcw-accent-100 dark:divide-tcw-accent-800">
-          {sponsors.map((sponsor) => (
-            <SponsorTableRow key={sponsor.id} sponsor={sponsor} />
-          ))}
-        </tbody>
-      </table>
+    <div className="mx-auto max-w-3xl">
+      {sponsors.map((sponsor) => (
+        <SponsorRow key={sponsor.id} sponsor={sponsor} />
+      ))}
     </div>
   )
 }
 
-function SponsorTableRow({ sponsor }: { sponsor: Sponsor }) {
+function SponsorRow({ sponsor }: { sponsor: Sponsor }) {
   const logo = sponsor.logo_web as DirectusFile | null
   const hasLogo = logo && typeof logo !== "string"
 
@@ -186,118 +182,85 @@ function SponsorTableRow({ sponsor }: { sponsor: Sponsor }) {
   if (cityParts.length > 0) addressParts.push(cityParts.join(" "))
   const addressString = addressParts.join(", ")
 
+  // Collect contact items for the footer
+  const contactItems: React.ReactNode[] = []
+  if (addressString) {
+    contactItems.push(<span key="address">{addressString}</span>)
+  }
+  const contactFields = [
+    { type: "phone" as const, value: sponsor.phone },
+    { type: "email" as const, value: sponsor.email },
+    { type: "website" as const, value: sponsor.website },
+    { type: "instagram" as const, value: sponsor.instagram },
+    { type: "facebook" as const, value: sponsor.facebook },
+  ]
+  for (const { type, value } of contactFields) {
+    if (value) {
+      contactItems.push(
+        <ContactInfo
+          key={type}
+          type={type}
+          value={value}
+          name={sponsor.name}
+          className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
+        />,
+      )
+    }
+  }
+
+  const logoImage = hasLogo ? (
+    <Image
+      src={`/api/images/${logo.id}`}
+      alt={sponsor.name}
+      width={logo.width ?? 180}
+      height={logo.height ?? 72}
+      className="h-[72px] w-auto max-w-[180px] rounded object-contain"
+      unoptimized
+    />
+  ) : (
+    <div className="h-[72px] w-[180px] rounded bg-tcw-accent-100 dark:bg-tcw-accent-800" />
+  )
+
   return (
-    <tr>
-      <td className="w-52 px-4 py-3 align-top">
-        {hasLogo ? (
-          <SponsorTableLogo
-            logo={logo}
-            name={sponsor.name}
-            url={sponsor.website}
-          />
-        ) : (
-          <div className="h-16 w-32 rounded bg-tcw-accent-100 dark:bg-tcw-accent-800" />
-        )}
-      </td>
-      <td className="px-4 py-3 align-top">
-        <p className="font-semibold text-tcw-accent-900 dark:text-white">
-          {sponsor.name}
-        </p>
-        <div className="mt-0.5 text-sm text-muted">
-          {sponsor.description && <p>{sponsor.description}</p>}
-          {(addressString || sponsor.phone || sponsor.email || sponsor.website || sponsor.instagram || sponsor.facebook) && (
-            <div className={sponsor.description ? "mt-2" : undefined}>
-              {addressString && <p>{addressString}</p>}
-              {sponsor.phone && (
-                <p>
-                  <ContactInfo
-                    type="phone"
-                    value={sponsor.phone}
-                    name={sponsor.name}
-                    className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
-                  />
-                </p>
-              )}
-              {sponsor.email && (
-                <p>
-                  <ContactInfo
-                    type="email"
-                    value={sponsor.email}
-                    name={sponsor.name}
-                    className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
-                  />
-                </p>
-              )}
-              {sponsor.website && (
-                <p>
-                  <ContactInfo
-                    type="website"
-                    value={sponsor.website}
-                    name={sponsor.name}
-                    className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
-                  />
-                </p>
-              )}
-              {sponsor.instagram && (
-                <p>
-                  <ContactInfo
-                    type="instagram"
-                    value={sponsor.instagram}
-                    name={sponsor.name}
-                    className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
-                  />
-                </p>
-              )}
-              {sponsor.facebook && (
-                <p>
-                  <ContactInfo
-                    type="facebook"
-                    value={sponsor.facebook}
-                    name={sponsor.name}
-                    className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
-                  />
-                </p>
-              )}
+    <div className="py-3 first:pt-0 last:pb-0">
+      <div className="flex flex-col gap-3 rounded-xl bg-white p-8 sm:flex-row sm:gap-7 dark:bg-tcw-accent-900">
+        <div className="shrink-0">
+          {hasLogo && sponsor.website ? (
+            <a
+              href={sponsor.website}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="cursor-pointer"
+            >
+              {logoImage}
+            </a>
+          ) : (
+            logoImage
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="font-serif text-lg text-body">{sponsor.name}</p>
+          {sponsor.description && (
+            <p className="mt-1.5 text-sm leading-relaxed text-muted">
+              {sponsor.description}
+            </p>
+          )}
+          {contactItems.length > 0 && (
+            <div className="mt-3.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+              {contactItems.map((item, i) => (
+                <span key={i} className="inline-flex items-center gap-x-3">
+                  {i > 0 && (
+                    <span aria-hidden="true" className="text-tcw-accent-300 dark:text-tcw-accent-600">
+                      ·
+                    </span>
+                  )}
+                  {item}
+                </span>
+              ))}
             </div>
           )}
         </div>
-      </td>
-    </tr>
+      </div>
+    </div>
   )
-}
-
-function SponsorTableLogo({
-  logo,
-  name,
-  url,
-}: {
-  logo: DirectusFile
-  name: string
-  url?: string | null
-}) {
-  const image = (
-    <Image
-      src={`/api/images/${logo.id}`}
-      alt={name}
-      width={logo.width ?? 180}
-      height={logo.height ?? 64}
-      className="h-16 w-auto max-w-[180px] object-contain"
-      unoptimized
-    />
-  )
-
-  if (url) {
-    return (
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer nofollow"
-        className="cursor-pointer"
-      >
-        {image}
-      </a>
-    )
-  }
-
-  return image
 }
