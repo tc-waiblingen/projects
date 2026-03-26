@@ -9,6 +9,7 @@ import type { BlockPost as BlockPostType, DirectusFile, Post } from '@/types/dir
 import { Section } from '@/components/elements/section'
 import { SoftButton } from '@/components/elements/button'
 import { fetchPostsPage, type PostsPageResult } from '@/lib/actions/posts'
+import { getEditAttr } from '@/lib/visual-editing'
 
 interface BlockPostsArchiveProps {
   data: BlockPostType
@@ -145,7 +146,15 @@ function PostListItem({ post }: { post: Post }) {
 
   return (
     <Link href={href} className="group block cursor-pointer rounded-lg border border-tcw-accent-200 bg-white p-4 transition-shadow hover:shadow-md dark:border-tcw-accent-700 dark:bg-tcw-accent-900">
-      <article className="flex gap-4">
+      <article
+        className="flex gap-4"
+        data-directus={getEditAttr({
+          collection: 'posts',
+          item: String(post.id),
+          fields: ['title', 'description', 'image', 'published_at'],
+          mode: 'modal',
+        })}
+      >
         {image && typeof image !== 'string' && (
           <div className="shrink-0">
             <PostListImage file={image} />

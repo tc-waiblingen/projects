@@ -120,7 +120,12 @@ export default async function PostPage({ params }: PageProps) {
     : null
 
   const subheadline = formattedDate ? (
-    <time dateTime={published_at ?? undefined}>{formattedDate}</time>
+    <time
+      dateTime={published_at ?? undefined}
+      data-directus={getEditAttr({ collection: 'posts', item: String(post.id), fields: 'published_at' })}
+    >
+      {formattedDate}
+    </time>
   ) : undefined
 
   const showToc = post.show_toc ?? false
