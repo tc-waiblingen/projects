@@ -5,11 +5,9 @@ import type {
   Sponsor,
 } from "@/types/directus-schema"
 import { ContactInfo } from "@/components/elements/contact-info"
-import { Eyebrow } from "@/components/elements/eyebrow"
 import { Section } from "@/components/elements/section"
 import { getSiteData } from "@/lib/directus/fetchers"
 import { fetchCourtsWithSponsors } from "@/lib/directus/fetchers"
-import { getEditAttr } from "@/lib/visual-editing"
 import { SitePlanMap } from "./SitePlanMap"
 import { SponsorsCards } from "./SponsorsCards"
 
@@ -20,26 +18,15 @@ interface BlockSponsorsProps {
 export async function BlockSponsors({ data }: BlockSponsorsProps) {
   const { id, headline, tagline, category, style, area_map } = data
 
-  const headlineEl = headline ? (
-    <span data-directus={getEditAttr({ collection: "block_sponsors", item: String(id), fields: "headline" })}>
-      {headline}
-    </span>
-  ) : undefined
-
-  const eyebrow = tagline ? (
-    <Eyebrow>
-      <span data-directus={getEditAttr({ collection: "block_sponsors", item: String(id), fields: "tagline" })}>
-        {tagline}
-      </span>
-    </Eyebrow>
-  ) : undefined
+  const editAttr = { collection: "block_sponsors", item: String(id) }
 
   if (style === "site_plan") {
     return (
       <SitePlanView
-        headline={headlineEl}
-        eyebrow={eyebrow}
+        headline={headline}
+        eyebrow={tagline}
         areaMap={area_map}
+        editAttr={editAttr}
       />
     )
   }
@@ -47,9 +34,10 @@ export async function BlockSponsors({ data }: BlockSponsorsProps) {
   if (style === "table") {
     return (
       <TableView
-        headline={headlineEl}
-        eyebrow={eyebrow}
+        headline={headline}
+        eyebrow={tagline}
         category={category}
+        editAttr={editAttr}
       />
     )
   }
@@ -57,9 +45,10 @@ export async function BlockSponsors({ data }: BlockSponsorsProps) {
   // Default: cards style
   return (
     <CardsView
-      headline={headlineEl}
-      eyebrow={eyebrow}
+      headline={headline}
+      eyebrow={tagline}
       category={category}
+      editAttr={editAttr}
     />
   )
 }
@@ -68,10 +57,12 @@ async function CardsView({
   headline,
   eyebrow,
   category,
+  editAttr,
 }: {
-  headline?: React.ReactNode
-  eyebrow?: React.ReactNode
+  headline?: string | null
+  eyebrow?: string | null
   category?: BlockSponsorType["category"]
+  editAttr: { collection: string; item: string }
 }) {
   const { sponsors } = await getSiteData()
 
@@ -85,7 +76,7 @@ async function CardsView({
   }
 
   return (
-    <Section eyebrow={eyebrow} headline={headline}>
+    <Section eyebrow={eyebrow} headline={headline} editAttr={editAttr}>
       <SponsorsCards sponsors={filteredSponsors} />
     </Section>
   )
@@ -95,10 +86,12 @@ async function TableView({
   headline,
   eyebrow,
   category,
+  editAttr,
 }: {
-  headline?: React.ReactNode
-  eyebrow?: React.ReactNode
+  headline?: string | null
+  eyebrow?: string | null
   category?: BlockSponsorType["category"]
+  editAttr: { collection: string; item: string }
 }) {
   const { sponsors } = await getSiteData()
 
@@ -111,7 +104,7 @@ async function TableView({
   }
 
   return (
-    <Section eyebrow={eyebrow} headline={headline}>
+    <Section eyebrow={eyebrow} headline={headline} editAttr={editAttr}>
       <SponsorsTable sponsors={filteredSponsors} />
     </Section>
   )
@@ -121,10 +114,12 @@ async function SitePlanView({
   headline,
   eyebrow,
   areaMap,
+  editAttr,
 }: {
-  headline?: React.ReactNode
-  eyebrow?: React.ReactNode
+  headline?: string | null
+  eyebrow?: string | null
   areaMap?: DirectusFile | string | null
+  editAttr: { collection: string; item: string }
 }) {
   const courts = await fetchCourtsWithSponsors()
 
@@ -152,7 +147,7 @@ async function SitePlanView({
   const areaMapId = typeof areaMap === "string" ? areaMap : areaMap?.id
 
   return (
-    <Section eyebrow={eyebrow} headline={headline}>
+    <Section eyebrow={eyebrow} headline={headline} editAttr={editAttr}>
       {areaMapId && (
         <SitePlanMap
           areaMapId={areaMapId}

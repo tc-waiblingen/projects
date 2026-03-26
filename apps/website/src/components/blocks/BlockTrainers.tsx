@@ -1,10 +1,8 @@
 import Image from "next/image"
 import type { BlockTrainer as BlockTrainerType, DirectusFile, Trainer } from "@/types/directus-schema"
 import { ContactInfo } from "@/components/elements/contact-info"
-import { Eyebrow } from "@/components/elements/eyebrow"
 import { Section } from "@/components/elements/section"
 import { fetchTrainers } from "@/lib/directus/fetchers"
-import { getEditAttr } from "@/lib/visual-editing"
 
 interface BlockTrainersProps {
   data: BlockTrainerType
@@ -12,20 +10,6 @@ interface BlockTrainersProps {
 
 export async function BlockTrainers({ data }: BlockTrainersProps) {
   const { id, headline, tagline, alignment } = data
-
-  const headlineEl = headline ? (
-    <span data-directus={getEditAttr({ collection: "block_trainers", item: String(id), fields: "headline" })}>
-      {headline}
-    </span>
-  ) : undefined
-
-  const eyebrow = tagline ? (
-    <Eyebrow>
-      <span data-directus={getEditAttr({ collection: "block_trainers", item: String(id), fields: "tagline" })}>
-        {tagline}
-      </span>
-    </Eyebrow>
-  ) : undefined
 
   const allTrainers = await fetchTrainers()
   const trainers = allTrainers.filter((t) => t.banner && typeof t.banner !== "string")
@@ -35,7 +19,7 @@ export async function BlockTrainers({ data }: BlockTrainersProps) {
   }
 
   return (
-    <Section eyebrow={eyebrow} headline={headlineEl} alignment={alignment}>
+    <Section eyebrow={tagline} headline={headline} alignment={alignment} editAttr={{ collection: "block_trainers", item: String(id) }}>
       <ul role="list" className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {trainers.map((trainer) => (
           <li key={trainer.id} className="overflow-hidden rounded-lg border border-tcw-accent-200 bg-white dark:border-tcw-accent-700 dark:bg-tcw-accent-800">

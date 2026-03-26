@@ -20,7 +20,7 @@ export function BlockHero({ data }: BlockHeroProps) {
   }
 
   const eyebrow = tagline ? (
-    <span data-directus={getEditAttr({ collection: "block_hero", item: String(id), fields: "tagline" })}>
+    <span data-directus={getEditAttr({ collection: "block_hero", item: String(id), fields: ["tagline", "tagline_button_type", "tagline_button_page", "tagline_button_post", "tagline_button_url", "tagline_button_label", "tagline_button_file"] })}>
       <AnnouncementBadge href={GetLinkHref(tagline_button_data) || ""} text={tagline} cta={tagline_button_data.label} />
     </span>
   ) : undefined

@@ -7,7 +7,6 @@ import { clsx } from "clsx/lite"
 import { Section } from "@/components/elements/section"
 import { ButtonLink, SoftButtonLink } from "@/components/elements/button"
 import { GetLinkHref } from "@/lib/dynamic-link-helper"
-import { getEditAttr } from "@/lib/visual-editing"
 
 interface BlockNavMenuProps {
   data: BlockNavMenuType
@@ -35,20 +34,8 @@ export function BlockNavMenu({ data, currentPath }: BlockNavMenuProps) {
     return null
   }
 
-  const headlineEl = headline ? (
-    <span data-directus={getEditAttr({ collection: "block_nav_menu", item: String(id), fields: "headline" })}>
-      {headline}
-    </span>
-  ) : undefined
-
-  const eyebrowEl = tagline ? (
-    <span data-directus={getEditAttr({ collection: "block_nav_menu", item: String(id), fields: "tagline" })}>
-      {tagline}
-    </span>
-  ) : undefined
-
   return (
-    <Section eyebrow={eyebrowEl} headline={headlineEl} alignment={alignment}>
+    <Section eyebrow={tagline} headline={headline} alignment={alignment} editAttr={{ collection: "block_nav_menu", item: String(id) }}>
       <div className={clsx("flex flex-wrap items-center gap-4", alignment === 'center' && "justify-center")}>
         {items.map((item) => {
           if (typeof item === "string") {

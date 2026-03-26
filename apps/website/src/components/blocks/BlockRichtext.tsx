@@ -34,27 +34,16 @@ export async function BlockRichtext({ data }: BlockRichtextProps) {
 
   const isCentered = alignment === "center"
 
-  const eyebrow = tagline ? (
-    <span data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "tagline" })}>
-      {tagline}
-    </span>
-  ) : undefined
-
   const processedContent = content
     ? sanitizeHtml(transformRichtextAssets(content))
     : undefined
 
-  const wrappedHeadline = headline ? (
-    <span data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "headline" })}>
-      {headline}
-    </span>
-  ) : undefined
-
   return (
     <Section
-      eyebrow={eyebrow}
-      headline={wrappedHeadline}
+      eyebrow={tagline}
+      headline={headline}
       alignment={alignment}
+      editAttr={{ collection: 'block_richtext', item: String(id) }}
     >
       {processedContent && (
         <Document className={isCentered ? 'mx-auto max-w-2xl' : 'max-w-2xl'}>

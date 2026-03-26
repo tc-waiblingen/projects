@@ -19,12 +19,6 @@ export function BlockGallery({ data }: BlockGalleryProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  const eyebrow = tagline ? (
-    <span data-directus={getEditAttr({ collection: "block_gallery", item: String(id), fields: "tagline" })}>
-      {tagline}
-    </span>
-  ) : undefined
-
   // Filter valid gallery items
   const galleryItems =
     items?.filter((item) => {
@@ -92,14 +86,9 @@ export function BlockGallery({ data }: BlockGalleryProps) {
 
   return (
     <Section
-      eyebrow={eyebrow}
-      headline={
-        headline ? (
-          <span data-directus={getEditAttr({ collection: "block_gallery", item: String(id), fields: "headline" })}>
-            {headline}
-          </span>
-        ) : undefined
-      }
+      eyebrow={tagline}
+      headline={headline}
+      editAttr={{ collection: "block_gallery", item: String(id) }}
       data-directus={getEditAttr({ collection: "block_gallery", item: String(id), fields: "items" })}
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

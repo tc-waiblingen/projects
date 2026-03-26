@@ -2,7 +2,6 @@ import type { BlockClubCalendar as BlockClubCalendarType } from '@/types/directu
 import type { CalendarEvent, MatchEventMetadata } from '@tcw/calendar'
 import { Section } from '@/components/elements/section'
 import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
-import { getEditAttr } from '@/lib/visual-editing'
 import { CalendarClient } from './CalendarClient'
 import type { GroupEntry } from './FilterControls'
 
@@ -48,20 +47,8 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
   const groupEntries = extractGroupEntries(events)
   const serverNow = dateRange.now.getTime()
 
-  const headlineEl = headline ? (
-    <span data-directus={getEditAttr({ collection: 'block_club_calendar', item: String(id), fields: 'headline' })}>
-      {headline}
-    </span>
-  ) : undefined
-
-  const eyebrowEl = tagline ? (
-    <span data-directus={getEditAttr({ collection: 'block_club_calendar', item: String(id), fields: 'tagline' })}>
-      {tagline}
-    </span>
-  ) : undefined
-
   return (
-    <Section headline={headlineEl} eyebrow={eyebrowEl} alignment={alignment}>
+    <Section headline={headline} eyebrow={tagline} alignment={alignment} editAttr={{ collection: 'block_club_calendar', item: String(id) }}>
       <CalendarClient
         events={events}
         groupEntries={groupEntries}

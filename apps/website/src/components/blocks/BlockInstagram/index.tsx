@@ -1,7 +1,6 @@
 import type { BlockInstagram as BlockInstagramType } from '@/types/directus-schema'
 import { Section } from '@/components/elements/section'
 import { fetchInstagramFeed } from '@/lib/instagram/fetchers'
-import { getEditAttr } from '@/lib/visual-editing'
 import { signUrl } from '@/lib/signing'
 import { InstagramCarousel } from './InstagramCarousel'
 import type { InstagramCarouselItem } from './types'
@@ -63,20 +62,8 @@ export async function BlockInstagram({ data }: BlockInstagramProps) {
     }
   })
 
-  const headlineEl = headline ? (
-    <span data-directus={getEditAttr({ collection: 'block_instagram', item: String(id), fields: 'headline' })}>
-      {headline}
-    </span>
-  ) : undefined
-
-  const eyebrowEl = tagline ? (
-    <span data-directus={getEditAttr({ collection: 'block_instagram', item: String(id), fields: 'tagline' })}>
-      {tagline}
-    </span>
-  ) : undefined
-
   return (
-    <Section headline={headlineEl} eyebrow={eyebrowEl}>
+    <Section headline={headline} eyebrow={tagline} editAttr={{ collection: 'block_instagram', item: String(id) }}>
       <InstagramCarousel
         items={carouselItems}
         showCaptions={show_captions}

@@ -1,9 +1,7 @@
 import Image from "next/image"
 import type { BlockTeam as BlockTeamType, DirectusFile, Team } from "@/types/directus-schema"
-import { Eyebrow } from "@/components/elements/eyebrow"
 import { Section } from "@/components/elements/section"
 import { fetchTeamMembers } from "@/lib/directus/fetchers"
-import { getEditAttr } from "@/lib/visual-editing"
 
 interface BlockTeamProps {
   data: BlockTeamType
@@ -11,12 +9,6 @@ interface BlockTeamProps {
 
 export async function BlockTeam({ data }: BlockTeamProps) {
   const { id, headline, tagline, alignment } = data
-
-  const eyebrow = tagline ? (
-    <Eyebrow data-directus={getEditAttr({ collection: "block_team", item: String(id), fields: "tagline" })}>
-      {tagline}
-    </Eyebrow>
-  ) : undefined
 
   const teamMembers = await fetchTeamMembers()
 
@@ -26,13 +18,10 @@ export async function BlockTeam({ data }: BlockTeamProps) {
 
   return (
     <Section
-      eyebrow={eyebrow}
-      headline={headline ? (
-        <span data-directus={getEditAttr({ collection: "block_team", item: String(id), fields: "headline" })}>
-          {headline}
-        </span>
-      ) : ""}
+      eyebrow={tagline}
+      headline={headline || ""}
       alignment={alignment}
+      editAttr={{ collection: "block_team", item: String(id) }}
     >
       <ul role="list" className="mx-auto flex max-w-4xl flex-wrap justify-center gap-x-6 gap-y-10">
         {teamMembers.map((member) => (

@@ -2,9 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import type { BlockPost as BlockPostType, DirectusFile, Post } from "@/types/directus-schema"
 import { Section } from "@/components/elements/section"
-import { Eyebrow } from "@/components/elements/eyebrow"
 import { fetchPosts, fetchPostsPaginated } from "@/lib/directus/fetchers"
-import { getEditAttr } from "@/lib/visual-editing"
 import { BlockPostsArchive } from "./BlockPostsArchive"
 
 interface BlockPostsProps {
@@ -24,12 +22,6 @@ export async function BlockPosts({ data }: BlockPostsProps) {
 async function PostsCards({ data }: { data: BlockPostType }) {
   const { id, headline, tagline, limit } = data
 
-  const eyebrow = tagline ? (
-    <Eyebrow data-directus={getEditAttr({ collection: "block_posts", item: String(id), fields: "tagline" })}>
-      {tagline}
-    </Eyebrow>
-  ) : undefined
-
   const posts = await fetchPosts(limit ?? undefined)
 
   if (!posts || posts.length === 0) {
@@ -37,11 +29,7 @@ async function PostsCards({ data }: { data: BlockPostType }) {
   }
 
   return (
-    <Section eyebrow={eyebrow} headline={headline ? (
-      <span data-directus={getEditAttr({ collection: "block_posts", item: String(id), fields: "headline" })}>
-        {headline}
-      </span>
-    ) : ""}>
+    <Section eyebrow={tagline} headline={headline || undefined} editAttr={{ collection: 'block_posts', item: String(id) }}>
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />

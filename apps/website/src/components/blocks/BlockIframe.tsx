@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef } from "react"
 import type { BlockIframe as BlockIframeType } from "@/types/directus-schema"
 import { Section } from "@/components/elements/section"
-import { getEditAttr } from "@/lib/visual-editing"
 
 interface BlockIframeProps {
   data: BlockIframeType
@@ -55,18 +54,6 @@ export function BlockIframe({ data }: BlockIframeProps) {
     return null
   }
 
-  const headlineEl = headline ? (
-    <span data-directus={getEditAttr({ collection: "block_iframe", item: String(id), fields: "headline" })}>
-      {headline}
-    </span>
-  ) : undefined
-
-  const eyebrowEl = tagline ? (
-    <span data-directus={getEditAttr({ collection: "block_iframe", item: String(id), fields: "tagline" })}>
-      {tagline}
-    </span>
-  ) : undefined
-
   // Determine height style
   const heightStyle =
     height === "fixed" && height_px ? { height: `${height_px}px` } : undefined
@@ -80,7 +67,7 @@ export function BlockIframe({ data }: BlockIframeProps) {
         : ""
 
   return (
-    <Section eyebrow={eyebrowEl} headline={headlineEl} alignment={alignment}>
+    <Section eyebrow={tagline} headline={headline} alignment={alignment} editAttr={{ collection: 'block_iframe', item: String(id) }}>
       <iframe
         ref={iframeRef}
         src={url}

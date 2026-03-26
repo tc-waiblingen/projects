@@ -5,7 +5,6 @@ import { clsx } from "clsx/lite"
 import type { BlockForm as BlockFormType, Form, FormField } from "@/types/directus-schema"
 import { Section } from "@/components/elements/section"
 import { Button } from "@/components/elements/button"
-import { getEditAttr } from "@/lib/visual-editing"
 
 interface BlockFormProps {
   data: BlockFormType
@@ -18,34 +17,11 @@ export function BlockForm({ data }: BlockFormProps) {
     return null
   }
 
-  const eyebrow = tagline ? (
-    <span
-      data-directus={getEditAttr({
-        collection: "block_form",
-        item: String(id),
-        fields: "tagline",
-      })}
-    >
-      {tagline}
-    </span>
-  ) : undefined
-
-  const wrappedHeadline = headline ? (
-    <span
-      data-directus={getEditAttr({
-        collection: "block_form",
-        item: String(id),
-        fields: "headline",
-      })}
-    >
-      {headline}
-    </span>
-  ) : undefined
-
   return (
     <Section
-      eyebrow={eyebrow}
-      headline={wrappedHeadline}
+      eyebrow={tagline}
+      headline={headline}
+      editAttr={{ collection: 'block_form', item: String(id) }}
     >
       <FormContent form={form} />
     </Section>

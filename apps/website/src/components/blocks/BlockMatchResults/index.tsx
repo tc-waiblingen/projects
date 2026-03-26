@@ -2,7 +2,6 @@ import type { BlockMatchResult as BlockMatchResultType } from '@/types/directus-
 import type { CalendarEvent, MatchEventMetadata } from '@tcw/calendar'
 import { Section } from '@/components/elements/section'
 import { fetchMatchResults } from '@/lib/directus/calendar-fetchers'
-import { getEditAttr } from '@/lib/visual-editing'
 import { MatchResultsClient } from './MatchResultsClient'
 
 interface BlockMatchResultsProps {
@@ -33,20 +32,8 @@ export async function BlockMatchResults({ data }: BlockMatchResultsProps) {
 
   const groupNames = extractGroupNames(results)
 
-  const headlineEl = headline ? (
-    <span data-directus={getEditAttr({ collection: 'block_match_results', item: String(id), fields: 'headline' })}>
-      {headline}
-    </span>
-  ) : undefined
-
-  const eyebrowEl = tagline ? (
-    <span data-directus={getEditAttr({ collection: 'block_match_results', item: String(id), fields: 'tagline' })}>
-      {tagline}
-    </span>
-  ) : undefined
-
   return (
-    <Section headline={headlineEl} eyebrow={eyebrowEl} alignment={alignment}>
+    <Section headline={headline} eyebrow={tagline} alignment={alignment} editAttr={{ collection: 'block_match_results', item: String(id) }}>
       <MatchResultsClient results={results} groupNames={groupNames} />
     </Section>
   )

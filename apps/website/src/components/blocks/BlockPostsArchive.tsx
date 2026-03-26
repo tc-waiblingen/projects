@@ -7,10 +7,8 @@ import Link from 'next/link'
 import { clsx } from 'clsx/lite'
 import type { BlockPost as BlockPostType, DirectusFile, Post } from '@/types/directus-schema'
 import { Section } from '@/components/elements/section'
-import { Eyebrow } from '@/components/elements/eyebrow'
 import { SoftButton } from '@/components/elements/button'
 import { fetchPostsPage, type PostsPageResult } from '@/lib/actions/posts'
-import { getEditAttr } from '@/lib/visual-editing'
 
 interface BlockPostsArchiveProps {
   data: BlockPostType
@@ -29,12 +27,6 @@ function ArchiveFallback({ data, initialData }: BlockPostsArchiveProps) {
   const { id, headline, tagline } = data
   const { posts, totalPages } = initialData
 
-  const eyebrow = tagline ? (
-    <Eyebrow data-directus={getEditAttr({ collection: 'block_posts', item: String(id), fields: 'tagline' })}>
-      {tagline}
-    </Eyebrow>
-  ) : undefined
-
   if (!posts || posts.length === 0) {
     return null
   }
@@ -42,11 +34,7 @@ function ArchiveFallback({ data, initialData }: BlockPostsArchiveProps) {
   const showPagination = totalPages > 1
 
   return (
-    <Section id="news" eyebrow={eyebrow} headline={headline ? (
-      <span data-directus={getEditAttr({ collection: 'block_posts', item: String(id), fields: 'headline' })}>
-        {headline}
-      </span>
-    ) : ''}>
+    <Section id="news" eyebrow={tagline} headline={headline || undefined} editAttr={{ collection: 'block_posts', item: String(id) }}>
       <div className="flex flex-col gap-8">
         {showPagination && (
           <PaginationSkeleton currentPage={1} totalPages={totalPages} />
@@ -104,12 +92,6 @@ function ArchiveWithSearchParams({ data, initialData }: BlockPostsArchiveProps) 
 
   const { posts, totalPages } = postsData
 
-  const eyebrow = tagline ? (
-    <Eyebrow data-directus={getEditAttr({ collection: 'block_posts', item: String(id), fields: 'tagline' })}>
-      {tagline}
-    </Eyebrow>
-  ) : undefined
-
   if (!posts || posts.length === 0) {
     return null
   }
@@ -117,11 +99,7 @@ function ArchiveWithSearchParams({ data, initialData }: BlockPostsArchiveProps) 
   const showPagination = totalPages > 1
 
   return (
-    <Section id="news" eyebrow={eyebrow} headline={headline ? (
-      <span data-directus={getEditAttr({ collection: 'block_posts', item: String(id), fields: 'headline' })}>
-        {headline}
-      </span>
-    ) : ''}>
+    <Section id="news" eyebrow={tagline} headline={headline || undefined} editAttr={{ collection: 'block_posts', item: String(id) }}>
       <div className={clsx('flex flex-col gap-8', isPending && 'opacity-60')}>
         {showPagination && (
           <Pagination

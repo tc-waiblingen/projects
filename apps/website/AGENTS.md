@@ -129,42 +129,40 @@ Directus visual editing allows content editors to click directly on page element
 - `src/components/visual-editing/VisualEditingWrapper.tsx` — Wrapper component that enables visual editing on pages
 
 **Adding visual editing to a new block:**
-1. Import the helper:
-   ```tsx
-   import { getEditAttr } from '@/lib/visual-editing'
-   ```
 
-2. Extract `id` from the block data:
-   ```tsx
-   const { id, headline, tagline, ...rest } = data
-   ```
+The `Section` component handles visual editing for `headline`, `tagline`, and `subheadline` automatically via the `editAttr` prop. Pass raw strings instead of wrapping them in `<span data-directus=...>`:
 
-3. Wrap editable elements with `data-directus` attributes:
-   ```tsx
-   // For headline
-   const headlineEl = headline ? (
-     <span data-directus={getEditAttr({ collection: 'block_xxx', item: id, fields: 'headline' })}>
-       {headline}
-     </span>
-   ) : undefined
+```tsx
+const { id, headline, tagline, content, alignment } = data
 
-   // For tagline (if using Eyebrow component that accepts data-directus)
-   const eyebrow = tagline ? (
-     <Eyebrow data-directus={getEditAttr({ collection: 'block_xxx', item: id, fields: 'tagline' })}>
-       {tagline}
-     </Eyebrow>
-   ) : undefined
+return (
+  <Section
+    eyebrow={tagline}
+    headline={headline}
+    alignment={alignment}
+    editAttr={{ collection: 'block_xxx', item: String(id) }}
+  >
+    {/* children */}
+  </Section>
+)
+```
 
-   // For rich content
-   <div data-directus={getEditAttr({ collection: 'block_xxx', item: id, fields: 'content' })}>
-     <RichtextContent ... />
-   </div>
-   ```
+The `editAttr` prop maps: `eyebrow` → field `tagline`, `headline` → field `headline`, `subheadline` → field `subheadline`.
+
+For other editable fields (content, images, etc.), use `getEditAttr()` directly:
+
+```tsx
+import { getEditAttr } from '@/lib/visual-editing'
+
+<div data-directus={getEditAttr({ collection: 'block_xxx', item: String(id), fields: 'content' })}>
+  <RichtextContent ... />
+</div>
+```
 
 **Key points:**
+- Do not manually wrap `headline`/`tagline` in `<span data-directus=...>` when using Section — use `editAttr` instead
 - `getEditAttr()` is a pure function that can be called in server components
 - The collection name must match the Directus collection (e.g., `block_hero`, `block_richtext`)
-- Common editable fields: `headline`, `tagline`, `content`, `description`, `image`
 - Default mode is `popover`; alternatives: `modal`, `drawer`
 - Enable visual editing by visiting any page with `?visual-editing=true`
 

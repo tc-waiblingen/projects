@@ -25,23 +25,12 @@ export function BlockAttachments({ data }: BlockAttachmentsProps) {
 
   const isCentered = alignment === 'center'
 
-  const eyebrow = tagline ? (
-    <span data-directus={getEditAttr({ collection: 'block_attachments', item: String(id), fields: 'tagline' })}>
-      {tagline}
-    </span>
-  ) : undefined
-
-  const wrappedHeadline = headline ? (
-    <span data-directus={getEditAttr({ collection: 'block_attachments', item: String(id), fields: 'headline' })}>
-      {headline}
-    </span>
-  ) : undefined
-
   return (
     <Section
-      eyebrow={eyebrow}
-      headline={wrappedHeadline}
+      eyebrow={tagline}
+      headline={headline}
       alignment={alignment}
+      editAttr={{ collection: 'block_attachments', item: String(id) }}
     >
       <ul
         className={clsx(
