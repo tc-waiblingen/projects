@@ -10,7 +10,7 @@ export function HeroTwoColumnWithPhoto({
   subheadline,
   cta,
   photo,
-  className,
+  photoSide = 'right',
   ...props
 }: {
   eyebrow?: ReactNode
@@ -18,12 +18,16 @@ export function HeroTwoColumnWithPhoto({
   subheadline: ReactNode
   cta?: ReactNode
   photo?: ReactNode
+  photoSide?: 'left' | 'right'
 } & ComponentProps<'section'>) {
+  const textCol = photoSide === 'left' ? 'xl:col-start-2' : 'xl:col-start-1'
+  const photoCol = photoSide === 'left' ? 'xl:col-start-1' : 'xl:col-start-2'
+
   return (
-    <section className={clsx('py-8', className)} {...props}>
-      <Container className="flex gap-8 max-xl:flex-col">
-        <div className="flex flex-1 flex-col items-start justify-center gap-4">
-          {eyebrow}
+    <section className="py-8" {...props}>
+      <Container className="grid gap-x-8 gap-y-4 xl:grid-cols-2 xl:grid-rows-[auto_1fr]">
+        <div className={clsx('self-end', textCol)}>{eyebrow}</div>
+        <div className={clsx('flex flex-col items-start gap-4', textCol)}>
           <Heading>{headline}</Heading>
           {subheadline && (
             <Text size="lg" className="flex max-w-3xl flex-col gap-4">
@@ -33,7 +37,13 @@ export function HeroTwoColumnWithPhoto({
           {cta}
         </div>
         {photo && (
-          <div className="flex flex-1 overflow-hidden rounded-xl outline -outline-offset-1 outline-black/5 *:object-cover dark:outline-white/5">
+          <div
+            className={clsx(
+              'overflow-hidden rounded-xl outline -outline-offset-1 outline-black/5 *:object-cover dark:outline-white/5',
+              photoCol,
+              'xl:row-start-2',
+            )}
+          >
             {photo}
           </div>
         )}

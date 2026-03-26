@@ -54,7 +54,7 @@ export function BlockHero({ data }: BlockHeroProps) {
         subheadline={subheadline}
         cta={cta}
         photo={photo}
-        className="flex-row-reverse"
+        photoSide="left"
       />
     )
   }
