@@ -29,91 +29,81 @@ export function SponsorDetailCard({ sponsor }: { sponsor: Sponsor }) {
   const hasLogo = logo && typeof logo !== "string"
 
   // Build address string
-  const addressParts = [
-    sponsor.address_line1,
-    sponsor.address_line2,
-    [sponsor.address_zip_code, sponsor.address_city].filter(Boolean).join(" "),
-  ].filter(Boolean)
-  const hasAddress = addressParts.length > 0
+  const addressParts: string[] = []
+  if (sponsor.address_line1) addressParts.push(sponsor.address_line1)
+  if (sponsor.address_line2) addressParts.push(sponsor.address_line2)
+  const cityParts: string[] = []
+  if (sponsor.address_zip_code) cityParts.push(sponsor.address_zip_code)
+  if (sponsor.address_city) cityParts.push(sponsor.address_city)
+  if (cityParts.length > 0) addressParts.push(cityParts.join(" "))
+  const addressString = addressParts.join(", ")
+
+  // Collect contact items for the footer
+  const contactItems: React.ReactNode[] = []
+  if (addressString) {
+    contactItems.push(<span key="address">{addressString}</span>)
+  }
+  const contactFields = [
+    { type: "phone" as const, value: sponsor.phone },
+    { type: "email" as const, value: sponsor.email },
+    { type: "website" as const, value: sponsor.website },
+    { type: "instagram" as const, value: sponsor.instagram },
+    { type: "facebook" as const, value: sponsor.facebook },
+  ]
+  for (const { type, value } of contactFields) {
+    if (value) {
+      contactItems.push(
+        <ContactInfo
+          key={type}
+          type={type}
+          value={value}
+          name={sponsor.name}
+          className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
+        />,
+      )
+    }
+  }
+
+  const logoImage = hasLogo ? (
+    <Image
+      src={`/api/images/${logo.id}`}
+      alt={sponsor.name}
+      width={logo.width ?? 180}
+      height={logo.height ?? 72}
+      className="h-[72px] w-auto max-w-[180px] rounded object-contain"
+      unoptimized
+    />
+  ) : null
 
   return (
-    <div className="rounded-lg bg-white p-3 dark:bg-tcw-accent-800">
-      {hasLogo && (
-        <div className="mb-1.5">
-          <Image
-            src={`/api/images/${logo.id}`}
-            alt={sponsor.name}
-            width={logo.width ?? 200}
-            height={logo.height ?? 100}
-            className="h-auto max-h-24 w-full object-contain"
-            unoptimized
-          />
+    <div className="rounded-xl bg-white p-5 dark:bg-tcw-accent-800">
+      {logoImage && (
+        <div className="mb-4 flex justify-center">
+          {sponsor.website ? (
+            <a
+              href={sponsor.website}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="cursor-pointer"
+            >
+              {logoImage}
+            </a>
+          ) : (
+            logoImage
+          )}
         </div>
       )}
-      <p className="font-semibold text-tcw-accent-900 dark:text-white">
-        {sponsor.name}
-      </p>
+      <p className="text-center font-serif text-lg text-body">{sponsor.name}</p>
       {sponsor.description && (
-        <p className="mt-0.5 text-sm text-muted">
+        <p className="mt-1.5 text-sm leading-relaxed text-muted">
           {sponsor.description}
         </p>
       )}
-
-      {/* Contact details */}
-      {(hasAddress ||
-        sponsor.phone ||
-        sponsor.email ||
-        sponsor.website ||
-        sponsor.instagram) && (
-        <div
-          className={clsx(
-            "space-y-1.5 text-sm text-muted",
-            sponsor.description && "mt-3"
-          )}
-        >
-          {hasAddress && (
-            <p className="whitespace-pre-line">{addressParts.join("\n")}</p>
-          )}
-          {sponsor.phone && (
-            <p>
-              <ContactInfo
-                type="phone"
-                value={sponsor.phone}
-                name={sponsor.name}
-                className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
-              />
-            </p>
-          )}
-          {sponsor.email && (
-            <p>
-              <ContactInfo
-                type="email"
-                value={sponsor.email}
-                name={sponsor.name}
-                className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
-              />
-            </p>
-          )}
-          {sponsor.website && (
-            <p>
-              <ContactInfo
-                type="website"
-                value={sponsor.website}
-                name={sponsor.name}
-                className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
-              />
-            </p>
-          )}
-          {sponsor.instagram && (
-            <p>
-              <ContactInfo
-                type="instagram"
-                value={sponsor.instagram}
-                name={sponsor.name}
-                className="text-tcw-red-600 hover:text-tcw-red-700 hover:underline dark:text-tcw-red-400"
-              />
-            </p>
-          )}
+      {contactItems.length > 0 && (
+        <div className="mt-3.5 flex flex-col gap-1 text-xs text-muted">
+          {contactItems.map((item, i) => (
+            <span key={i}>{item}</span>
+          ))}
         </div>
       )}
     </div>
