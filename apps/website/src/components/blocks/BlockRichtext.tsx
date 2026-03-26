@@ -1,6 +1,6 @@
 import type { BlockRichtext as BlockRichtextType, DirectusFile } from "@/types/directus-schema"
-import { DocumentCentered } from "@/components/sections/document-centered"
-import { DocumentLeftAligned } from "@/components/sections/document-left-aligned"
+import { Section } from "@/components/elements/section"
+import { Document } from "@/components/elements/document"
 import { sanitizeHtml } from "@/lib/sanitize"
 import { transformRichtextAssets } from "@/lib/transform-richtext-assets"
 import { RichtextContent } from "@/components/elements/richtext-content"
@@ -32,11 +32,14 @@ export async function BlockRichtext({ data }: BlockRichtextProps) {
     files.map((f) => [f.id, f])
   )
 
-  const subheadline = tagline ? (
-    <p data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "tagline" })}>
+  const isCentered = alignment === "center"
+
+  const eyebrow = tagline ? (
+    <span data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "tagline" })}>
       {tagline}
-    </p>
+    </span>
   ) : undefined
+
   const processedContent = content
     ? sanitizeHtml(transformRichtextAssets(content))
     : undefined
@@ -45,28 +48,21 @@ export async function BlockRichtext({ data }: BlockRichtextProps) {
     <span data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "headline" })}>
       {headline}
     </span>
-  ) : null
+  ) : undefined
 
-  if (alignment === "center") {
-    return (
-      <DocumentCentered headline={wrappedHeadline} headlineLevel="h2" subheadline={subheadline}>
-        {processedContent && (
+  return (
+    <Section
+      eyebrow={eyebrow}
+      headline={wrappedHeadline}
+      alignment={alignment}
+    >
+      {processedContent && (
+        <Document className={isCentered ? 'mx-auto max-w-2xl' : 'max-w-2xl'}>
           <div data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "content" })}>
             <RichtextContent html={processedContent} fileMetadata={fileMetadata} />
           </div>
-        )}
-      </DocumentCentered>
-    )
-  }
-
-  // Default: left-aligned
-  return (
-    <DocumentLeftAligned headline={wrappedHeadline} headlineLevel="h2" subheadline={subheadline}>
-      {processedContent && (
-        <div data-directus={getEditAttr({ collection: "block_richtext", item: String(id), fields: "content" })}>
-          <RichtextContent html={processedContent} fileMetadata={fileMetadata} />
-        </div>
+        </Document>
       )}
-    </DocumentLeftAligned>
+    </Section>
   )
 }

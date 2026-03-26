@@ -1,7 +1,7 @@
 import { clsx } from "clsx/lite"
 import type { BlockButtonGroup } from "@/types/directus-schema"
+import { Section } from "@/components/elements/section"
 import { ButtonGroup } from "./ButtonGroup"
-import { Container } from "@/components/elements/container"
 import { getEditAttr } from "@/lib/visual-editing"
 
 interface BlockButtonGroupBlockProps {
@@ -13,17 +13,16 @@ export function BlockButtonGroupBlock({ data, currentPath }: BlockButtonGroupBlo
   const { id, alignment } = data
 
   return (
-    <section className="py-8">
-      <Container
+    <Section alignment={alignment}>
+      <div
         className={clsx(
           "flex",
           alignment === "center" ? "justify-center" : "justify-start"
         )}
+        data-directus={getEditAttr({ collection: "block_button_group", item: String(id), fields: "buttons" })}
       >
-        <div data-directus={getEditAttr({ collection: "block_button_group", item: String(id), fields: "buttons" })}>
-          <ButtonGroup data={data} currentPath={currentPath} />
-        </div>
-      </Container>
-    </section>
+        <ButtonGroup data={data} currentPath={currentPath} />
+      </div>
+    </Section>
   )
 }

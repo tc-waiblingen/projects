@@ -1,7 +1,5 @@
 import type { BlockAttachment as BlockAttachmentType, DirectusFile } from '@/types/directus-schema'
-import { Container } from '@/components/elements/container'
-import { Eyebrow } from '@/components/elements/eyebrow'
-import { Subheading } from '@/components/elements/subheading'
+import { Section } from '@/components/elements/section'
 import { formatFileSize, FileIcon } from '@/lib/file-utils'
 import { getEditAttr } from '@/lib/visual-editing'
 import { clsx } from 'clsx/lite'
@@ -27,45 +25,39 @@ export function BlockAttachments({ data }: BlockAttachmentsProps) {
 
   const isCentered = alignment === 'center'
 
-  return (
-    <section className="py-8">
-      <Container className={clsx('flex flex-col gap-6 sm:gap-10', isCentered && 'items-center')}>
-        {(headline || tagline) && (
-          <div className={clsx('flex max-w-2xl flex-col gap-2', isCentered && 'items-center')}>
-            {tagline && (
-              <Eyebrow
-                className={isCentered ? 'text-center' : undefined}
-                data-directus={getEditAttr({ collection: 'block_attachments', item: String(id), fields: 'tagline' })}
-              >
-                {tagline}
-              </Eyebrow>
-            )}
-            {headline && (
-              <Subheading
-                className={isCentered ? 'text-center' : undefined}
-                data-directus={getEditAttr({ collection: 'block_attachments', item: String(id), fields: 'headline' })}
-              >
-                {headline}
-              </Subheading>
-            )}
-          </div>
-        )}
-        <ul
-          className={clsx(
-            'flex flex-wrap gap-4',
-            isCentered ? 'justify-center' : 'justify-start'
-          )}
-          data-directus={getEditAttr({ collection: 'block_attachments', item: String(id), fields: 'files' })}
-        >
-          {attachmentFiles.map((item) => {
-            if (typeof item === 'string') return null
-            const file = item.directus_files_id as DirectusFile
+  const eyebrow = tagline ? (
+    <span data-directus={getEditAttr({ collection: 'block_attachments', item: String(id), fields: 'tagline' })}>
+      {tagline}
+    </span>
+  ) : undefined
 
-            return <AttachmentItem key={item.id} file={file} />
-          })}
-        </ul>
-      </Container>
-    </section>
+  const wrappedHeadline = headline ? (
+    <span data-directus={getEditAttr({ collection: 'block_attachments', item: String(id), fields: 'headline' })}>
+      {headline}
+    </span>
+  ) : undefined
+
+  return (
+    <Section
+      eyebrow={eyebrow}
+      headline={wrappedHeadline}
+      alignment={alignment}
+    >
+      <ul
+        className={clsx(
+          'flex flex-wrap gap-4',
+          isCentered ? 'justify-center' : 'justify-start'
+        )}
+        data-directus={getEditAttr({ collection: 'block_attachments', item: String(id), fields: 'files' })}
+      >
+        {attachmentFiles.map((item) => {
+          if (typeof item === 'string') return null
+          const file = item.directus_files_id as DirectusFile
+
+          return <AttachmentItem key={item.id} file={file} />
+        })}
+      </ul>
+    </Section>
   )
 }
 

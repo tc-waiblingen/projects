@@ -3,9 +3,7 @@
 import { useState, type FormEvent } from "react"
 import { clsx } from "clsx/lite"
 import type { BlockForm as BlockFormType, Form, FormField } from "@/types/directus-schema"
-import { Container } from "@/components/elements/container"
-import { Eyebrow } from "@/components/elements/eyebrow"
-import { Subheading } from "@/components/elements/subheading"
+import { Section } from "@/components/elements/section"
 import { Button } from "@/components/elements/button"
 import { getEditAttr } from "@/lib/visual-editing"
 
@@ -20,38 +18,37 @@ export function BlockForm({ data }: BlockFormProps) {
     return null
   }
 
+  const eyebrow = tagline ? (
+    <span
+      data-directus={getEditAttr({
+        collection: "block_form",
+        item: String(id),
+        fields: "tagline",
+      })}
+    >
+      {tagline}
+    </span>
+  ) : undefined
+
+  const wrappedHeadline = headline ? (
+    <span
+      data-directus={getEditAttr({
+        collection: "block_form",
+        item: String(id),
+        fields: "headline",
+      })}
+    >
+      {headline}
+    </span>
+  ) : undefined
+
   return (
-    <section className="py-16">
-      <Container className="flex flex-col gap-10 sm:gap-16">
-        {headline && (
-          <div className="flex max-w-2xl flex-col gap-6">
-            <div className="flex flex-col gap-2">
-              {tagline && (
-                <span
-                  data-directus={getEditAttr({
-                    collection: "block_form",
-                    item: String(id),
-                    fields: "tagline",
-                  })}
-                >
-                  <Eyebrow>{tagline}</Eyebrow>
-                </span>
-              )}
-              <span
-                data-directus={getEditAttr({
-                  collection: "block_form",
-                  item: String(id),
-                  fields: "headline",
-                })}
-              >
-                <Subheading>{headline}</Subheading>
-              </span>
-            </div>
-          </div>
-        )}
-        <FormContent form={form} />
-      </Container>
-    </section>
+    <Section
+      eyebrow={eyebrow}
+      headline={wrappedHeadline}
+    >
+      <FormContent form={form} />
+    </Section>
   )
 }
 
