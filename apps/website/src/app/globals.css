@@ -30,6 +30,22 @@
   font-style: italic;
 }
 
+@font-face {
+  font-family: "But Head";
+  src: url("/assets/fonts/But-Head-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "But Head";
+  src: url("/assets/fonts/But-Head-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: block;
+}
+
 @counter-style alpha-paren {
   system: extends lower-alpha;
   suffix: ") ";
@@ -41,6 +57,8 @@
   --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: 'EB Garamond', ui-serif, Georgia, "Times New Roman", serif;
+  /* --font-heading: 'But Head', 'EB Garamond', ui-serif, Georgia, serif; */
+  --font-heading: var(--font-sans);
 
   /*
    https://huetone.ardov.me/?palette=N4IgdghgtgpiBcIAOAbCBPA5gJwPYFcwATEAGhAAt8YBnBAbVElgRAGNcVdsz3Pu68eiADEAMwkAmGGN7ixbBQDY5EiAE51EVWIDsYpQCNVABgCs6gCxm5RJQGY2k4%2BRGGxJjybkAOGCZ8Tb1czIhN7ILl7JRMARkiAXQBfBPIAF1wwWgYQM2CQePzJSPII-MsS3MqY-N1KwPz1RKSgA
@@ -123,9 +141,15 @@
     }
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     overflow-wrap: break-word;
     hyphens: auto;
+    font-family: var(--font-heading);
   }
 
   a {
@@ -134,10 +158,9 @@
 
   /* H1 - page/hero titles */
   h1 {
-    font-family: var(--font-sans);
     font-size: var(--text-5xl);
     line-height: var(--leading-12);
-    font-weight: 500;
+    font-weight: 800;
     letter-spacing: -0.025em;
     color: var(--color-tcw-accent-900);
 
@@ -153,10 +176,9 @@
 
   /* H2 - section titles */
   h2 {
-    font-family: var(--font-sans);
     font-size: var(--text-3xl);
     line-height: var(--leading-9);
-    font-weight: 500;
+    font-weight: 800;
     letter-spacing: -0.025em;
     color: var(--color-tcw-accent-900);
 
@@ -172,7 +194,6 @@
 
   /* H3 - card/feature titles */
   h3 {
-    font-family: var(--font-sans);
     font-size: var(--text-xl);
     line-height: var(--leading-7);
     font-weight: 600;
@@ -185,7 +206,6 @@
 
   /* H4-H6 - smaller content headings */
   h4 {
-    font-family: var(--font-sans);
     font-size: var(--text-lg);
     line-height: var(--leading-7);
     font-weight: 600;
@@ -197,7 +217,6 @@
   }
 
   h5 {
-    font-family: var(--font-sans);
     font-size: var(--text-base);
     line-height: var(--leading-7);
     font-weight: 600;
@@ -209,7 +228,6 @@
   }
 
   h6 {
-    font-family: var(--font-sans);
     font-size: var(--text-sm);
     line-height: var(--leading-6);
     font-weight: 600;
