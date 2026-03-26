@@ -8,6 +8,7 @@ import { ContactInfo } from "@/components/elements/contact-info"
 import { Section } from "@/components/elements/section"
 import { getSiteData } from "@/lib/directus/fetchers"
 import { fetchCourtsWithSponsors } from "@/lib/directus/fetchers"
+import { getEditAttr } from "@/lib/visual-editing"
 import { SitePlanMap } from "./SitePlanMap"
 import { SponsorsCards } from "./SponsorsCards"
 
@@ -222,7 +223,10 @@ function SponsorRow({ sponsor }: { sponsor: Sponsor }) {
   )
 
   return (
-    <div className="py-3 first:pt-0 last:pb-0">
+    <div
+      className="py-3 first:pt-0 last:pb-0"
+      data-directus={getEditAttr({ collection: "sponsors", item: String(sponsor.id), fields: ["name", "description", "logo_web", "address_line1", "address_line2", "address_zip_code", "address_city", "phone", "email", "website", "instagram", "facebook"], mode: "modal" })}
+    >
       <div className="flex flex-col gap-3 rounded-xl bg-white p-8 sm:flex-row sm:gap-7 dark:bg-tcw-accent-900">
         <div className="shrink-0">
           {hasLogo && sponsor.website ? (
