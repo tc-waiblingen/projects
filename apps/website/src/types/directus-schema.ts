@@ -667,6 +667,8 @@ export interface PostGroup {
 	slug?: string;
 	name?: string | null;
 	description?: string | null;
+	/** @description Steuert die Sortierung von Beiträgen in Listen mit Bezug zu dieser Gruppe (Älteste zuerst = kürzere Events; Neueste zuerst = längere News-Serien) @required */
+	posts_direction: 'oldest_first' | 'newest_first';
 	posts?: Post[] | string[];
 }
 
