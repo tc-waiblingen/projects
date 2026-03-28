@@ -137,6 +137,7 @@ export function CalendarClient({ events, groupEntries, serverNow, filterCategory
     // Use requestAnimationFrame to avoid synchronous setState warning
     const rafId = requestAnimationFrame(applyState)
     return () => cancelAnimationFrame(rafId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Update query params on state change (skip until hydrated)
