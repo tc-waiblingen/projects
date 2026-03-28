@@ -1,7 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
-import { _testHelpers } from '../directus'
-
-const { extractCollectionFromUrl, fetchRetryAndCache, RETRYABLE_STATUSES } = _testHelpers
+import { extractCollectionFromUrl, fetchRetryAndCache, RETRYABLE_STATUSES } from '../directus-fetch'
 
 describe('directus', () => {
   describe('extractCollectionFromUrl', () => {

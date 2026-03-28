@@ -14,7 +14,6 @@ import {
   type CalendarFetcherConfig,
   type FetchCalendarOptions,
   type CalendarConfig,
-  _testHelpers,
 } from '@tcw/calendar'
 import { getDirectus } from './directus'
 import { getDirectusAssetURL } from './directus-utils'
@@ -92,6 +91,3 @@ export async function fetchTournaments(options: FetchCalendarOptions = {}) {
 export async function fetchMatchResults(months: number = 2, limit: number = 12) {
   return baseFetchMatchResults(getCalendarConfig(), months, limit)
 }
-
-// Re-export test helpers
-export { _testHelpers }

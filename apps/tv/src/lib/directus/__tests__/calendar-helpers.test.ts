@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { _testHelpers } from '../calendar-fetchers'
+import { _testHelpers } from '@tcw/calendar'
 
 const {
   formatTime,
