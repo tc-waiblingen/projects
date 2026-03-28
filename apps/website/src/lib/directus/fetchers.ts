@@ -500,9 +500,14 @@ export async function fetchFilesByIds(fileIds: string[]): Promise<DirectusFile[]
 }
 
 export const fetchPostsByGroup = async (groupId: number, limit?: number, preview = false) => {
-  const { directus, readItems } = getDirectus()
+  const { directus, readItems, readItem } = getDirectus()
 
   try {
+    const group = await directus.request(
+      readItem("post_groups", groupId, {
+        fields: ["posts_direction"],
+      }),
+    )
     const posts = await directus.request(
       readItems("posts", {
         filter: preview
@@ -516,7 +521,7 @@ export const fetchPostsByGroup = async (groupId: number, limit?: number, preview
               ],
             // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't type _or with mixed filters
             } as any,
-        sort: ["published_at"],
+        sort: group?.posts_direction === 'newest_first' ? ["-published_at"] : ["published_at"],
         limit: limit ?? -1,
         fields: ["id", "title", "slug", "published_at", "status"],
       }),
