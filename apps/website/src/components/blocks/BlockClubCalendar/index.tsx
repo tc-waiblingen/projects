@@ -2,7 +2,9 @@ import type { BlockClubCalendar as BlockClubCalendarType } from '@/types/directu
 import type { CalendarEvent, MatchEventMetadata } from '@tcw/calendar'
 import { Section } from '@/components/elements/section'
 import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
+import { fetchCourtsWithSponsors } from '@/lib/directus/fetchers'
 import { CalendarClient } from './CalendarClient'
+import { CourtUsageClient } from './CourtUsageClient'
 import type { GroupEntry } from './FilterControls'
 
 interface BlockClubCalendarProps {
@@ -44,6 +46,24 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
 
   const dateRange = getCalendarDateRange()
   const events = await fetchAllCalendarEvents(dateRange)
+
+  if (style === 'court_usage') {
+    const courts = await fetchCourtsWithSponsors()
+    const indoorCourtCount = courts.filter((c) => c.type === 'tennis_indoor').length
+    const outdoorCourtCount = courts.filter((c) => c.type === 'tennis_outdoor').length
+
+    return (
+      <Section headline={headline} eyebrow={tagline} alignment={alignment} editAttr={{ collection: 'block_club_calendar', item: String(id) }}>
+        <CourtUsageClient
+          events={events}
+          indoorCourtCount={indoorCourtCount}
+          outdoorCourtCount={outdoorCourtCount}
+          serverNow={dateRange.now.getTime()}
+        />
+      </Section>
+    )
+  }
+
   const groupEntries = extractGroupEntries(events)
   const serverNow = dateRange.now.getTime()
 
