@@ -38,3 +38,21 @@ export {
 } from './grouping'
 
 export type { DayGroup, MonthGroup, GroupEventsByMonthOptions } from './grouping'
+
+// Court usage
+export {
+  computeCourtUsage,
+  getCourtCount,
+  getPlayerCount,
+  getSeasonCourtType,
+  getHeatLevel,
+} from './court-usage'
+
+export type {
+  CourtUsageConfig,
+  CourtUsageMonth,
+  CourtUsageDay,
+  CourtUsageHalf,
+  CourtUsageEntry,
+  TournamentUsageEntry,
+} from './court-usage'
