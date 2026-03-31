@@ -2,6 +2,7 @@ import { clsx } from 'clsx/lite'
 import Link from 'next/link'
 import type { ComponentProps, ReactNode } from 'react'
 import { Container } from '../elements/container'
+import { FooterPrintInfo } from '../elements/footer-print-info'
 import { ArrowNarrowRightIcon } from '../icons/arrow-narrow-right-icon'
 
 export function FooterCategory({
@@ -132,13 +133,13 @@ export function FooterWithNewsletterFormCategoriesAndSocialIcons({
   return (
     <footer className={clsx('pt-16', className)} {...props}>
       {sponsors && (
-        <div className="bg-tcw-accent-900/5 py-12 dark:bg-white/2.5">
+        <div className="bg-tcw-accent-900/5 py-12 print:hidden dark:bg-white/2.5">
           <Container>
             {sponsors}
           </Container>
         </div>
       )}
-      <div className="bg-tcw-accent-900/2.5 py-16 text-tcw-accent-900 dark:bg-white/5 dark:text-white">
+      <div className="bg-tcw-accent-900/2.5 py-16 text-tcw-accent-900 print:hidden dark:bg-white/5 dark:text-white">
         <Container className="flex flex-col gap-16">
           <div className="grid grid-cols-1 gap-x-6 gap-y-16 text-sm/7 lg:grid-cols-2">
             {cta}
@@ -152,6 +153,7 @@ export function FooterWithNewsletterFormCategoriesAndSocialIcons({
           </div>
         </Container>
       </div>
+      <FooterPrintInfo />
     </footer>
   )
 }

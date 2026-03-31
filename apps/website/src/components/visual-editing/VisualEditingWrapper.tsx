@@ -47,7 +47,7 @@ function VisualEditingControls({ itemId, collection }: { itemId?: string; collec
   }
 
   return (
-    <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2">
+    <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2 print:hidden">
       {itemId && (
         <a
           href={`${directusUrl}/admin/content/${collection}/${itemId}`}

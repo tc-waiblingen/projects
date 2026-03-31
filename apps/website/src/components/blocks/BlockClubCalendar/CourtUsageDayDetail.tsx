@@ -67,7 +67,7 @@ export function CourtUsageDayDetail({ day, showDayHeader = true }: CourtUsageDay
             <a href={day.tournament.url} target="_blank" rel="noopener noreferrer nofollow" className="cursor-pointer underline decoration-muted/30 hover:decoration-body">{day.tournament.title}</a>
           ) : (
             day.tournament.title
-          )} — alle {courtTypeLabel} belegt
+          )} — alle {day.courtType === 'tennis_indoor' ? 'Hallenplätze' : 'Freiplätze'} belegt
         </div>
       ) : (
         <div className="mb-4">

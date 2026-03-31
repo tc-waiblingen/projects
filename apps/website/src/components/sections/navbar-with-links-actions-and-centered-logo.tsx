@@ -20,13 +20,13 @@ export function NavbarWithLinksActionsAndCenteredLogo({
   mobileNavigation?: ReactNode
 } & ComponentProps<'header'>) {
   return (
-    <header className={clsx('sticky top-0 z-10 bg-tcw-accent-100 dark:bg-tcw-accent-900', className)} {...props}>
+    <header className={clsx('sticky top-0 z-10 bg-tcw-accent-100 dark:bg-tcw-accent-900 print:static', className)} {...props}>
       <style>{`:root { --scroll-padding-top: 5.25rem }`}</style>
       <nav>
-        <div className="mx-auto flex h-(--scroll-padding-top) max-w-7xl items-center gap-4 px-6 lg:px-10">
-          <div className="flex flex-1 gap-8 max-lg:hidden">{links}</div>
-          <div className="flex items-center">{logo}</div>
-          <div className="flex flex-1 items-center justify-end gap-4">
+        <div className="mx-auto flex h-(--scroll-padding-top) max-w-7xl items-center gap-4 px-6 lg:px-10 print:h-auto print:justify-center print:py-2">
+          <div className="flex flex-1 gap-8 max-lg:hidden print:hidden">{links}</div>
+          <div className="flex items-center print:scale-75">{logo}</div>
+          <div className="flex flex-1 items-center justify-end gap-4 print:hidden">
             <div className="flex shrink-0 items-center gap-5">{actions}</div>
             {mobileNavigation}
           </div>
