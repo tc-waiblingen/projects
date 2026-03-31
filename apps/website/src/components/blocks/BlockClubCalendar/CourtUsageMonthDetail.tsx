@@ -24,8 +24,7 @@ export function CourtUsageMonthDetail({ month, onDayClick, onBack }: CourtUsageM
         ← Zurück zur Übersicht
       </button>
       <h3 className="mb-6 border-b-[3px] border-gray-900 pb-2 text-xl font-bold text-body dark:border-gray-100">
-        {formatMonthHeader(month.monthDate)}{' '}
-        <span className="text-sm font-normal text-muted">({formatCourtType(month.courtType)})</span>
+        {formatMonthHeader(month.monthDate)}
       </h3>
       <div className="flex flex-col gap-6">
         {month.days.map((day) => (

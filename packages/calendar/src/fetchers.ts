@@ -615,7 +615,7 @@ export async function fetchMatches(
 
     if (!formNode || !formAction) {
       console.error('[fetchMatches] Filter form not found in page')
-      console.log('[fetchMatches] HTML preview:', initialHtml.substring(0, 2000))
+      console.debug('[fetchMatches] HTML preview:', initialHtml.substring(0, 2000))
       return []
     }
 
@@ -626,7 +626,7 @@ export async function fetchMatches(
     console.log('[fetchMatches] Base form fields:', Object.keys(baseFormData).length)
 
 
-// Step 2: Fetch matches with pagination
+    // Step 2: Fetch matches with pagination
     const allEvents: CalendarEvent[] = []
     let offset = 0
     let hasMoreResults = true
@@ -1092,6 +1092,8 @@ export async function fetchTournaments(
   }
 
   try {
+    console.log('[fetchTournaments] Configured URL:', calendarConfig.wtbTournamentsUrl)
+    console.log('[fetchTournaments] Base URL:', baseUrl)
     console.log('[fetchTournaments] Fetching initial page...')
 
     // Step 1: Fetch initial page to get the form
@@ -1111,6 +1113,8 @@ export async function fetchTournaments(
     const formAction = formNode?.getAttribute('action')
 
     if (!formNode || !formAction) {
+      console.error('[fetchTournaments] Form not found in HTML. Response status:', initialResponse.status)
+      console.debug('[fetchTournaments] HTML preview:', initialHtml.substring(0, 200000))
       throw new Error('Tournament filter form not found')
     }
 
@@ -1161,6 +1165,9 @@ export async function fetchTournaments(
     formData.set('tx_nuportalrs_tournaments[tournamentsFilter][endDate]', formatDateDE(endDate))
     formData.set('tx_nuportalrs_tournaments[tournamentsFilter][firstResult]', '0')
     formData.set('tx_nuportalrs_tournaments[tournamentsFilter][maxResults]', '300')
+
+    console.debug('[fetchTournaments] Form action URL:', formActionUrl)
+    console.debug('[fetchTournaments] Form data:', Object.fromEntries(formData.entries()))
 
     const postHeaders: Record<string, string> = {
       'Content-Type': 'application/x-www-form-urlencoded',

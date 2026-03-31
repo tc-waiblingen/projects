@@ -123,7 +123,11 @@ function makeTournamentEvent(overrides: Partial<CalendarEvent> = {}): CalendarEv
 }
 
 describe('computeCourtUsage', () => {
-  const config = { indoorCourtCount: 4, outdoorCourtCount: 7 }
+  const config = { indoorCourtCount: 4, outdoorCourtCount: 7, year: 2026 }
+
+  function getMonth(result: ReturnType<typeof computeCourtUsage>, key: string) {
+    return result.find((m) => m.monthKey === key)!
+  }
 
   it('filters to only home matches', () => {
     const events = [
@@ -131,7 +135,7 @@ describe('computeCourtUsage', () => {
       makeMatchEvent({ id: 'away' }, { isHome: false }),
     ]
     const result = computeCourtUsage({ events, ...config })
-    const day = result[0].days[0]
+    const day = getMonth(result, '2026-10').days[0]
     expect(day.pm.entries).toHaveLength(1)
     expect(day.pm.entries[0].opponent).toBe('TC Stuttgart')
   })
@@ -142,7 +146,7 @@ describe('computeCourtUsage', () => {
       makeMatchEvent({ id: 'pm', startTime: '14:00' }, { league: 'Damen' }),
     ]
     const result = computeCourtUsage({ events, ...config })
-    const day = result[0].days[0]
+    const day = getMonth(result, '2026-10').days[0]
     expect(day.am.entries).toHaveLength(1)
     expect(day.pm.entries).toHaveLength(1)
   })
@@ -153,10 +157,11 @@ describe('computeCourtUsage', () => {
       makeMatchEvent({ id: 'normal', startTime: '14:00', startDate: new Date(2026, 9, 11) }, { league: 'Herren' }),
     ]
     const result = computeCourtUsage({ events, ...config })
-    const day1 = result[0].days[0]
+    const oct = getMonth(result, '2026-10')
+    const day1 = oct.days[0]
     expect(day1.pm.entries[0].courts).toBe(2)
     expect(day1.pm.entries[0].players).toBe(8)
-    const day2 = result[0].days[1]
+    const day2 = oct.days[1]
     expect(day2.pm.entries[0].courts).toBe(3)
     expect(day2.pm.entries[0].players).toBe(12)
   })
@@ -168,7 +173,7 @@ describe('computeCourtUsage', () => {
       makeMatchEvent({ id: '3', startTime: '15:00' }, { league: 'Damen 40' }),
     ]
     const result = computeCourtUsage({ events, ...config })
-    const day = result[0].days[0]
+    const day = getMonth(result, '2026-10').days[0]
     expect(day.am.courts).toBe(3)
     expect(day.am.teams).toBe(1)
     expect(day.am.players).toBe(12)
@@ -180,10 +185,31 @@ describe('computeCourtUsage', () => {
   it('handles tournaments — uses all courts for the season', () => {
     const events = [makeTournamentEvent()]
     const result = computeCourtUsage({ events, ...config })
-    const day = result[0].days[0]
+    const day = getMonth(result, '2026-11').days[0]
     expect(day.tournament).not.toBeNull()
     expect(day.tournament!.courts).toBe(4)
     expect(day.heatLevel).toBe('high')
+  })
+
+  it('expands multi-day tournaments across all days', () => {
+    const events = [makeTournamentEvent({
+      startDate: new Date(2026, 10, 14), // Nov 14
+      endDate: new Date(2026, 10, 16),   // Nov 16
+      isMultiDay: true,
+    })]
+    const result = computeCourtUsage({ events, ...config })
+    const month = result.find((m) => m.monthKey === '2026-11')!
+    expect(month.days).toHaveLength(3)
+    expect(month.days.map((d) => d.dateKey)).toEqual([
+      '2026-11-14',
+      '2026-11-15',
+      '2026-11-16',
+    ])
+    for (const day of month.days) {
+      expect(day.tournament).not.toBeNull()
+      expect(day.tournament!.courts).toBe(4) // all indoor
+      expect(day.heatLevel).toBe('high')
+    }
   })
 
   it('assigns court type based on season', () => {
@@ -197,7 +223,8 @@ describe('computeCourtUsage', () => {
   it('assigns heat level based on percentage of available courts', () => {
     const events = [makeMatchEvent({ startTime: '14:00' }, { league: 'Herren' })]
     const result = computeCourtUsage({ events, ...config })
-    expect(result[0].days[0].heatLevel).toBe('high')
+    const oct = result.find((m) => m.monthKey === '2026-10')!
+    expect(oct.days[0].heatLevel).toBe('high')
   })
 
   it('ignores non-match, non-tournament events', () => {
@@ -219,7 +246,8 @@ describe('computeCourtUsage', () => {
       displayWeight: 2,
     }
     const result = computeCourtUsage({ events: [clubEvent], ...config })
-    expect(result).toHaveLength(0)
+    expect(result).toHaveLength(12) // all months present
+    expect(result.every((m) => m.days.length === 0)).toBe(true) // but no days with data
   })
 
   it('sorts entries by time within AM/PM groups', () => {
@@ -228,7 +256,7 @@ describe('computeCourtUsage', () => {
       makeMatchEvent({ id: '2', startTime: '13:00' }, { league: 'Herren' }),
     ]
     const result = computeCourtUsage({ events, ...config })
-    const pm = result[0].days[0].pm
+    const pm = getMonth(result, '2026-10').days[0].pm
     expect(pm.entries[0].time).toBe('13:00')
     expect(pm.entries[1].time).toBe('15:00')
   })

@@ -35,12 +35,14 @@ export interface CourtUsageEntry {
   courts: number
   players: number
   league: string
+  leagueUrl: string | null
   teamName: string
   opponent: string
 }
 
 export interface TournamentUsageEntry {
   title: string
+  url: string | null
   courts: number
 }
 
@@ -74,6 +76,7 @@ export interface CourtUsageConfig {
   events: CalendarEvent[]
   indoorCourtCount: number
   outdoorCourtCount: number
+  year: number
 }
 
 function emptyHalf(): CourtUsageHalf {
@@ -81,7 +84,7 @@ function emptyHalf(): CourtUsageHalf {
 }
 
 export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
-  const { events, indoorCourtCount, outdoorCourtCount } = config
+  const { events, indoorCourtCount, outdoorCourtCount, year } = config
 
   const daysMap = new Map<string, CourtUsageDay>()
 
@@ -91,22 +94,36 @@ export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
     const dateKey = getDateKey(event.startDate)
 
     if (event.source === 'tournament') {
-      let day = daysMap.get(dateKey)
-      if (!day) {
-        day = {
-          dateKey,
-          date: new Date(event.startDate),
-          courtType,
-          totalCourtsAvailable,
-          am: emptyHalf(),
-          pm: emptyHalf(),
-          tournament: null,
-          heatLevel: 'high',
+      const endDate = event.endDate && event.isMultiDay ? event.endDate : event.startDate
+      const current = new Date(event.startDate)
+      const endTime = endDate.getTime()
+      let iterations = 0
+
+      while (current.getTime() <= endTime && iterations < 365) {
+        const dayCourtType = getSeasonCourtType(current)
+        const dayAvailable = dayCourtType === 'tennis_indoor' ? indoorCourtCount : outdoorCourtCount
+        const dayKey = getDateKey(current)
+
+        let day = daysMap.get(dayKey)
+        if (!day) {
+          day = {
+            dateKey: dayKey,
+            date: new Date(current),
+            courtType: dayCourtType,
+            totalCourtsAvailable: dayAvailable,
+            am: emptyHalf(),
+            pm: emptyHalf(),
+            tournament: null,
+            heatLevel: 'high',
+          }
+          daysMap.set(dayKey, day)
         }
-        daysMap.set(dateKey, day)
+        day.tournament = { title: event.title, url: event.url, courts: dayAvailable }
+        day.heatLevel = 'high'
+
+        current.setDate(current.getDate() + 1)
+        iterations++
       }
-      day.tournament = { title: event.title, courts: totalCourtsAvailable }
-      day.heatLevel = 'high'
       continue
     }
 
@@ -125,6 +142,7 @@ export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
       courts,
       players,
       league,
+      leagueUrl: meta.leagueUrl || null,
       teamName: meta.homeTeam,
       opponent: meta.awayTeam,
     }
@@ -160,27 +178,36 @@ export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
     }
   }
 
-  const monthsMap = new Map<string, CourtUsageMonth>()
-  for (const day of daysMap.values()) {
-    const monthKey = getMonthKey(day.date)
-    let month = monthsMap.get(monthKey)
-    if (!month) {
-      month = {
-        monthKey,
-        monthDate: new Date(day.date.getFullYear(), day.date.getMonth(), 1),
-        courtType: day.courtType,
-        totalCourtsAvailable: day.totalCourtsAvailable,
-        days: [],
-      }
-      monthsMap.set(monthKey, month)
-    }
-    month.days.push(day)
+  // Build all 12 months for the year
+  const months: CourtUsageMonth[] = []
+  for (let m = 0; m < 12; m++) {
+    const monthDate = new Date(year, m, 1)
+    const courtType = getSeasonCourtType(monthDate)
+    const totalCourtsAvailable = courtType === 'tennis_indoor' ? indoorCourtCount : outdoorCourtCount
+    const monthKey = getMonthKey(monthDate)
+
+    months.push({
+      monthKey,
+      monthDate,
+      courtType,
+      totalCourtsAvailable,
+      days: [],
+    })
   }
 
-  return Array.from(monthsMap.values())
-    .sort((a, b) => a.monthKey.localeCompare(b.monthKey))
-    .map((month) => ({
-      ...month,
-      days: month.days.sort((a, b) => a.dateKey.localeCompare(b.dateKey)),
-    }))
+  // Assign days to their months
+  for (const day of daysMap.values()) {
+    const monthKey = getMonthKey(day.date)
+    const month = months.find((m) => m.monthKey === monthKey)
+    if (month) {
+      month.days.push(day)
+    }
+  }
+
+  // Sort days within each month
+  for (const month of months) {
+    month.days.sort((a, b) => a.dateKey.localeCompare(b.dateKey))
+  }
+
+  return months
 }

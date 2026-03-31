@@ -17,8 +17,7 @@ export function CourtUsagePrintView({ months }: CourtUsagePrintViewProps) {
       {months.map((month) => (
         <div key={month.monthKey} className="mb-8">
           <h2 className="mb-4 border-b-[3px] border-gray-900 pb-1 text-lg font-bold">
-            {formatMonthHeader(month.monthDate)}{' '}
-            <span className="text-sm font-normal text-gray-500">({formatCourtType(month.courtType)})</span>
+            {formatMonthHeader(month.monthDate)}
           </h2>
           {month.days.length === 0 ? (
             <p className="text-sm text-gray-500">Keine Heimspiele oder Turniere</p>

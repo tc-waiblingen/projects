@@ -5,7 +5,6 @@ import type { CourtUsageMonth, CourtUsageDay } from '@tcw/calendar'
 interface CourtUsageGridProps {
   months: CourtUsageMonth[]
   mode: 'courts' | 'teams'
-  onMonthClick: (monthKey: string) => void
   onDayClick: (dateKey: string) => void
 }
 
@@ -40,10 +39,9 @@ function getSuperscript(day: CourtUsageDay, mode: 'courts' | 'teams'): string {
   return `${am}+${pm}`
 }
 
-function MonthGrid({ month, mode, onMonthClick, onDayClick }: {
+function MonthGrid({ month, mode, onDayClick }: {
   month: CourtUsageMonth
   mode: 'courts' | 'teams'
-  onMonthClick: (monthKey: string) => void
   onDayClick: (dateKey: string) => void
 }) {
   const year = month.monthDate.getFullYear()
@@ -66,16 +64,9 @@ function MonthGrid({ month, mode, onMonthClick, onDayClick }: {
 
   return (
     <div className="min-w-[240px]">
-      <button
-        type="button"
-        onClick={() => onMonthClick(month.monthKey)}
-        className="mb-2 w-full cursor-pointer text-left font-bold text-body hover:underline"
-      >
-        {formatMonthLabel(month.monthDate)}{' '}
-        <span className="text-xs font-normal text-muted">
-          ({formatCourtTypeLabel(month.courtType)})
-        </span>
-      </button>
+      <div className="mb-2 font-bold text-body">
+        {formatMonthLabel(month.monthDate)}
+      </div>
       <table className="w-full border-collapse font-mono text-sm">
         <thead>
           <tr>
@@ -122,7 +113,7 @@ function MonthGrid({ month, mode, onMonthClick, onDayClick }: {
   )
 }
 
-export function CourtUsageGrid({ months, mode, onMonthClick, onDayClick }: CourtUsageGridProps) {
+export function CourtUsageGrid({ months, mode, onDayClick }: CourtUsageGridProps) {
   return (
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {months.map((month) => (
@@ -130,7 +121,6 @@ export function CourtUsageGrid({ months, mode, onMonthClick, onDayClick }: Court
           key={month.monthKey}
           month={month}
           mode={mode}
-          onMonthClick={onMonthClick}
           onDayClick={onDayClick}
         />
       ))}
