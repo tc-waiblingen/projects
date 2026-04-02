@@ -169,6 +169,27 @@ export default async function PostPage({ params }: PageProps) {
   )
 }
 
+const WIDE_THRESHOLD = 16 / 9
+
+function getObjectPosition(file: DirectusFile): string | undefined {
+  if (
+    file.focal_point_x != null &&
+    file.focal_point_y != null &&
+    file.width &&
+    file.height
+  ) {
+    const x = (file.focal_point_x / file.width) * 100
+    const y = (file.focal_point_y / file.height) * 100
+    return `${x.toFixed(1)}% ${y.toFixed(1)}%`
+  }
+  return undefined
+}
+
+function isWideImage(file: DirectusFile): boolean {
+  if (!file.width || !file.height) return true // fallback: treat as wide (current behavior)
+  return file.width / file.height >= WIDE_THRESHOLD
+}
+
 function PostHeroImage({ file }: { file: DirectusFile }) {
   if (!file.id) {
     return null
@@ -177,15 +198,42 @@ function PostHeroImage({ file }: { file: DirectusFile }) {
   const src = `/api/images/${file.id}`
   const title = file.title ?? ""
   const alt = file.description ?? ""
+  const objectPosition = getObjectPosition(file)
+
+  if (isWideImage(file)) {
+    return (
+      <div className="relative h-64 w-full sm:h-80 lg:h-96">
+        <Image
+          src={src}
+          title={title}
+          alt={alt}
+          fill
+          className="object-cover"
+          style={objectPosition ? { objectPosition } : undefined}
+          priority
+        />
+      </div>
+    )
+  }
 
   return (
-    <div className="relative h-64 w-full sm:h-80 lg:h-96">
+    <div className="relative h-64 w-full overflow-hidden sm:h-80 lg:h-96">
+      {/* Blurred background wash */}
+      <Image
+        src={src}
+        alt=""
+        fill
+        className="scale-[1.2] object-cover brightness-150 blur-[30px] saturate-50 dark:brightness-[.7]"
+        aria-hidden
+      />
+      {/* Sharp foreground */}
       <Image
         src={src}
         title={title}
         alt={alt}
         fill
-        className="object-cover"
+        className="object-contain drop-shadow-xl"
+        style={objectPosition ? { objectPosition } : undefined}
         priority
       />
     </div>
