@@ -3,7 +3,7 @@ import { Court, DirectusFile, Form, Global, Navigation, OfficeClosingDay, Office
 import { getDirectus } from "./directus"
 
 /** Common DirectusFile fields needed for image display */
-const DIRECTUS_FILE_FIELDS = ["id", "filename_disk", "filename_download", "title", "description", "type", "width", "height"] as const
+const DIRECTUS_FILE_FIELDS = ["id", "filename_disk", "filename_download", "title", "description", "type", "width", "height", "focal_point_x", "focal_point_y"] as const
 
 export const fetchAllPages = async () => {
   const { directus, readItems } = getDirectus()
