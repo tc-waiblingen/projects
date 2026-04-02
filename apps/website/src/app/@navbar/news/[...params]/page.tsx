@@ -28,6 +28,7 @@ export default async function NavbarSlot({ params }: NavbarSlotProps) {
             className="dark:hidden"
             width={188}
             height={54}
+            loading="eager"
           />
           <Image
             src="/assets/logo/tcw-logo-anniversary-dark.svg"
@@ -35,6 +36,7 @@ export default async function NavbarSlot({ params }: NavbarSlotProps) {
             className="not-dark:hidden"
             width={188}
             height={54}
+            loading="eager"
           />
         </NavbarLogo>
       }
