@@ -92,6 +92,21 @@ export interface BlockClubCalendar {
 	filter_category?: 'all' | 'matches' | 'tournaments' | 'club' | 'beginners' | 'children' | null;
 }
 
+export interface BlockClubOffice {
+	/** @primaryKey */
+	id: number;
+	user_created?: string | null;
+	date_created?: string | null;
+	user_updated?: string | null;
+	date_updated?: string | null;
+	/** @description Smaller copy shown above the headline to label a section or add extra context. */
+	tagline?: string | null;
+	/** @description Larger main headline for this page section. */
+	headline?: string | null;
+	/** @description Controls how the content block is positioned on the page. Choose "Left" to align the block against the left margin or "Center" to position the block in the middle of the page. This setting affects the entire content block's placement, not the text alignment within it. */
+	alignment?: 'left' | 'center' | null;
+}
+
 export interface BlockForm {
 	/** @primaryKey */
 	id: string;
@@ -602,7 +617,7 @@ export interface PageBlock {
 	/** @description The id of the page that this block belongs to. */
 	page?: Page | string | null;
 	/** @description The data for the block. */
-	item?: BlockHero | BlockRichtext | BlockForm | BlockPost | BlockGallery | BlockPricing | BlockAttachment | BlockTeam | BlockClubCalendar | BlockMatchResult | BlockSponsor | BlockInstagram | BlockIframe | BlockTrainer | BlockButtonGroup | BlockNavMenu | string | null;
+	item?: BlockHero | BlockRichtext | BlockForm | BlockPost | BlockGallery | BlockPricing | BlockAttachment | BlockTeam | BlockClubCalendar | BlockMatchResult | BlockSponsor | BlockInstagram | BlockIframe | BlockTrainer | BlockButtonGroup | BlockNavMenu | BlockClubOffice | string | null;
 	/** @description The collection (type of block). */
 	collection?: string | null;
 	/** @description Temporarily hide this block on the website without having to remove it from your page. */
@@ -651,7 +666,7 @@ export interface PostBlock {
 	hide_block?: boolean | null;
 	/** @description Background color for the block to create contrast. Does not control dark or light mode for the entire site. */
 	background?: 'default' | 'light' | 'dark' | null;
-	item?: BlockHero | BlockRichtext | BlockForm | BlockPost | BlockGallery | BlockPricing | BlockButtonGroup | BlockAttachment | BlockTeam | BlockClubCalendar | BlockMatchResult | BlockSponsor | BlockInstagram | BlockIframe | BlockTrainer | BlockNavMenu | string | null;
+	item?: BlockHero | BlockRichtext | BlockForm | BlockPost | BlockGallery | BlockPricing | BlockButtonGroup | BlockAttachment | BlockTeam | BlockClubCalendar | BlockMatchResult | BlockSponsor | BlockInstagram | BlockIframe | BlockTrainer | BlockNavMenu | BlockClubOffice | string | null;
 	collection?: string | null;
 }
 
@@ -887,6 +902,7 @@ export interface Schema {
 	block_button: BlockButton[];
 	block_button_group: BlockButtonGroup[];
 	block_club_calendar: BlockClubCalendar[];
+	block_club_office: BlockClubOffice[];
 	block_form: BlockForm[];
 	block_gallery: BlockGallery[];
 	block_gallery_items: BlockGalleryItem[];
@@ -936,6 +952,7 @@ export enum CollectionNames {
 	block_button = 'block_button',
 	block_button_group = 'block_button_group',
 	block_club_calendar = 'block_club_calendar',
+	block_club_office = 'block_club_office',
 	block_form = 'block_form',
 	block_gallery = 'block_gallery',
 	block_gallery_items = 'block_gallery_items',

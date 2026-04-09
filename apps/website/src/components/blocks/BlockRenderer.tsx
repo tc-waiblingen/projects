@@ -11,6 +11,7 @@ import type {
   BlockTeam as BlockTeamType,
   BlockTrainer as BlockTrainerType,
   BlockClubCalendar as BlockClubCalendarType,
+  BlockClubOffice as BlockClubOfficeType,
   BlockMatchResult as BlockMatchResultType,
   BlockInstagram as BlockInstagramType,
   BlockIframe as BlockIframeType,
@@ -28,6 +29,7 @@ import { BlockAttachments } from "./BlockAttachments"
 import { BlockTeam } from "./BlockTeam"
 import { BlockTrainers } from "./BlockTrainers"
 import { BlockClubCalendar } from "./BlockClubCalendar"
+import { BlockClubOffice } from "./BlockClubOffice"
 import { BlockMatchResults } from "./BlockMatchResults"
 import { BlockInstagram } from "./BlockInstagram"
 import { BlockIframe } from "./BlockIframe"
@@ -104,6 +106,8 @@ function Block({ block, currentPath }: { block: PageBlock | PostBlock; currentPa
       return <BlockTrainers data={item as BlockTrainerType} />
     case "block_club_calendar":
       return <BlockClubCalendar data={item as BlockClubCalendarType} />
+    case "block_club_office":
+      return <BlockClubOffice data={item as BlockClubOfficeType} />
     case "block_match_results":
       return <BlockMatchResults data={item as BlockMatchResultType} />
     case "block_instagram":
