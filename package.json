@@ -1,6 +1,7 @@
 {
   "name": "tcw-monorepo",
   "private": true,
+  "license": "MIT",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev:website": "pnpm --filter @tcw/website dev",

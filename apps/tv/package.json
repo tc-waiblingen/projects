@@ -2,7 +2,7 @@
   "name": "@tcw/tv",
   "version": "0.0.1",
   "description": "TV kiosk display for Tennis-Club Waiblingen",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev --port 3001",
     "build": "next build",
