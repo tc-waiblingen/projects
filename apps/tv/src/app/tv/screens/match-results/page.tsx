@@ -73,7 +73,7 @@ export default async function MatchResultsPage() {
                     )}
 
                     {/* Group - centered */}
-                    {match.groupName && <p className="mt-6 text-center tv-heading font-medium text-neutral-900 line-clamp-1">{match.groupName}</p>}
+                    {match.groupName && <p className="mt-6 shrink-0 text-center tv-heading font-medium text-neutral-900 line-clamp-1">{match.groupName}</p>}
 
                     {/* Teams and score - horizontal layout */}
                     <div className="mb-2 mt-6 flex flex-col gap-1">
@@ -127,7 +127,7 @@ export default async function MatchResultsPage() {
 
                     {/* QR Codes */}
                     {hasAnyQrCode && (
-                      <div className="mt-8 flex items-center justify-center gap-18 pt-4">
+                      <div className="mt-6 flex items-center justify-center gap-18">
                         {match.groupQrCode && match.groupUrl && (
                           <QrCode linkUrl={match.groupUrl} qrCodeDataUrl={match.groupQrCode} label="Gruppe" size="large" />
                         )}

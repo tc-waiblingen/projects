@@ -30,17 +30,28 @@ export interface MatchResult {
   isWin: boolean
 }
 
+interface ParsedResult {
+  matchScore: { home: number; guest: number }
+  setsScore: { home: number; guest: number } | null
+  gamesScore: { home: number; guest: number } | null
+}
+
 /**
- * Parse a match result string like "3:2" into home/guest scores.
+ * Parse a nuliga-reader result string into match/sets/games scores.
+ * Accepts "3:2" or the detailed "3:3 (6:7 / 49:59)" form.
  */
-function parseScore(result: string | undefined): { home: number; guest: number } | null {
+function parseResult(result: string | undefined): ParsedResult | null {
   if (!result) return null
-  const match = /^(\d+):(\d+)$/.exec(result.trim())
-  if (!match) return null
-  return {
-    home: parseInt(match[1]!, 10),
-    guest: parseInt(match[2]!, 10),
-  }
+  const parts = result.trim().match(/^(\d+):(\d+)(?:\s*\((\d+):(\d+)\s*\/\s*(\d+):(\d+)\))?$/)
+  if (!parts) return null
+  const matchScore = { home: parseInt(parts[1]!, 10), guest: parseInt(parts[2]!, 10) }
+  const setsScore = parts[3] != null
+    ? { home: parseInt(parts[3]!, 10), guest: parseInt(parts[4]!, 10) }
+    : null
+  const gamesScore = parts[5] != null
+    ? { home: parseInt(parts[5]!, 10), guest: parseInt(parts[6]!, 10) }
+    : null
+  return { matchScore, setsScore, gamesScore }
 }
 
 /**
@@ -116,11 +127,10 @@ export function transformMatchResultsForTv(events: CalendarEvent[]): MatchResult
 
   const results: MatchResult[] = matchEvents.map((event) => {
     const meta = event.metadata as MatchEventMetadata
-    const matchScore = parseScore(meta.result)
-
-    // For team matches, we typically only have the match score from the scraped data
-    const setsScore = null
-    const gamesScore = null
+    const parsed = parseResult(meta.result)
+    const matchScore = parsed?.matchScore ?? null
+    const setsScore = parsed?.setsScore ?? null
+    const gamesScore = parsed?.gamesScore ?? null
 
     const { homeWins, guestWins, isWin } = computeWinner(matchScore, setsScore, gamesScore, meta.isHome)
 
@@ -138,8 +148,8 @@ export function transformMatchResultsForTv(events: CalendarEvent[]): MatchResult
       }),
       time: event.startTime,
       relativeDate: getRelativeDateText(event.startDate, today),
-      groupName: meta.league || null,
-      groupUrl: meta.leagueUrl || null,
+      groupName: meta.group || null,
+      groupUrl: meta.groupUrl || null,
       reportUrl: meta.reportUrl || null,
       location: normalizedLocation,
       homeTeam: meta.homeTeam,

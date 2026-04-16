@@ -242,6 +242,8 @@ Use these classes instead of raw `text-*` size classes in TV components. This al
 
 Use `rodney` (Chrome automation CLI) to take screenshots of TV screens for visual testing.
 
+**Always use a viewport of 1920x1080 when browser-testing TV screens** — they are designed for full-HD displays and layout issues only appear at that size.
+
 ### TV Screen URLs
 
 All screens are at `http://localhost:3001/tv/screens/<name>`:
