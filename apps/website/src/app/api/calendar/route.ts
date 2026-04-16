@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import ical, { ICalCalendarMethod, ICalEventStatus } from 'ical-generator'
 import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
 import { isMatchPlayed } from '@/lib/match-utils'
+import { fetchNrTeams, type NrTeam } from '@tcw/calendar'
+import {
+  getCalendarName,
+  type CategoryFilter,
+} from '@/lib/calendar/calendar-name'
 import type {
   CalendarEvent,
   CalendarEventSource,
@@ -9,8 +14,6 @@ import type {
   MatchEventMetadata,
   TournamentEventMetadata,
 } from '@tcw/calendar'
-
-type CategoryFilter = 'matches' | 'tournaments' | 'club' | 'beginners' | 'children'
 
 function getSourceForCategory(category: CategoryFilter): CalendarEventSource[] {
   switch (category) {
@@ -26,30 +29,6 @@ function getSourceForCategory(category: CategoryFilter): CalendarEventSource[] {
     default:
       return []
   }
-}
-
-function getCalendarName(
-  category: CategoryFilter | null,
-  teamLabel: string | null,
-): string {
-  const baseName = 'TCW-Vereinskalender'
-
-  if (teamLabel) {
-    return `${baseName} (${teamLabel})`
-  }
-
-  if (category) {
-    const categoryLabels: Record<CategoryFilter, string> = {
-      matches: 'Punktspiele',
-      tournaments: 'Turniere',
-      club: 'Vereinstermine',
-      beginners: 'Für Einsteiger',
-      children: 'Kinder',
-    }
-    return `${baseName} (${categoryLabels[category]})`
-  }
-
-  return baseName
 }
 
 function filterEvents(
@@ -90,13 +69,22 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category') as CategoryFilter | null
     const teamId = searchParams.get('team')
 
-    const allEvents = await fetchAllCalendarEvents()
+    const [allEvents, teams] = await Promise.all([
+      fetchAllCalendarEvents(),
+      teamId ? fetchNrTeams() : Promise.resolve<NrTeam[]>([]),
+    ])
     const events = filterEvents(allEvents, category, teamId)
 
-    const teamLabel = teamId
-      ? ((events[0]?.metadata as MatchEventMetadata | undefined)?.teamName ?? teamId)
+    const resolvedTeam = teamId
+      ? (teams.find((t) => t.id === teamId) ?? null)
       : null
-    const calendarName = getCalendarName(category, teamLabel)
+    const calendarName = getCalendarName({
+      category,
+      team: resolvedTeam
+        ? { season: resolvedTeam.season, name: resolvedTeam.name }
+        : null,
+      teamId,
+    })
 
     const calendar = ical({
       name: calendarName,
