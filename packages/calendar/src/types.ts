@@ -70,8 +70,6 @@ export interface FetchCalendarOptions {
 
 export interface CalendarConfig {
   appCalendarUrl: string | null
-  nuligaMatchesUrl: string | null
-  wtbTournamentsUrl: string | null
 }
 
 /**

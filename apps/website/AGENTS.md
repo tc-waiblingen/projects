@@ -203,6 +203,9 @@ Do NOT use raw color classes like `text-tcw-accent-800` for body text. Use the s
 
 - `NEXT_PUBLIC_DIRECTUS_URL` — Directus CMS URL (public)
 - `DIRECTUS_TOKEN` — Directus API token (server-side only)
+- `NR_API_URL` — nuliga-reader base URL, e.g. `https://nr.tc-waiblingen.de` (server-side only)
+- `NR_API_TOKEN` — nuliga-reader bearer token (server-side only)
+- `NR_CLUB_ID` — TC Waiblingen club ID in nuliga-reader (server-side only)
 
 ## Code Style
 

@@ -21,11 +21,11 @@
     "@directus/sdk": "^21.0.0"
   },
   "dependencies": {
-    "ical-expander": "^3.2.0",
-    "node-html-parser": "^7.1.0"
+    "ical-expander": "^3.2.0"
   },
   "devDependencies": {
     "@directus/sdk": "^21.2.0",
+    "@types/node": "^22.0.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.1"
   }

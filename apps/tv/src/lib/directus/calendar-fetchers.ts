@@ -28,21 +28,17 @@ export async function fetchCalendarConfig(): Promise<CalendarConfig> {
   try {
     const global = (await directus.request(
       readSingleton('global', {
-        fields: ['app_calendar_url', 'nuliga_matches_url', 'wtb_tournaments_url'],
+        fields: ['app_calendar_url'],
       })
     )) as Global
 
     return {
       appCalendarUrl: global.app_calendar_url ?? null,
-      nuligaMatchesUrl: global.nuliga_matches_url ?? null,
-      wtbTournamentsUrl: global.wtb_tournaments_url ?? null,
     }
   } catch (error) {
     console.error('Error fetching calendar config:', error)
     return {
       appCalendarUrl: null,
-      nuligaMatchesUrl: null,
-      wtbTournamentsUrl: null,
     }
   }
 }
