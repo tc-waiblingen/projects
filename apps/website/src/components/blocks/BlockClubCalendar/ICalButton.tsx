@@ -6,10 +6,10 @@ import type { CategoryFilter } from './FilterControls'
 
 interface ICalButtonProps {
   category: CategoryFilter
-  group: string | null
+  team: string | null
 }
 
-export function ICalButton({ category, group }: ICalButtonProps) {
+export function ICalButton({ category, team }: ICalButtonProps) {
   const subscriptionUrl = useMemo(() => {
     if (typeof window === 'undefined') return ''
 
@@ -20,15 +20,15 @@ export function ICalButton({ category, group }: ICalButtonProps) {
       params.set('category', category)
     }
 
-    if (group) {
-      params.set('group', group)
+    if (team) {
+      params.set('team', team)
     }
 
     const queryString = params.toString()
     const path = queryString ? `/api/calendar?${queryString}` : '/api/calendar'
 
     return `webcal://${baseUrl.replace(/^https?:\/\//, '')}${path}`
-  }, [category, group])
+  }, [category, team])
 
   const handleClick = () => {
     if (subscriptionUrl) {

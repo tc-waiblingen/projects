@@ -27,6 +27,11 @@ export interface MatchEventMetadata {
   district?: string
   season?: string
   isHome: boolean
+  teamId?: string
+  teamName?: string
+  seasonSort?: number
+  group?: string
+  groupUrl?: string
 }
 
 export interface TournamentEventMetadata {

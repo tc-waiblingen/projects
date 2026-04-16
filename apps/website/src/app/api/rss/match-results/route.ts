@@ -54,7 +54,7 @@ async function fetchGlobalSettings(): Promise<{ clubName: string; website: strin
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const group = searchParams.get('group')
+    const teamId = searchParams.get('team')
 
     // Fetch global settings and match results in parallel
     const [globalSettings, allResults] = await Promise.all([
@@ -62,11 +62,11 @@ export async function GET(request: NextRequest) {
       fetchMatchResults(6, 50),
     ])
 
-    // Filter by group if specified
-    const results = group
+    // Filter by teamId if specified
+    const results = teamId
       ? allResults.filter((match) => {
         const metadata = match.metadata as MatchEventMetadata
-        return metadata.league === group || metadata.leagueFull === group
+        return metadata.teamId === teamId
       })
       : allResults
 
@@ -75,12 +75,17 @@ export async function GET(request: NextRequest) {
     const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`
     const imageUrl = `${baseUrl}/assets/logo/tcw-crest.png`
 
-    const feedTitle = group
-      ? `${globalSettings.clubName} - Spielergebnisse (${group})`
+    // Derive a display name for the selected team from the first match's metadata
+    const teamLabel = teamId
+      ? ((results[0]?.metadata as MatchEventMetadata | undefined)?.teamName ?? teamId)
+      : null
+
+    const feedTitle = teamLabel
+      ? `${globalSettings.clubName} - Spielergebnisse (${teamLabel})`
       : `${globalSettings.clubName} - Spielergebnisse`
     const feedLink = `${baseUrl}/spielergebnisse`
-    const feedDescription = group
-      ? `Aktuelle Spielergebnisse des ${globalSettings.clubName} für ${group}`
+    const feedDescription = teamLabel
+      ? `Aktuelle Spielergebnisse des ${globalSettings.clubName} für ${teamLabel}`
       : `Aktuelle Spielergebnisse des ${globalSettings.clubName}`
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>

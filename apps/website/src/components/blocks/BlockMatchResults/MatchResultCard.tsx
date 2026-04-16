@@ -46,20 +46,20 @@ export function MatchResultCard({ match }: MatchResultCardProps) {
         )}
       </div>
 
-      {metadata.league && (
+      {metadata.group && (
         <div>
-          {metadata.leagueUrl ? (
+          {metadata.groupUrl ? (
             <a
-              href={metadata.leagueUrl}
+              href={metadata.groupUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-tcw-accent-900 underline decoration-tcw-accent-400 underline-offset-2 hover:decoration-tcw-accent-600 dark:text-tcw-accent-100 dark:decoration-tcw-accent-500 dark:hover:decoration-tcw-accent-300"
             >
-              {metadata.league}
+              {metadata.group}
             </a>
           ) : (
             <span className="font-medium text-body">
-              {metadata.league}
+              {metadata.group}
             </span>
           )}
         </div>

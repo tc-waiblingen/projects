@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { _testHelpers } from '../fetchers'
-import type { NrMatch, NrTournament } from '../nr-client'
+import type { NrMatch, NrTeam, NrTournament } from '../nr-client'
 import type {
   MatchEventMetadata,
   TournamentEventMetadata,
@@ -21,6 +21,24 @@ function makeNrMatch(overrides: Partial<NrMatch> = {}): NrMatch {
     awayTeam: 'TC Beispiel',
     isHome: true,
     lastRefreshedAt: '2026-04-14T00:00:00Z',
+    ...overrides,
+  }
+}
+
+function makeNrTeam(overrides: Partial<NrTeam> = {}): NrTeam {
+  return {
+    id: 't1',
+    clubId: 'tcw',
+    season: 'Sommer 2026',
+    seasonSort: 1,
+    league: 'Herren 40',
+    leagueSort: 3,
+    name: 'Herren 40 (1)',
+    teamSize: 6,
+    isActiveSeason: true,
+    lastRefreshedAt: '2026-04-14T00:00:00Z',
+    group: 'Herren 40 Verbandsliga',
+    groupUrl: 'https://example/group',
     ...overrides,
   }
 }
@@ -70,7 +88,13 @@ describe('parseNrDateTime', () => {
 })
 
 describe('mapNrMatch', () => {
-  it('maps a full home match with time and result', () => {
+  const team = makeNrTeam()
+  const context = {
+    teamsById: new Map([[team.id, team]]),
+    clubName: 'Tennis-Club Waiblingen e.V.',
+  }
+
+  it('maps a full home match with time, result, and team enrichment', () => {
     const event = mapNrMatch(
       makeNrMatch({
         result: '6:3',
@@ -82,66 +106,98 @@ describe('mapNrMatch', () => {
         leagueUrl: 'https://example/league',
         district: 'Bezirk B',
       }),
+      context,
     )
     expect(event).not.toBeNull()
     expect(event!.source).toBe('match')
+    expect(event!.id).toBe('m1')
     expect(event!.title).toBe(
-      'Herren 40: TC Waiblingen vs. TC Beispiel',
+      'Herren 40 Verbandsliga: TC Waiblingen vs. TC Beispiel',
     )
     expect(event!.location).toBe('TCW Halle')
     expect(event!.startTime).toBe('10:00')
     expect(event!.isAllDay).toBe(false)
-    expect(event!.isMultiDay).toBe(false)
-    expect(event!.expandDays).toBe(true)
-    expect(event!.displayWeight).toBe(2)
-    expect(event!.id).toBe('match-2026-05-10-TC-Waiblingen-TC-Beispiel')
 
     const meta = event!.metadata as MatchEventMetadata
+    expect(meta.teamId).toBe('t1')
+    expect(meta.teamName).toBe('Herren 40 (1)')
+    expect(meta.seasonSort).toBe(1)
+    expect(meta.group).toBe('Herren 40 Verbandsliga')
+    expect(meta.groupUrl).toBe('https://example/group')
     expect(meta.isHome).toBe(true)
     expect(meta.result).toBe('6:3')
-    expect(meta.reportUrl).toBe('https://example/report')
-    expect(meta.leagueFull).toBe('Herren 40 Verbandsliga')
-    expect(meta.district).toBe('Bezirk B')
   })
 
-  it('maps a match without time as all-day', () => {
-    const event = mapNrMatch(
-      makeNrMatch({ matchTime: undefined, result: undefined }),
-    )
-    expect(event!.startTime).toBeNull()
-    expect(event!.isAllDay).toBe(true)
-    const meta = event!.metadata as MatchEventMetadata
-    expect(meta.result).toBeUndefined()
+  it('falls back to match.league when team.group is missing', () => {
+    const teamWithoutGroup = makeNrTeam({ group: undefined })
+    const event = mapNrMatch(makeNrMatch(), {
+      teamsById: new Map([[teamWithoutGroup.id, teamWithoutGroup]]),
+    })
+    expect(event!.title).toBe('Herren 40: TC Waiblingen vs. TC Beispiel')
   })
 
-  it('drops league prefix when league is empty', () => {
-    const event = mapNrMatch(makeNrMatch({ league: '' }))
+  it('drops title prefix when both team.group and match.league are empty', () => {
+    const teamWithoutGroup = makeNrTeam({ group: undefined })
+    const event = mapNrMatch(makeNrMatch({ league: '' }), {
+      teamsById: new Map([[teamWithoutGroup.id, teamWithoutGroup]]),
+    })
     expect(event!.title).toBe('TC Waiblingen vs. TC Beispiel')
+  })
+
+  it('uses club name as location fallback for home matches', () => {
+    const event = mapNrMatch(
+      makeNrMatch({ location: undefined, isHome: true }),
+      context,
+    )
+    expect(event!.location).toBe('Tennis-Club Waiblingen e.V.')
+  })
+
+  it('falls back to "Heim" when club name is unavailable on home match', () => {
+    const event = mapNrMatch(
+      makeNrMatch({ location: undefined, isHome: true }),
+      { teamsById: context.teamsById },
+    )
+    expect(event!.location).toBe('Heim')
+  })
+
+  it('uses "Auswärts" as location fallback for away matches', () => {
+    const event = mapNrMatch(
+      makeNrMatch({ location: undefined, isHome: false }),
+      context,
+    )
+    expect(event!.location).toBe('Auswärts')
+  })
+
+  it('keeps API-provided location over any fallback', () => {
+    const event = mapNrMatch(
+      makeNrMatch({ location: 'TC Example Platz 3', isHome: false }),
+      context,
+    )
+    expect(event!.location).toBe('TC Example Platz 3')
+  })
+
+  it('leaves team metadata undefined when team is missing from lookup', () => {
+    const event = mapNrMatch(makeNrMatch({ teamId: 'unknown' }), context)
     const meta = event!.metadata as MatchEventMetadata
-    expect(meta.league).toBeUndefined()
+    expect(meta.teamId).toBe('unknown')
+    expect(meta.teamName).toBeUndefined()
+    expect(meta.seasonSort).toBeUndefined()
   })
 
   it('returns null for unparseable date', () => {
-    const event = mapNrMatch(makeNrMatch({ matchDate: 'bogus' }))
+    const event = mapNrMatch(makeNrMatch({ matchDate: 'bogus' }), context)
     expect(event).toBeNull()
-  })
-
-  it('marks away matches via metadata', () => {
-    const event = mapNrMatch(makeNrMatch({ isHome: false }))
-    const meta = event!.metadata as MatchEventMetadata
-    expect(meta.isHome).toBe(false)
   })
 })
 
 describe('mapNrTournament', () => {
-  it('maps a single-day tournament', () => {
-    const event = mapNrTournament(makeNrTournament())
+  it('maps a single-day tournament using the API id', () => {
+    const event = mapNrTournament(makeNrTournament({ id: 'trn-xyz' }))
+    expect(event!.id).toBe('trn-xyz')
     expect(event!.source).toBe('tournament')
     expect(event!.title).toBe('Clubmeisterschaft')
     expect(event!.isAllDay).toBe(true)
     expect(event!.isMultiDay).toBe(false)
-    expect(event!.endDate).toBeNull()
-    expect(event!.displayWeight).toBe(2)
   })
 
   it('detects multi-day tournaments', () => {

@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   NrConfigError,
+  fetchNrClub,
   fetchNrMatches,
+  fetchNrTeams,
   fetchNrTournaments,
 } from '../nr-client'
 
@@ -95,5 +97,39 @@ describe('fetchNrTournaments', () => {
     expect(url).toContain('/v1/clubs/tcw-123/tournaments')
     expect(url).toContain('from=2026-03-01')
     expect(url).toContain('to=2026-03-31')
+  })
+})
+
+describe('fetchNrTeams', () => {
+  it('hits the teams endpoint', async () => {
+    const fetchMock = vi.fn(async () =>
+      jsonResponse({ items: [], lastRefreshedAt: '' }),
+    )
+    globalThis.fetch = fetchMock as unknown as typeof fetch
+
+    await fetchNrTeams()
+
+    const url = (fetchMock.mock.calls[0] as unknown as [string])[0]
+    expect(url).toContain('/v1/clubs/tcw-123/teams')
+  })
+})
+
+describe('fetchNrClub', () => {
+  it('fetches the club record', async () => {
+    const fetchMock = vi.fn(async () =>
+      jsonResponse({
+        id: 'tcw-123',
+        name: 'Tennis-Club Waiblingen e.V.',
+        city: 'Waiblingen',
+        createdAt: '2026-01-01T00:00:00Z',
+        updatedAt: '2026-04-14T00:00:00Z',
+      }),
+    )
+    globalThis.fetch = fetchMock as unknown as typeof fetch
+
+    const club = await fetchNrClub()
+    expect(club.name).toBe('Tennis-Club Waiblingen e.V.')
+    const url = (fetchMock.mock.calls[0] as unknown as [string])[0]
+    expect(url).toContain('/v1/clubs/tcw-123')
   })
 })

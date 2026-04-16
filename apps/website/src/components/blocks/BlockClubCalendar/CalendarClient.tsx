@@ -2,23 +2,23 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import type { CalendarEvent, ClubEventMetadata, MatchEventMetadata } from '@tcw/calendar'
-import { FilterControls, type CategoryFilter, type GroupEntry } from './FilterControls'
+import { FilterControls, type CategoryFilter, type TeamEntry } from './FilterControls'
 import { EventList } from './EventList'
 import { useTocSafe } from '@/components/toc'
 
 interface FilterState {
   futureOnly: boolean
   category: CategoryFilter
-  group: string | null
+  team: string | null
 }
 
 const DEFAULT_STATE: FilterState = {
   futureOnly: true,
   category: 'all',
-  group: null,
+  team: null,
 }
 
-const KNOWN_FILTER_KEYS = ['future', 'category', 'group']
+const KNOWN_FILTER_KEYS = ['future', 'category', 'team']
 
 /** Migrate legacy hash params (#future=0&category=matches) to query params */
 function migrateHashParams(): void {
@@ -67,9 +67,9 @@ function parseQueryState(): Partial<FilterState> {
     state.category = categoryParam as CategoryFilter
   }
 
-  const groupParam = params.get('group')
-  if (groupParam) {
-    state.group = groupParam
+  const teamParam = params.get('team')
+  if (teamParam) {
+    state.team = teamParam
   }
 
   return state
@@ -86,8 +86,8 @@ function buildQueryString(state: FilterState, isLocked = false): string {
     params.set('category', state.category)
   }
 
-  if (state.group) {
-    params.set('group', state.group)
+  if (state.team) {
+    params.set('team', state.team)
   }
 
   const queryString = params.toString()
@@ -96,14 +96,14 @@ function buildQueryString(state: FilterState, isLocked = false): string {
 
 interface CalendarClientProps {
   events: CalendarEvent[]
-  groupEntries: GroupEntry[]
+  teamEntries: TeamEntry[]
   serverNow: number
   filterCategory?: CategoryFilter
   style?: 'default' | 'list'
   alignment?: 'left' | 'center'
 }
 
-export function CalendarClient({ events, groupEntries, serverNow, filterCategory, style = 'default', alignment = 'left' }: CalendarClientProps) {
+export function CalendarClient({ events, teamEntries, serverNow, filterCategory, style = 'default', alignment = 'left' }: CalendarClientProps) {
   const isLocked = !!filterCategory && filterCategory !== 'all'
   const [state, setState] = useState<FilterState>({
     ...DEFAULT_STATE,
@@ -214,13 +214,13 @@ export function CalendarClient({ events, groupEntries, serverNow, filterCategory
         }
       }
 
-      // Group filter (only applies to match events)
-      if (state.group) {
+      // Team filter (only applies to match events)
+      if (state.team) {
         if (event.source !== 'match') {
           return false
         }
         const metadata = event.metadata as MatchEventMetadata
-        if ((metadata.leagueFull || metadata.league) !== state.group) {
+        if (metadata.teamId !== state.team) {
           return false
         }
       }
@@ -245,11 +245,11 @@ export function CalendarClient({ events, groupEntries, serverNow, filterCategory
           onFutureOnlyChange={(value) => setState((prev) => ({ ...prev, futureOnly: value }))}
           category={state.category}
           onCategoryChange={(value) => setState((prev) => ({ ...prev, category: value }))}
-          group={state.group}
-          onGroupChange={(value) =>
-            setState((prev) => ({ ...prev, group: value, ...(value ? { category: 'all' } : {}) }))
+          team={state.team}
+          onTeamChange={(value) =>
+            setState((prev) => ({ ...prev, team: value, ...(value ? { category: 'all' } : {}) }))
           }
-          groupEntries={groupEntries}
+          teamEntries={teamEntries}
         />
       )}
       {filteredEvents.length === 0 ? (

@@ -4,18 +4,18 @@ import { useMemo } from 'react'
 import { RSSIcon } from '@/components/icons/rss-icon'
 
 interface RSSButtonProps {
-  group: string | null
+  team: string | null
 }
 
-export function RSSButton({ group }: RSSButtonProps) {
+export function RSSButton({ team }: RSSButtonProps) {
   const feedUrl = useMemo(() => {
     if (typeof window === 'undefined') return ''
 
     const baseUrl = window.location.origin
     const params = new URLSearchParams()
 
-    if (group) {
-      params.set('group', group)
+    if (team) {
+      params.set('team', team)
     }
 
     const queryString = params.toString()
@@ -24,7 +24,7 @@ export function RSSButton({ group }: RSSButtonProps) {
       : '/api/rss/match-results'
 
     return `${baseUrl}${path}`
-  }, [group])
+  }, [team])
 
   return (
     <a

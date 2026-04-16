@@ -13,8 +13,11 @@ import type {
 import {
   fetchNrMatches,
   fetchNrTournaments,
+  fetchNrTeams,
+  fetchNrClub,
   type NrMatch,
   type NrTournament,
+  type NrTeam,
 } from "./nr-client";
 
 /** Threshold for short vs long description (characters) */
@@ -536,16 +539,37 @@ function parseNrDateTime(
   return { date, time, jsDate };
 }
 
+interface MatchMapContext {
+  teamsById?: Map<string, NrTeam>;
+  clubName?: string;
+}
+
 /**
  * Map an NrMatch to a CalendarEvent.
+ * `context.teamsById` drives the title prefix, sort fields, and team-id filter support.
+ * `context.clubName` is used as a location fallback for home matches when `match.location` is empty.
  */
-function mapNrMatch(match: NrMatch): CalendarEvent | null {
+function mapNrMatch(
+  match: NrMatch,
+  context: MatchMapContext = {},
+): CalendarEvent | null {
   const parsed = parseNrDateTime(match.matchDate, match.matchTime);
   if (!parsed) return null;
 
-  const title = match.league
-    ? `${match.league}: ${match.homeTeam} vs. ${match.awayTeam}`
+  const team = context.teamsById?.get(match.teamId);
+  const titlePrefix = team?.group || match.league;
+  const title = titlePrefix
+    ? `${titlePrefix}: ${match.homeTeam} vs. ${match.awayTeam}`
     : `${match.homeTeam} vs. ${match.awayTeam}`;
+
+  let location: string | null = match.location || null;
+  if (!location) {
+    if (match.isHome) {
+      location = context.clubName ?? "Heim";
+    } else {
+      location = "Auswärts";
+    }
+  }
 
   const metadata: MatchEventMetadata = {
     homeTeam: match.homeTeam,
@@ -560,17 +584,19 @@ function mapNrMatch(match: NrMatch): CalendarEvent | null {
     district: match.district,
     season: match.season,
     isHome: match.isHome,
+    teamId: match.teamId,
+    teamName: team?.name,
+    seasonSort: team?.seasonSort,
+    group: team?.group,
+    groupUrl: team?.groupUrl,
   };
 
   return {
-    id: `match-${parsed.date}-${match.homeTeam}-${match.awayTeam}`.replace(
-      /\s+/g,
-      "-",
-    ),
+    id: match.id,
     source: "match",
     title,
     description: null,
-    location: match.location || null,
+    location,
     startDate: parsed.jsDate,
     endDate: null,
     startTime: parsed.time,
@@ -613,7 +639,7 @@ function mapNrTournament(tournament: NrTournament): CalendarEvent | null {
     : null;
 
   return {
-    id: `tournament-${start.date}-${tournament.title}`.replace(/\s+/g, "-"),
+    id: tournament.id,
     source: "tournament",
     title: tournament.title,
     description,
@@ -634,6 +660,7 @@ function mapNrTournament(tournament: NrTournament): CalendarEvent | null {
 
 /**
  * Fetches match data from the nuliga-reader service.
+ * Also fetches teams and club in parallel for title prefix, sort keys, and location fallback.
  */
 export async function fetchMatches(
   _config: CalendarFetcherConfig,
@@ -645,10 +672,40 @@ export async function fetchMatches(
   const toDate = options.to ?? new Date(now.getFullYear() + 1, 11, 31);
 
   try {
-    const items = await fetchNrMatches(fromDate, toDate);
+    const [matchesResult, teamsResult, clubResult] = await Promise.allSettled([
+      fetchNrMatches(fromDate, toDate),
+      fetchNrTeams(),
+      fetchNrClub(),
+    ]);
+
+    if (matchesResult.status !== "fulfilled") {
+      console.error("[fetchMatches] Error:", matchesResult.reason);
+      return [];
+    }
+
+    const teamsById = new Map<string, NrTeam>();
+    if (teamsResult.status === "fulfilled") {
+      for (const team of teamsResult.value) teamsById.set(team.id, team);
+    } else {
+      console.warn(
+        "[fetchMatches] Teams fetch failed, title prefix and sort keys will be missing:",
+        teamsResult.reason,
+      );
+    }
+
+    const clubName =
+      clubResult.status === "fulfilled" ? clubResult.value.name : undefined;
+    if (clubResult.status !== "fulfilled") {
+      console.warn(
+        "[fetchMatches] Club fetch failed, location fallback will use 'Heim':",
+        clubResult.reason,
+      );
+    }
+
+    const context: MatchMapContext = { teamsById, clubName };
     const events: CalendarEvent[] = [];
-    for (const item of items) {
-      const event = mapNrMatch(item);
+    for (const item of matchesResult.value) {
+      const event = mapNrMatch(item, context);
       if (!event) continue;
       if (event.startDate < fromDate || event.startDate > toDate) continue;
       events.push(event);

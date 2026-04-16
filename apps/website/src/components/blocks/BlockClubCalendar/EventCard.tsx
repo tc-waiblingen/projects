@@ -39,14 +39,14 @@ function ExternalLink({ href, children }: { href: string; children: React.ReactN
   )
 }
 
-function MatchLeague({ metadata }: { metadata: MatchEventMetadata }) {
-  const { league, leagueUrl } = metadata
+function MatchGroup({ metadata }: { metadata: MatchEventMetadata }) {
+  const { group, groupUrl } = metadata
 
-  if (!league) return null
+  if (!group) return null
 
   return (
     <div className="mb-1">
-      {leagueUrl ? <ExternalLink href={leagueUrl}>{league}</ExternalLink> : league}
+      {groupUrl ? <ExternalLink href={groupUrl}>{group}</ExternalLink> : group}
     </div>
   )
 }
@@ -162,7 +162,7 @@ function EventItem({ event }: { event: CalendarEvent }) {
               const matchPlayed = isMatchPlayed(matchMeta.result, matchMeta.reportUrl)
               return (
                 <>
-                  <MatchLeague metadata={matchMeta} />
+                  <MatchGroup metadata={matchMeta} />
                   <MatchDetails
                     homeTeam={matchMeta.homeTeam}
                     homeTeamUrl={matchMeta.homeTeamUrl}

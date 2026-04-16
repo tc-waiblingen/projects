@@ -40,6 +40,41 @@ export interface NrTournament {
   callForEntriesUrl?: string
 }
 
+export interface NrTeam {
+  id: string
+  clubId: string
+  season: string
+  seasonSort: number
+  league: string
+  leagueSort: number
+  name: string
+  teamSize: number
+  isActiveSeason: boolean
+  lastRefreshedAt: string
+  captainName?: string
+  captainContact?: string
+  group?: string
+  groupUrl?: string
+  matchesUrl?: string
+  teamUrl?: string
+  statsRank?: string
+  statsGames?: string
+  statsMatches?: string
+  statsMeetings?: string
+  statsPoints?: string
+  statsSets?: string
+}
+
+export interface NrClub {
+  id: string
+  name: string
+  city: string
+  createdAt: string
+  updatedAt: string
+  hallenAddress?: string
+  platzAddress?: string
+}
+
 export interface NrListMatchesResponse {
   items: NrMatch[]
   lastRefreshedAt: string
@@ -47,6 +82,11 @@ export interface NrListMatchesResponse {
 
 export interface NrListTournamentsResponse {
   items: NrTournament[]
+  lastRefreshedAt: string
+}
+
+export interface NrListTeamsResponse {
+  items: NrTeam[]
   lastRefreshedAt: string
 }
 
@@ -127,6 +167,25 @@ export async function fetchNrTournaments(
     14400,
   )
   return data.items
+}
+
+export async function fetchNrTeams(): Promise<NrTeam[]> {
+  const config = readConfig()
+  const data = await nrGet<NrListTeamsResponse>(
+    `/v1/clubs/${encodeURIComponent(config.clubId)}/teams`,
+    {},
+    86400,
+  )
+  return data.items
+}
+
+export async function fetchNrClub(): Promise<NrClub> {
+  const config = readConfig()
+  return nrGet<NrClub>(
+    `/v1/clubs/${encodeURIComponent(config.clubId)}`,
+    {},
+    86400,
+  )
 }
 
 export const _nrTestHelpers = {

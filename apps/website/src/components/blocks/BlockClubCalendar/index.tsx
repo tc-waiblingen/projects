@@ -3,9 +3,10 @@ import type { CalendarEvent, MatchEventMetadata } from '@tcw/calendar'
 import { Section } from '@/components/elements/section'
 import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
 import { fetchCourtsWithSponsors } from '@/lib/directus/fetchers'
+import { teamLabelWithGroup } from '@/lib/team-label'
 import { CalendarClient } from './CalendarClient'
 import { CourtUsageClient } from './CourtUsageClient'
-import type { GroupEntry } from './FilterControls'
+import type { TeamEntry } from './FilterControls'
 
 interface BlockClubCalendarProps {
   data: BlockClubCalendarType
@@ -22,23 +23,26 @@ function getCalendarDateRange(): { from: Date; to: Date; now: Date } {
   return { from, to, now }
 }
 
-function extractGroupEntries(events: CalendarEvent[]): GroupEntry[] {
-  const seen = new Map<string, GroupEntry>()
+function extractTeamEntries(events: CalendarEvent[]): TeamEntry[] {
+  const seen = new Map<string, TeamEntry>()
 
   for (const event of events) {
-    if (event.source === 'match') {
-      const meta = event.metadata as MatchEventMetadata
-      const league = meta.leagueFull || meta.league
-      if (!league) continue
-      const key = `${meta.season ?? ''}|${league}|${meta.district ?? ''}`
-      if (!seen.has(key)) {
-        const label = meta.district ? `${league} (${meta.district})` : league
-        seen.set(key, { value: league, label, season: meta.season })
-      }
-    }
+    if (event.source !== 'match') continue
+    const meta = event.metadata as MatchEventMetadata
+    if (!meta.teamId || !meta.teamName) continue
+    if (seen.has(meta.teamId)) continue
+    seen.set(meta.teamId, {
+      value: meta.teamId,
+      label: teamLabelWithGroup(meta.teamName, meta.group),
+      season: meta.season,
+      seasonSort: meta.seasonSort ?? Number.MAX_SAFE_INTEGER,
+    })
   }
 
-  return Array.from(seen.values()).sort((a, b) => a.label.localeCompare(b.label, 'de'))
+  return Array.from(seen.values()).sort((a, b) => {
+    if (a.seasonSort !== b.seasonSort) return b.seasonSort - a.seasonSort
+    return a.label.localeCompare(b.label, 'de')
+  })
 }
 
 export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
@@ -64,14 +68,14 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
     )
   }
 
-  const groupEntries = extractGroupEntries(events)
+  const teamEntries = extractTeamEntries(events)
   const serverNow = dateRange.now.getTime()
 
   return (
     <Section headline={headline} eyebrow={tagline} alignment={alignment} editAttr={{ collection: 'block_club_calendar', item: String(id) }}>
       <CalendarClient
         events={events}
-        groupEntries={groupEntries}
+        teamEntries={teamEntries}
         serverNow={serverNow}
         filterCategory={filter_category ?? undefined}
         style={style ?? 'default'}

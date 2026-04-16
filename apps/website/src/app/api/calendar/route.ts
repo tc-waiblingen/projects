@@ -28,11 +28,14 @@ function getSourceForCategory(category: CategoryFilter): CalendarEventSource[] {
   }
 }
 
-function getCalendarName(category: CategoryFilter | null, group: string | null): string {
+function getCalendarName(
+  category: CategoryFilter | null,
+  teamLabel: string | null,
+): string {
   const baseName = 'TCW-Vereinskalender'
 
-  if (group) {
-    return `${baseName} (${group})`
+  if (teamLabel) {
+    return `${baseName} (${teamLabel})`
   }
 
   if (category) {
@@ -52,7 +55,7 @@ function getCalendarName(category: CategoryFilter | null, group: string | null):
 function filterEvents(
   events: CalendarEvent[],
   category: CategoryFilter | null,
-  group: string | null
+  teamId: string | null,
 ): CalendarEvent[] {
   let filtered = events
 
@@ -69,12 +72,12 @@ function filterEvents(
     }
   }
 
-  // Group filter (only applies to match events, filters by league name)
-  if (group) {
+  // Team filter (only applies to match events)
+  if (teamId) {
     filtered = filtered.filter((e) => {
       if (e.source !== 'match') return false
       const meta = e.metadata as MatchEventMetadata
-      return meta.league === group || meta.leagueFull === group
+      return meta.teamId === teamId
     })
   }
 
@@ -85,12 +88,15 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category') as CategoryFilter | null
-    const group = searchParams.get('group')
+    const teamId = searchParams.get('team')
 
     const allEvents = await fetchAllCalendarEvents()
-    const events = filterEvents(allEvents, category, group)
+    const events = filterEvents(allEvents, category, teamId)
 
-    const calendarName = getCalendarName(category, group)
+    const teamLabel = teamId
+      ? ((events[0]?.metadata as MatchEventMetadata | undefined)?.teamName ?? teamId)
+      : null
+    const calendarName = getCalendarName(category, teamLabel)
 
     const calendar = ical({
       name: calendarName,

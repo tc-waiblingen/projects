@@ -6,10 +6,11 @@ import { ICalButton } from './ICalButton'
 
 export type CategoryFilter = 'all' | 'matches' | 'tournaments' | 'club' | 'beginners' | 'children'
 
-export interface GroupEntry {
-  value: string   // leagueFull || league — used for filtering
-  label: string   // "{league} ({district})" — displayed in dropdown
-  season?: string // used for optgroup grouping
+export interface TeamEntry {
+  value: string        // teamId — used for filtering
+  label: string        // team.name — displayed in dropdown
+  season?: string      // used for optgroup label
+  seasonSort: number   // optgroup sort key (descending)
 }
 
 interface FilterControlsProps {
@@ -17,9 +18,9 @@ interface FilterControlsProps {
   onFutureOnlyChange: (value: boolean) => void
   category: CategoryFilter
   onCategoryChange: (value: CategoryFilter) => void
-  group: string | null
-  onGroupChange: (value: string | null) => void
-  groupEntries: GroupEntry[]
+  team: string | null
+  onTeamChange: (value: string | null) => void
+  teamEntries: TeamEntry[]
 }
 
 const categories: { value: CategoryFilter; label: string }[] = [
@@ -35,27 +36,27 @@ export function FilterControls({
   onFutureOnlyChange,
   category,
   onCategoryChange,
-  group,
-  onGroupChange,
-  groupEntries,
+  team,
+  onTeamChange,
+  teamEntries,
 }: FilterControlsProps) {
-  // Group entries by season for optgroup rendering
-  const seasons = new Map<string, GroupEntry[]>()
-  for (const entry of groupEntries) {
+  // Group teams by season label. seasonSort on the first entry determines optgroup order.
+  const seasons = new Map<string, { seasonSort: number; entries: TeamEntry[] }>()
+  for (const entry of teamEntries) {
     const key = entry.season ?? ''
-    if (!seasons.has(key)) seasons.set(key, [])
-    seasons.get(key)!.push(entry)
+    const bucket = seasons.get(key)
+    if (bucket) {
+      bucket.entries.push(entry)
+    } else {
+      seasons.set(key, { seasonSort: entry.seasonSort, entries: [entry] })
+    }
   }
-  // Sort newest season first; within same year, Sommer > Winter
-  const seasonSortKey = (s: string): number => {
-    const yearMatch = s.match(/(20\d{2})/)
-    const year = yearMatch?.[1] ? parseInt(yearMatch[1]) : 0
-    const isSummer = s.startsWith('Sommer')
-    return -(year * 10 + (isSummer ? 1 : 0))
-  }
-  const sortedSeasons = Array.from(seasons.entries()).sort((a, b) =>
-    seasonSortKey(a[0]) - seasonSortKey(b[0])
+  const sortedSeasons = Array.from(seasons.entries()).sort(
+    (a, b) => b[1].seasonSort - a[1].seasonSort,
   )
+  for (const [, bucket] of sortedSeasons) {
+    bucket.entries.sort((a, b) => a.label.localeCompare(b.label, 'de'))
+  }
 
   return (
     <div className="mb-6 flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-3 md:sticky md:top-(--scroll-padding-top) md:z-20 md:-mx-4 md:bg-taupe-100 md:px-4 md:py-3 md:dark:bg-taupe-900">
@@ -83,24 +84,24 @@ export function FilterControls({
         ))}
       </div>
 
-      {groupEntries.length > 0 && (
+      {teamEntries.length > 0 && (
         <div className="inline-flex rounded-full bg-taupe-200 p-0.5 dark:bg-taupe-700">
           <select
-            value={group ?? ''}
-            onChange={(e) => onGroupChange(e.target.value || null)}
+            value={team ?? ''}
+            onChange={(e) => onTeamChange(e.target.value || null)}
             className="cursor-pointer appearance-none rounded-full bg-transparent px-2.5 py-1 pr-7 text-xs font-medium text-taupe-700 transition-colors hover:text-taupe-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:text-taupe-200 dark:hover:text-white"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23787264' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E")`, backgroundPosition: 'right 0.4rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1rem 1rem' }}
           >
-            <option value="">Gruppe/Mannschaft wählen...</option>
+            <option value="">Mannschaft wählen...</option>
             {sortedSeasons.length === 1 && !sortedSeasons[0]?.[0]
-              ? groupEntries.map((entry) => (
+              ? sortedSeasons[0]![1].entries.map((entry) => (
                   <option key={entry.value} value={entry.value}>
                     {entry.label}
                   </option>
                 ))
-              : sortedSeasons.map(([season, entries]) => (
+              : sortedSeasons.map(([season, bucket]) => (
                   <optgroup key={season || '(ohne Saison)'} label={season || 'Sonstige'}>
-                    {entries.map((entry) => (
+                    {bucket.entries.map((entry) => (
                       <option key={entry.value} value={entry.value}>
                         {entry.label}
                       </option>
@@ -112,7 +113,7 @@ export function FilterControls({
         </div>
       )}
 
-      <ICalButton category={category} group={group} />
+      <ICalButton category={category} team={team} />
     </div>
   )
 }

@@ -5,9 +5,15 @@ import type { CalendarEvent, MatchEventMetadata } from '@tcw/calendar'
 import { MatchResultCard } from './MatchResultCard'
 import { RSSButton } from './RSSButton'
 
+export interface TeamEntry {
+  value: string
+  label: string
+  seasonSort: number
+}
+
 interface MatchResultsClientProps {
   results: CalendarEvent[]
-  groupNames: string[]
+  teamEntries: TeamEntry[]
 }
 
 function parseHashState(): string | null {
@@ -17,24 +23,24 @@ function parseHashState(): string | null {
   if (!hash) return null
 
   const params = new URLSearchParams(hash)
-  return params.get('group')
+  return params.get('team')
 }
 
-function buildHashString(group: string | null): string {
-  if (!group) return ''
+function buildHashString(team: string | null): string {
+  if (!team) return ''
 
   const params = new URLSearchParams()
-  params.set('group', group)
+  params.set('team', team)
   return `#${params.toString()}`
 }
 
-function getInitialGroup(): string | null {
+function getInitialTeam(): string | null {
   if (typeof window === 'undefined') return null
   return parseHashState()
 }
 
-export function MatchResultsClient({ results, groupNames }: MatchResultsClientProps) {
-  const [group, setGroup] = useState<string | null>(getInitialGroup)
+export function MatchResultsClient({ results, teamEntries }: MatchResultsClientProps) {
+  const [team, setTeam] = useState<string | null>(getInitialTeam)
   const isInitialMount = useRef(true)
   const isHashUpdate = useRef(false)
 
@@ -50,16 +56,16 @@ export function MatchResultsClient({ results, groupNames }: MatchResultsClientPr
       return
     }
 
-    const hashString = buildHashString(group)
+    const hashString = buildHashString(team)
     const newUrl = window.location.pathname + window.location.search + hashString
     window.history.replaceState(null, '', newUrl)
-  }, [group])
+  }, [team])
 
   // Listen for popstate to handle browser navigation
   useEffect(() => {
     const handlePopState = () => {
       isHashUpdate.current = true
-      setGroup(parseHashState())
+      setTeam(parseHashState())
     }
 
     window.addEventListener('popstate', handlePopState)
@@ -67,22 +73,22 @@ export function MatchResultsClient({ results, groupNames }: MatchResultsClientPr
   }, [])
 
   const filteredResults = useMemo(() => {
-    if (!group) return results
+    if (!team) return results
 
     return results.filter((match) => {
       const metadata = match.metadata as MatchEventMetadata
-      return metadata.league === group
+      return metadata.teamId === team
     })
-  }, [results, group])
+  }, [results, team])
 
   return (
     <>
       <div className="mb-6 flex items-center justify-center gap-2">
-        {groupNames.length > 0 && (
+        {teamEntries.length > 0 && (
           <div className="inline-flex rounded-full bg-taupe-200 p-0.5 dark:bg-taupe-700">
             <select
-              value={group ?? ''}
-              onChange={(e) => setGroup(e.target.value || null)}
+              value={team ?? ''}
+              onChange={(e) => setTeam(e.target.value || null)}
               className="cursor-pointer appearance-none rounded-full bg-transparent px-2.5 py-1 pr-7 text-xs font-medium text-taupe-700 transition-colors hover:text-taupe-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:text-taupe-200 dark:hover:text-white"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23787264' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E")`,
@@ -92,15 +98,15 @@ export function MatchResultsClient({ results, groupNames }: MatchResultsClientPr
               }}
             >
               <option value="">Alle Mannschaften</option>
-              {groupNames.map((name) => (
-                <option key={name} value={name}>
-                  {name}
+              {teamEntries.map((entry) => (
+                <option key={entry.value} value={entry.value}>
+                  {entry.label}
                 </option>
               ))}
             </select>
           </div>
         )}
-        <RSSButton group={group} />
+        <RSSButton team={team} />
       </div>
 
       {filteredResults.length === 0 ? (
