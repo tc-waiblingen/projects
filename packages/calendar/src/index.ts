@@ -25,6 +25,10 @@ export {
   _testHelpers,
 } from './fetchers'
 
+// Nr-client (nuliga-reader)
+export { fetchNrTeams } from './nr-client'
+export type { NrTeam } from './nr-client'
+
 // Grouping
 export {
   groupEventsByMonth,
