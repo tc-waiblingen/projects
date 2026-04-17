@@ -55,7 +55,7 @@ export const SCREENS: Screen[] = [
     title: 'Platzbelegung',
     screenMeta: {
       sortKey: 22,
-      visible: true,
+      visible: false,
       duration: 20000,
       illustrationPath: '/assets/tv/illustrations/court-status-illustration.svg',
       illustrationAlt: 'Platzbelegung',
