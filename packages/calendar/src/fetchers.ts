@@ -607,7 +607,7 @@ function mapNrMatch(
     imageUrl: null,
     metadata,
     expandDays: true,
-    displayWeight: 2,
+    displayWeight: 3,
   };
 }
 
