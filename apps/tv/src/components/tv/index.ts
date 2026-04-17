@@ -3,6 +3,7 @@
  */
 
 export { CalendarIllustration } from './CalendarIllustration'
+export { CourtStatusMap } from './CourtStatusMap'
 export { Crest } from './Crest'
 export { EmailAddress } from './EmailAddress'
 export { FlashMessage } from './FlashMessage'

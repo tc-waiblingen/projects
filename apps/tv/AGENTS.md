@@ -226,6 +226,9 @@ Use these classes instead of raw `text-*` size classes in TV components. This al
 - `NR_API_URL` — nuliga-reader base URL, e.g. `https://nr.tc-waiblingen.de` (server-side only)
 - `NR_API_TOKEN` — nuliga-reader bearer token (server-side only)
 - `NR_CLUB_ID` — TC Waiblingen club ID in nuliga-reader (server-side only)
+- `EBUSY_API_URL` — eBuSy base URL, e.g. `https://ebusy.tc-waiblingen.de/api` (server-side only)
+- `EBUSY_API_USER` — eBuSy API user for Basic auth (server-side only)
+- `EBUSY_API_PASSWORD` — eBuSy API password for Basic auth (server-side only)
 
 ## Code Style
 
@@ -252,6 +255,7 @@ All screens are at `http://localhost:3001/tv/screens/<name>`:
 |--------|-----|
 | Match Results | `/tv/screens/match-results` |
 | Club Schedule | `/tv/screens/club-schedule` |
+| Court Status | `/tv/screens/court-status` |
 | Club Office | `/tv/screens/club-office` |
 | Team | `/tv/screens/team` |
 | Trainers | `/tv/screens/trainers` |

@@ -30,20 +30,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  let body: { collection?: string }
+  let body: { collection?: string; tag?: string }
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { collection } = body
+  const { collection, tag: rawTag } = body
 
-  if (!collection) {
-    return NextResponse.json({ error: 'Missing collection' }, { status: 400 })
+  if (!collection && !rawTag) {
+    return NextResponse.json({ error: 'Missing collection or tag' }, { status: 400 })
   }
 
-  const tag = `directus:collection:${collection}`
+  const tag = rawTag ?? `directus:collection:${collection}`
   debouncedRevalidate(tag)
 
   // Revalidate all route cache to ensure layout-level data (globals) is refreshed

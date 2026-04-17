@@ -30,6 +30,7 @@
   "dependencies": {
     "@directus/sdk": "^21.2.0",
     "@tcw/calendar": "workspace:*",
+    "@tcw/ebusy": "workspace:*",
     "clsx": "^2.1.1",
     "libphonenumber-js": "^1.12.40",
     "next": "^16.2.1",

@@ -3,12 +3,22 @@
  */
 
 import { cache } from 'react'
+import {
+  computeCourtStatus,
+  formatEbusyDate,
+  listCourtModuleReservations,
+  listLiteModuleReservations,
+  listModules,
+  type EbusyReservation,
+} from '@tcw/ebusy'
 import { getDirectus } from '@/lib/directus/directus'
-import type { Global, OfficeHour, Sponsor, Team, Trainer } from '@/types/directus-schema'
+import type { Court, DirectusFile, Global, OfficeHour, Sponsor, Team, Trainer } from '@/types/directus-schema'
 import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
 import { fetchInstagramFeed } from '@/lib/instagram/fetchers'
 import { transformScheduleForTv, type ScheduleData } from './schedule-transformer'
 import { transformMatchResultsForTv, type MatchResultsData } from './match-results-transformer'
+
+const COURT_STATUS_REVALIDATE_SECONDS = 300
 
 /** Common DirectusFile fields needed for image display */
 const DIRECTUS_FILE_FIELDS = ['id', 'filename_disk', 'filename_download', 'title', 'description', 'type', 'width', 'height'] as const
@@ -32,6 +42,19 @@ export interface OfficeData {
 
 export interface SponsorsData {
   byCategory: Record<string, Sponsor[]>
+}
+
+export interface CourtStatus {
+  directusId: number
+  name: string
+  ebusyId: string
+  busy: boolean
+  currentEndsAt?: string
+}
+
+export interface CourtStatusData {
+  areaMapId: string | null
+  courts: CourtStatus[]
 }
 
 export interface InstagramFeedData {
@@ -294,4 +317,80 @@ export const fetchInstagramFeedData = cache(async (): Promise<InstagramFeedData>
       feed: [],
     }
   }
+})
+
+/**
+ * Fetch live court busy/free status for the TV display.
+ *
+ * Queries the eBuSy API for today's reservations across every Hallenmodul
+ * (COURT) and Freiplatzmodul (LITE), then joins them to Directus courts by
+ * `ebusy_id`. Also returns the site-plan SVG file id from the global singleton.
+ *
+ * If the eBuSy API is unavailable we still return the area map and the list
+ * of courts (all marked free) so the screen renders in a neutral state.
+ */
+export const fetchCourtStatusData = cache(async (): Promise<CourtStatusData> => {
+  const { directus, readSingleton, readItems } = getDirectus()
+
+  const [globalData, courtItems] = await Promise.all([
+    directus.request(readSingleton('global', { fields: ['area_map'] })),
+    directus.request(
+      readItems('courts', {
+        filter: { status: { _eq: 'published' } },
+        fields: ['id', 'name', 'ebusy_id'],
+        sort: ['sort'],
+        limit: -1,
+      }),
+    ),
+  ])
+
+  const areaMapField = (globalData as Partial<Global>).area_map as DirectusFile | string | null | undefined
+  const areaMapId = typeof areaMapField === 'string' ? areaMapField : (areaMapField?.id ?? null)
+
+  const courts = (courtItems as Court[]).filter(
+    (c): c is Court & { name: string; ebusy_id: string } =>
+      typeof c.name === 'string' && typeof c.ebusy_id === 'string' && c.ebusy_id.length > 0,
+  )
+
+  const now = new Date()
+  const today = formatEbusyDate(now)
+  let reservationsByEbusyId = new Map<string, EbusyReservation[]>()
+
+  try {
+    const modules = await listModules(COURT_STATUS_REVALIDATE_SECONDS)
+    const relevant = modules.filter((m) => m.type === 'COURT' || m.type === 'LITE')
+
+    const reservationsPerModule = await Promise.all(
+      relevant.map(async (mod) => {
+        const fetcher = mod.type === 'COURT' ? listCourtModuleReservations : listLiteModuleReservations
+        return fetcher(mod.id, { fromDate: today, toDate: today }, COURT_STATUS_REVALIDATE_SECONDS)
+      }),
+    )
+
+    for (const list of reservationsPerModule) {
+      for (const res of list) {
+        const key = String(res.courtId)
+        const existing = reservationsByEbusyId.get(key) ?? []
+        existing.push(res)
+        reservationsByEbusyId.set(key, existing)
+      }
+    }
+  } catch (error) {
+    console.error('fetchCourtStatusData: eBuSy fetch failed:', error)
+    reservationsByEbusyId = new Map()
+  }
+
+  const statuses: CourtStatus[] = courts.map((court) => {
+    const reservations = reservationsByEbusyId.get(court.ebusy_id) ?? []
+    const status = computeCourtStatus(reservations, now)
+    return {
+      directusId: court.id,
+      name: court.name,
+      ebusyId: court.ebusy_id,
+      busy: status.busy,
+      currentEndsAt: status.currentEndsAt,
+    }
+  })
+
+  return { areaMapId, courts: statuses }
 })

@@ -392,7 +392,7 @@ export interface Calendar {
 	show_on_tv?: boolean | null;
 	/** @description Bleibt dieses Feld leer, findet der Termin beim TCW statt. */
 	location?: string | null;
-	category?: 'beginners' | 'children' | null;
+	category?: 'beginners' | 'children' | 'tournament' | null;
 	expand_days?: boolean;
 }
 
@@ -407,6 +407,8 @@ export interface Court {
 	location?: string | null;
 	location_polygon?: string | null;
 	name?: string | null;
+	/** @description ID des Platzes in eBuSy (API) */
+	ebusy_id?: string | null;
 	sponsors?: CourtsSponsor[] | string[];
 }
 
@@ -525,6 +527,7 @@ export interface Global {
 	/** @description Kalender im iCal-Format */
 	wtb_tournaments_url?: string | null;
 	tagline?: string | null;
+	area_map?: DirectusFile | string | null;
 }
 
 export interface Navigation {

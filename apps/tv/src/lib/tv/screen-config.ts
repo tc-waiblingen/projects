@@ -51,6 +51,19 @@ export const SCREENS: Screen[] = [
     },
   },
   {
+    url: '/tv/screens/court-status',
+    title: 'Platzbelegung',
+    screenMeta: {
+      sortKey: 22,
+      visible: true,
+      duration: 20000,
+      illustrationPath: '/assets/tv/illustrations/court-status-illustration.svg',
+      illustrationAlt: 'Platzbelegung',
+      angle: 15,
+      rayLength: 380,
+    },
+  },
+  {
     url: '/tv/screens/match-results',
     title: 'Neueste Spielergebnisse',
     screenMeta: {
