@@ -1,0 +1,64 @@
+{
+  "name": "@tcw/dispo",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev --port 3002",
+    "build": "next build",
+    "start": "next start --port 3002",
+    "lint": "eslint",
+    "clean": "rm -rf .next/cache",
+    "generate:types": "tsx ./src/lib/directus/generateDirectusTypes.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "printWidth": 120,
+    "plugins": [
+      "prettier-plugin-organize-imports",
+      "prettier-plugin-tailwindcss"
+    ],
+    "tailwindStylesheet": "./src/app/globals.css",
+    "tailwindFunctions": [
+      "clsx"
+    ]
+  },
+  "dependencies": {
+    "@directus/sdk": "^21.2.0",
+    "@tcw/calendar": "workspace:*",
+    "better-sqlite3": "^11.10.0",
+    "clsx": "^2.1.1",
+    "jose": "^6.1.0",
+    "next": "^16.2.1",
+    "openid-client": "^6.8.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwindcss": "^4.2.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.4",
+    "directus-sdk-typegen": "^0.2.1",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.1",
+    "jsdom": "^29.0.1",
+    "prettier": "^3.8.1",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.1"
+  }
+}
