@@ -48,10 +48,12 @@ COPY apps/tv ./apps/tv
 ARG NEXT_PUBLIC_DIRECTUS_URL
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_ENABLE_VISUAL_EDITING
+ARG EBUSY_API_URL
 
 ENV NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
 ENV NEXT_PUBLIC_ENABLE_VISUAL_EDITING=${NEXT_PUBLIC_ENABLE_VISUAL_EDITING}
+ENV EBUSY_API_URL=${EBUSY_API_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 
 WORKDIR /app/apps/tv
@@ -63,11 +65,15 @@ RUN --mount=type=cache,target=/app/apps/tv/.next/cache \
     --mount=type=secret,id=INSTAGRAM_ACCESS_TOKEN \
     --mount=type=secret,id=INSTAGRAM_USER_ID \
     --mount=type=secret,id=URL_SIGNING_SECRET \
+    --mount=type=secret,id=EBUSY_API_USER \
+    --mount=type=secret,id=EBUSY_API_PASSWORD \
     DIRECTUS_TOKEN=$(cat /run/secrets/DIRECTUS_TOKEN) \
     DIRECTUS_PUBLIC_TOKEN=$(cat /run/secrets/DIRECTUS_PUBLIC_TOKEN) \
     INSTAGRAM_ACCESS_TOKEN=$(cat /run/secrets/INSTAGRAM_ACCESS_TOKEN) \
     INSTAGRAM_USER_ID=$(cat /run/secrets/INSTAGRAM_USER_ID) \
     URL_SIGNING_SECRET=$(cat /run/secrets/URL_SIGNING_SECRET) \
+    EBUSY_API_USER=$(cat /run/secrets/EBUSY_API_USER) \
+    EBUSY_API_PASSWORD=$(cat /run/secrets/EBUSY_API_PASSWORD) \
     pnpm run build
 
 # Production image
