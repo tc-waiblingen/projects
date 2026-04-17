@@ -19,6 +19,14 @@ export function getSeasonCourtType(date: Date): 'tennis_indoor' | 'tennis_outdoo
   return 'tennis_indoor'
 }
 
+export function getMatchCourtType(
+  meta: MatchEventMetadata
+): 'tennis_indoor' | 'tennis_outdoor' {
+  return meta.season?.toLowerCase().includes('winter')
+    ? 'tennis_indoor'
+    : 'tennis_outdoor'
+}
+
 export function getHeatLevel(
   courtsUsed: number,
   courtsAvailable: number
@@ -89,8 +97,6 @@ export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
   const daysMap = new Map<string, CourtUsageDay>()
 
   for (const event of events) {
-    const courtType = getSeasonCourtType(event.startDate)
-    const totalCourtsAvailable = courtType === 'tennis_indoor' ? indoorCourtCount : outdoorCourtCount
     const dateKey = getDateKey(event.startDate)
 
     if (event.source === 'tournament') {
@@ -130,6 +136,10 @@ export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
     if (event.source !== 'match') continue
     const meta = event.metadata as MatchEventMetadata
     if (!meta.isHome) continue
+
+    const courtType = getMatchCourtType(meta)
+    const totalCourtsAvailable =
+      courtType === 'tennis_indoor' ? indoorCourtCount : outdoorCourtCount
 
     const league = meta.leagueFull || meta.league || ''
     const courts = getCourtCount(league)

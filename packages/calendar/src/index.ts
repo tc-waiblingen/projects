@@ -49,6 +49,7 @@ export {
   getCourtCount,
   getPlayerCount,
   getSeasonCourtType,
+  getMatchCourtType,
   getHeatLevel,
 } from './court-usage'
 

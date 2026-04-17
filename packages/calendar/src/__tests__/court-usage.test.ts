@@ -3,6 +3,7 @@ import {
   getCourtCount,
   getPlayerCount,
   getSeasonCourtType,
+  getMatchCourtType,
   getHeatLevel,
   computeCourtUsage,
 } from '../court-usage'
@@ -54,6 +55,32 @@ describe('getSeasonCourtType', () => {
     expect(getSeasonCourtType(new Date(2026, 4, 1))).toBe('tennis_outdoor')  // May 1
     expect(getSeasonCourtType(new Date(2026, 6, 15))).toBe('tennis_outdoor') // Jul 15
     expect(getSeasonCourtType(new Date(2026, 8, 22))).toBe('tennis_outdoor') // Sep 22
+  })
+})
+
+describe('getMatchCourtType', () => {
+  function meta(season: string | undefined): MatchEventMetadata {
+    return {
+      homeTeam: 'A',
+      awayTeam: 'B',
+      isHome: true,
+      season,
+    } as MatchEventMetadata
+  }
+
+  it('returns tennis_indoor when season contains "winter" (case-insensitive)', () => {
+    expect(getMatchCourtType(meta('Winter 2026/27'))).toBe('tennis_indoor')
+    expect(getMatchCourtType(meta('WINTER'))).toBe('tennis_indoor')
+    expect(getMatchCourtType(meta('prewinter run'))).toBe('tennis_indoor')
+  })
+
+  it('returns tennis_outdoor when season does not contain "winter"', () => {
+    expect(getMatchCourtType(meta('Sommer 2026'))).toBe('tennis_outdoor')
+    expect(getMatchCourtType(meta('Summer'))).toBe('tennis_outdoor')
+  })
+
+  it('returns tennis_outdoor when season is missing', () => {
+    expect(getMatchCourtType(meta(undefined))).toBe('tennis_outdoor')
   })
 })
 
@@ -212,7 +239,7 @@ describe('computeCourtUsage', () => {
     }
   })
 
-  it('assigns court type based on season', () => {
+  it('assigns month court type based on calendar season', () => {
     const winterMatch = makeMatchEvent({ startDate: new Date(2026, 10, 5) })
     const summerMatch = makeMatchEvent({ id: '2', startDate: new Date(2026, 5, 15) })
     const result = computeCourtUsage({ events: [winterMatch, summerMatch], ...config })
@@ -220,8 +247,44 @@ describe('computeCourtUsage', () => {
     expect(result.find((m) => m.monthKey === '2026-06')!.courtType).toBe('tennis_outdoor')
   })
 
+  it('assigns day court type from match season metadata', () => {
+    const winterMatch = makeMatchEvent(
+      { id: 'w', startDate: new Date(2026, 5, 6) }, // Jun 6 — summer by date
+      { season: 'Winter 2026/27' }
+    )
+    const summerMatch = makeMatchEvent(
+      { id: 's', startDate: new Date(2026, 10, 7) }, // Nov 7 — winter by date
+      { season: 'Sommer 2026' }
+    )
+    const missingSeason = makeMatchEvent(
+      { id: 'x', startDate: new Date(2026, 10, 8) }, // Nov 8 — winter by date
+      { season: undefined }
+    )
+    const result = computeCourtUsage({
+      events: [winterMatch, summerMatch, missingSeason],
+      ...config,
+    })
+
+    const jun = result.find((m) => m.monthKey === '2026-06')!
+    expect(jun.days[0].courtType).toBe('tennis_indoor')
+    expect(jun.days[0].totalCourtsAvailable).toBe(4)
+
+    const nov = result.find((m) => m.monthKey === '2026-11')!
+    const nov7 = nov.days.find((d) => d.dateKey === '2026-11-07')!
+    const nov8 = nov.days.find((d) => d.dateKey === '2026-11-08')!
+    expect(nov7.courtType).toBe('tennis_outdoor')
+    expect(nov7.totalCourtsAvailable).toBe(7)
+    expect(nov8.courtType).toBe('tennis_outdoor')
+    expect(nov8.totalCourtsAvailable).toBe(7)
+  })
+
   it('assigns heat level based on percentage of available courts', () => {
-    const events = [makeMatchEvent({ startTime: '14:00' }, { league: 'Herren' })]
+    const events = [
+      makeMatchEvent(
+        { startTime: '14:00' },
+        { league: 'Herren', season: 'Winter 2026/27' }
+      ),
+    ]
     const result = computeCourtUsage({ events, ...config })
     const oct = result.find((m) => m.monthKey === '2026-10')!
     expect(oct.days[0].heatLevel).toBe('high')
