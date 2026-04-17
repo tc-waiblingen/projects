@@ -20,6 +20,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 
 # Copy package.json files for all workspace packages
 COPY packages/calendar/package.json ./packages/calendar/
+COPY packages/ebusy/package.json ./packages/ebusy/
 COPY apps/tv/package.json ./apps/tv/
 
 # Install dependencies (--frozen-lockfile ensures reproducible builds)
@@ -31,11 +32,14 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/packages/calendar/node_modules ./packages/calendar/node_modules
+COPY --from=deps /app/packages/ebusy/node_modules ./packages/ebusy/node_modules
 COPY --from=deps /app/apps/tv/node_modules ./apps/tv/node_modules
 
 # Copy shared package source and build it
 COPY packages/calendar ./packages/calendar
 RUN cd packages/calendar && pnpm run build
+COPY packages/ebusy ./packages/ebusy
+RUN cd packages/ebusy && pnpm run build
 
 # Copy app source
 COPY apps/tv ./apps/tv
