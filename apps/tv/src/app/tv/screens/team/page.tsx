@@ -22,7 +22,7 @@ export default async function TeamPage() {
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION}>
-      <div className="relative flex h-screen items-center justify-center overflow-hidden p-16 mt-10">
+      <div className="relative flex tv-screen-fit items-center justify-center overflow-hidden p-16 mt-10">
         <div className="w-full">
           <div className="grid grid-cols-6 gap-8">
             {team.map((member) => (

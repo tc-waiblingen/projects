@@ -291,3 +291,8 @@
   font-size: var(--text-xl);
   line-height: var(--tw-leading, 1.25);
 }
+
+/* Shrink content-filling TV screens by the fixed office footer height. */
+@utility tv-screen-fit {
+  height: calc(100dvh - 3.5rem);
+}

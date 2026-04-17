@@ -13,7 +13,7 @@ export default async function CourtStatusPage() {
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION}>
-      <div className="relative h-screen overflow-hidden">
+      <div className="relative tv-screen-fit overflow-hidden">
         <div className="relative z-10 h-full px-16 pb-10 pt-44">
           {svg ? (
             <CourtStatusMap svg={svg} courts={data.courts} />

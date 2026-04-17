@@ -12,7 +12,7 @@ export default async function TrainersPage() {
   const nextIndex = getNextScreenIndex(SCREEN_URL)
 
   return (
-    <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION} showLogo={false}>
+    <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION} showLogo={false} showFooter={false}>
       <div className="relative flex h-screen items-center justify-center overflow-hidden p-16">
         <div className="w-full">
           <p className="mb-8 mt-16 text-center tv-heading">

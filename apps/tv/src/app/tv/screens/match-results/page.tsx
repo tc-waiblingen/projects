@@ -33,7 +33,7 @@ export default async function MatchResultsPage() {
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={duration}>
-      <div className="relative h-screen overflow-hidden">
+      <div className="relative tv-screen-fit overflow-hidden">
         <div className="relative z-10 h-full px-16 pb-10 pt-44">
           {!matchResults.hasResults && (
             <div className="flex h-full items-center justify-center text-center">

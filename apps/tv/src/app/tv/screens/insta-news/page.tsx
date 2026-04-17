@@ -29,7 +29,7 @@ export default async function InstaNewsPage() {
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={duration}>
-      <div className="relative flex h-screen items-center justify-center overflow-hidden">
+      <div className="relative flex tv-screen-fit items-center justify-center overflow-hidden">
         {instagramFeed.profileUrl && profileQrCode && (
           <div className="absolute bottom-8 left-8 z-20 flex items-center gap-3 rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-black/50">
             <QrCode linkUrl={instagramFeed.profileUrl} qrCodeDataUrl={profileQrCode} size="large" />

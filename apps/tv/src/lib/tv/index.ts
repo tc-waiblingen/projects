@@ -4,6 +4,7 @@
 
 export * from './date-utils'
 export * from './fetchers'
+export * from './office-hours'
 export * from './match-results-transformer'
 export * from './qr-code'
 export * from './schedule-transformer'

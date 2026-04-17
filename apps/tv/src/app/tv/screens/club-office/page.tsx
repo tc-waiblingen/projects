@@ -1,33 +1,19 @@
 import { CourtStatusMap, EmailAddress, PhoneNumber, QrCode, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchAreaMapSvg } from '@/lib/directus/fetchAreaMapSvg'
 import {
+  DAY_NAME_LONG_DE,
   fetchCourtStatusData,
   fetchGlobals,
   fetchOfficeData,
+  formatTime,
   generateQrCodeForView,
   getNextScreenIndex,
+  type DayName,
 } from '@/lib/tv'
 
 const SCREEN_URL = '/tv/screens/club-office'
 const SCREEN_TITLE = 'Geschäftsstelle'
 const SCREEN_DURATION = 15000
-
-// Map English day names to German
-const dayNameMap: Record<string, string> = {
-  monday: 'Montag',
-  tuesday: 'Dienstag',
-  wednesday: 'Mittwoch',
-  thursday: 'Donnerstag',
-  friday: 'Freitag',
-  saturday: 'Samstag',
-  sunday: 'Sonntag',
-}
-
-// Format time string (remove seconds)
-const formatTime = (timeStr: string) => {
-  const [hours, minutes] = timeStr.split(':')
-  return `${hours}:${minutes}`
-}
 
 export default async function ClubOfficePage() {
   const [office, globals, courtStatus] = await Promise.all([
@@ -50,7 +36,7 @@ export default async function ClubOfficePage() {
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION}>
-      <div className="relative h-screen overflow-hidden">
+      <div className="relative tv-screen-fit overflow-hidden">
         <div className="relative z-10 h-full px-16 pb-10 pt-44">
           <div className="grid h-full content-center gap-8 grid-cols-2 grid-rows-2">
             {/* Opening Hours Card */}
@@ -69,7 +55,7 @@ export default async function ClubOfficePage() {
               <div className="mt-4 space-y-3 tv-body text-neutral-700">
                 {office.hours.map((hourEntry, index) => (
                   <div key={index} className="flex gap-4">
-                    <span className="w-28 font-medium">{dayNameMap[hourEntry.day]}</span>
+                    <span className="w-28 font-medium">{DAY_NAME_LONG_DE[hourEntry.day as DayName]}</span>
                     <span>
                       {formatTime(hourEntry.starts_at)} – {formatTime(hourEntry.ends_at)} Uhr
                     </span>

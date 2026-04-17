@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { OfficeFooter } from './OfficeFooter'
 import { ProgressIndicator } from './ProgressIndicator'
 import { TcwLogoTextRight } from './TcwLogoTextRight'
 
@@ -8,6 +9,7 @@ interface TvScreenLayoutProps {
   showTitle?: boolean
   duration?: number
   showLogo?: boolean
+  showFooter?: boolean
 }
 
 /**
@@ -19,6 +21,7 @@ export function TvScreenLayout({
   showTitle = true,
   duration,
   showLogo = true,
+  showFooter = true,
 }: TvScreenLayoutProps) {
   return (
     <>
@@ -35,6 +38,8 @@ export function TvScreenLayout({
 
       {/* Main content */}
       <main>{children}</main>
+
+      {showFooter && <OfficeFooter />}
     </>
   )
 }

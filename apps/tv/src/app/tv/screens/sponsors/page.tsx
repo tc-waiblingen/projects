@@ -13,7 +13,7 @@ export default async function SponsorsPage() {
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION}>
-      <div className="relative flex h-screen items-center justify-center overflow-hidden p-16">
+      <div className="relative flex tv-screen-fit items-center justify-center overflow-hidden p-16">
         <div className="w-full">
           <p className="mb-12 text-center tv-heading">
             Ohne die großartige Unterstützung unserer Sponsoren könnte so manches Projekt nicht realisiert werden.

@@ -118,8 +118,10 @@ export const fetchOfficeData = cache(async (): Promise<OfficeData> => {
     ),
   ])
 
+  const closingDayDates = closingDays as Array<{ date: string }>
+
   // Format closing days
-  const formattedClosingDays = (closingDays as Array<{ date: string }>).map((day) => {
+  const formattedClosingDays = closingDayDates.map((day) => {
     const date = new Date(day.date + 'T00:00:00')
     return date.toLocaleDateString('de-DE', {
       day: '2-digit',
