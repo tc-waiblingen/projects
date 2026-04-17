@@ -7,6 +7,8 @@ import type { CourtStatus } from '@/lib/tv/fetchers'
 interface CourtStatusMapProps {
   svg: string
   courts: CourtStatus[]
+  /** 'compact' scales the overlay labels down for small embeds (e.g. card in another screen). */
+  size?: 'default' | 'compact'
 }
 
 interface CourtRect {
@@ -39,7 +41,11 @@ function labelBackground(endsAt: string, now: Date): string {
   return `rgba(${r}, ${g}, ${b}, 0.9)`
 }
 
-export function CourtStatusMap({ svg, courts }: CourtStatusMapProps) {
+export function CourtStatusMap({ svg, courts, size = 'default' }: CourtStatusMapProps) {
+  const labelClasses =
+    size === 'compact'
+      ? 'rounded px-1 py-0 text-center text-[10px] leading-tight font-semibold text-white shadow-sm'
+      : 'rounded-md px-2 py-0.5 text-center tv-small font-semibold text-white shadow-sm'
   const containerRef = useRef<HTMLDivElement>(null)
   const [positions, setPositions] = useState<Record<string, CourtRect>>({})
 
@@ -107,8 +113,11 @@ export function CourtStatusMap({ svg, courts }: CourtStatusMapProps) {
   }, [applyStyles, svg])
 
   return (
-    <div className="relative h-full w-full">
-      <div ref={containerRef} className="h-full w-full [&_svg]:h-full [&_svg]:w-full" />
+    <div className="relative h-full w-full overflow-hidden">
+      <div
+        ref={containerRef}
+        className="h-full w-full [&_svg]:h-full [&_svg]:max-h-full [&_svg]:w-full [&_svg]:max-w-full"
+      />
 
       {courts.map((court) => {
         const rect = positions[court.name]
@@ -132,10 +141,7 @@ export function CourtStatusMap({ svg, courts }: CourtStatusMapProps) {
             }}
           >
             {court.busy && court.currentEndsAt && (
-              <span
-                className={clsx('rounded-md px-2 py-0.5 text-center tv-small font-semibold text-white shadow-sm')}
-                style={{ backgroundColor: background }}
-              >
+              <span className={clsx(labelClasses)} style={{ backgroundColor: background }}>
                 Belegt bis
                 <br />
                 {court.currentEndsAt} Uhr

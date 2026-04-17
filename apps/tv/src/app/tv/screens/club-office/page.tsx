@@ -1,5 +1,12 @@
-import { EmailAddress, PhoneNumber, QrCode, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
-import { fetchGlobals, fetchOfficeData, generateQrCodeForView, getNextScreenIndex } from '@/lib/tv'
+import { CourtStatusMap, EmailAddress, PhoneNumber, QrCode, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
+import { fetchAreaMapSvg } from '@/lib/directus/fetchAreaMapSvg'
+import {
+  fetchCourtStatusData,
+  fetchGlobals,
+  fetchOfficeData,
+  generateQrCodeForView,
+  getNextScreenIndex,
+} from '@/lib/tv'
 
 const SCREEN_URL = '/tv/screens/club-office'
 const SCREEN_TITLE = 'Geschäftsstelle'
@@ -23,8 +30,15 @@ const formatTime = (timeStr: string) => {
 }
 
 export default async function ClubOfficePage() {
-  const [office, globals] = await Promise.all([fetchOfficeData(), fetchGlobals()])
+  const [office, globals, courtStatus] = await Promise.all([
+    fetchOfficeData(),
+    fetchGlobals(),
+    fetchCourtStatusData(),
+  ])
   const nextIndex = getNextScreenIndex(SCREEN_URL)
+
+  const showCourtStatus = !office.announcement
+  const courtStatusSvg = showCourtStatus && courtStatus.areaMapId ? await fetchAreaMapSvg(courtStatus.areaMapId) : null
 
   // Generate QR codes
   const qrSchnuppern = await generateQrCodeForView('https://tc-waiblingen.de/schnuppern', 'large')
@@ -75,10 +89,17 @@ export default async function ClubOfficePage() {
               </div>
             </div>
 
-            {/* Special Announcements Card - Only shown when there's a message */}
+            {/* Special Announcements Card — Court Status fills this slot when there is no announcement */}
             {office.announcement ? (
               <div className="flex flex-col gap-3 rounded-3xl border border-amber-500/70 bg-amber-50/90 px-6 py-5 shadow-sm">
                 <div className="tv-message leading-relaxed">{office.announcement.message}</div>
+              </div>
+            ) : courtStatusSvg ? (
+              <div className="flex min-h-0 flex-col gap-3 overflow-hidden rounded-3xl border border-white/70 bg-white/70 px-6 py-5 shadow-sm">
+                <h3 className="shrink-0 tv-heading font-semibold text-neutral-900">Platzbelegung</h3>
+                <div className="relative min-h-0 flex-1">
+                  <CourtStatusMap svg={courtStatusSvg} courts={courtStatus.courts} size="compact" />
+                </div>
               </div>
             ) : (
               <div></div>
