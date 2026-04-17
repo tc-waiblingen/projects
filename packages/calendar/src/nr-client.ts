@@ -90,6 +90,24 @@ export interface NrListTeamsResponse {
   lastRefreshedAt: string
 }
 
+export interface NrMatchChange {
+  id: number
+  matchId: string
+  clubId: string
+  teamId: string
+  changedAt: string
+  field: string
+  oldValue?: string | null
+  newValue?: string | null
+  jobId?: string | null
+  traceId?: string | null
+}
+
+export interface NrListMatchChangesResponse {
+  items: NrMatchChange[]
+  lastRefreshedAt: string
+}
+
 export class NrConfigError extends Error {
   constructor(missing: string) {
     super(`nuliga-reader env var not set: ${missing}`)
@@ -176,6 +194,49 @@ export async function fetchNrTeams(): Promise<NrTeam[]> {
     {},
     86400,
   )
+  return data.items
+}
+
+export interface FetchNrMatchChangesOptions {
+  since: Date
+  until?: Date
+  fields?: string[]
+  teamId?: string
+  matchId?: string
+  limit?: number
+}
+
+export async function fetchNrMatchChanges(
+  options: FetchNrMatchChangesOptions,
+): Promise<NrMatchChange[]> {
+  const config = readConfig()
+  const url = new URL(
+    `${config.baseUrl}/v1/clubs/${encodeURIComponent(config.clubId)}/match-changes`,
+  )
+  url.searchParams.set('since', options.since.toISOString())
+  if (options.until) url.searchParams.set('until', options.until.toISOString())
+  if (options.teamId) url.searchParams.set('teamId', options.teamId)
+  if (options.matchId) url.searchParams.set('matchId', options.matchId)
+  if (options.limit !== undefined) url.searchParams.set('limit', String(options.limit))
+  if (options.fields) {
+    for (const field of options.fields) url.searchParams.append('field', field)
+  }
+
+  const response = await fetch(url.toString(), {
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: 'application/json',
+    },
+    next: { revalidate: 3600 },
+  } as RequestInit)
+
+  if (!response.ok) {
+    throw new Error(
+      `nuliga-reader /match-changes failed: ${response.status} ${response.statusText}`,
+    )
+  }
+
+  const data = (await response.json()) as NrListMatchChangesResponse
   return data.items
 }
 

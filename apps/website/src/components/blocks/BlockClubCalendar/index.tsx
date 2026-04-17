@@ -1,10 +1,18 @@
 import type { BlockClubCalendar as BlockClubCalendarType } from '@/types/directus-schema'
-import type { CalendarEvent, MatchEventMetadata } from '@tcw/calendar'
+import type { CalendarEvent, MatchChangeSummaryGroup, MatchEventMetadata } from '@tcw/calendar'
+import {
+  buildMatchChangeSummary,
+  fetchNrMatchChanges,
+  fetchNrMatches,
+  fetchNrTeams,
+} from '@tcw/calendar'
 import { Section } from '@/components/elements/section'
 import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
 import { fetchCourtsWithSponsors } from '@/lib/directus/fetchers'
+import { logger } from '@/lib/logger'
 import { teamLabelWithGroup } from '@/lib/team-label'
 import { CalendarClient } from './CalendarClient'
+import { CourtUsageChanges } from './CourtUsageChanges'
 import { CourtUsageClient } from './CourtUsageClient'
 import type { TeamEntry } from './FilterControls'
 
@@ -21,6 +29,33 @@ function getCalendarDateRange(): { from: Date; to: Date; now: Date } {
   twelveMonthsFromNow.setFullYear(twelveMonthsFromNow.getFullYear() + 1)
   const to = endOfYear > twelveMonthsFromNow ? endOfYear : twelveMonthsFromNow
   return { from, to, now }
+}
+
+async function fetchMatchChangeGroups(dateRange: {
+  from: Date
+  to: Date
+  now: Date
+}): Promise<MatchChangeSummaryGroup[]> {
+  const thirtyDaysAgo = new Date(dateRange.now.getTime() - 30 * 24 * 60 * 60 * 1000)
+  try {
+    const [changes, matches, teams] = await Promise.all([
+      fetchNrMatchChanges({
+        since: thirtyDaysAgo,
+        fields: ['__created', 'match_date', 'match_time', 'location'],
+      }),
+      fetchNrMatches(dateRange.from, dateRange.to),
+      fetchNrTeams(),
+    ])
+    return buildMatchChangeSummary({
+      changes,
+      matches,
+      teams,
+      formatTeamLabel: (team) => teamLabelWithGroup(team.name, team.group),
+    })
+  } catch (error) {
+    logger.warn('Failed to load match changes', error)
+    return []
+  }
 }
 
 function extractTeamEntries(events: CalendarEvent[]): TeamEntry[] {
@@ -56,6 +91,8 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
     const indoorCourtCount = courts.filter((c) => c.type === 'tennis_indoor').length
     const outdoorCourtCount = courts.filter((c) => c.type === 'tennis_outdoor').length
 
+    const changeGroups = await fetchMatchChangeGroups(dateRange)
+
     return (
       <Section headline={headline} eyebrow={tagline} alignment={alignment} editAttr={{ collection: 'block_club_calendar', item: String(id) }}>
         <CourtUsageClient
@@ -64,6 +101,7 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
           outdoorCourtCount={outdoorCourtCount}
           serverNow={dateRange.now.getTime()}
         />
+        <CourtUsageChanges groups={changeGroups} now={dateRange.now} />
       </Section>
     )
   }

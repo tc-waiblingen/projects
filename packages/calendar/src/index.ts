@@ -26,8 +26,27 @@ export {
 } from './fetchers'
 
 // Nr-client (nuliga-reader)
-export { fetchNrTeams } from './nr-client'
-export type { NrTeam } from './nr-client'
+export {
+  fetchNrTeams,
+  fetchNrMatches,
+  fetchNrMatchChanges,
+} from './nr-client'
+export type {
+  NrTeam,
+  NrMatch,
+  NrMatchChange,
+  NrListMatchChangesResponse,
+  FetchNrMatchChangesOptions,
+} from './nr-client'
+
+// Match-change summary
+export { buildMatchChangeSummary } from './match-change-summary'
+export type {
+  MatchChangeKind,
+  MatchChangeSummaryEntry,
+  MatchChangeSummaryGroup,
+  BuildMatchChangeSummaryOptions,
+} from './match-change-summary'
 
 // Grouping
 export {

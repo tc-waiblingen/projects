@@ -1,32 +1,9 @@
 import { MatchDetails } from '@/components/elements/MatchDetails'
+import { formatRelativeDate } from '@/lib/relative-date'
 import type { CalendarEvent, MatchEventMetadata } from '@tcw/calendar'
 
 interface MatchResultCardProps {
   match: CalendarEvent
-}
-
-function formatRelativeDate(date: Date): string {
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) {
-    return 'heute'
-  } else if (diffDays === 1) {
-    return 'gestern'
-  } else if (diffDays < 7) {
-    return `vor ${diffDays} Tagen`
-  } else if (diffDays < 14) {
-    return 'vor einer Woche'
-  } else if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7)
-    return `vor ${weeks} Wochen`
-  } else if (diffDays < 60) {
-    return 'vor einem Monat'
-  } else {
-    const months = Math.floor(diffDays / 30)
-    return `vor ${months} Monaten`
-  }
 }
 
 export function MatchResultCard({ match }: MatchResultCardProps) {
