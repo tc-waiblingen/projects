@@ -1,6 +1,6 @@
-import clsx from 'clsx'
 import { LocationPin, QrCode, ScoreBoard, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchMatchResultsData, generateQrCodeForView, getNextScreenIndex } from '@/lib/tv'
+import clsx from 'clsx'
 
 const SCREEN_URL = '/tv/screens/match-results'
 const SCREEN_TITLE = 'Neueste Spielergebnisse'
@@ -25,7 +25,7 @@ export default async function MatchResultsPage() {
       const groupQrCode = match.groupUrl ? await generateQrCodeForView(match.groupUrl, 'large') : null
       const reportQrCode = match.reportUrl ? await generateQrCodeForView(match.reportUrl, 'large') : null
       return { ...match, groupQrCode, reportQrCode }
-    })
+    }),
   )
 
   const duration = !matchResults.hasResults ? SHORT_DURATION : SCREEN_DURATION
@@ -34,23 +34,20 @@ export default async function MatchResultsPage() {
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={duration}>
       <div className="relative tv-screen-fit overflow-hidden">
-        <div className="relative z-10 h-full px-16 pb-10 pt-44">
+        <div className="relative z-10 h-full px-16 pt-44 pb-10">
           {!matchResults.hasResults && (
             <div className="flex h-full items-center justify-center text-center">
               <div className="max-w-2xl">
                 <p className="tv-message font-light">Im Moment sind keine Ergebnisse verfügbar.</p>
-                <p className="mt-4 tv-body opacity-60">Sobald Spiele stattgefunden haben, werden die Ergebnisse hier angezeigt.</p>
+                <p className="mt-4 tv-body opacity-60">
+                  Sobald Spiele stattgefunden haben, werden die Ergebnisse hier angezeigt.
+                </p>
               </div>
             </div>
           )}
 
           {matchesWithQr.length > 0 && (
-            <div
-              className={clsx(
-                'grid h-full content-center gap-10 grid-rows-2',
-                cols, flow
-              )}
-            >
+            <div className={clsx('grid h-full grid-rows-2 content-center gap-10', cols, flow)}>
               {matchesWithQr.map((match) => {
                 const hasAnyQrCode = match.groupUrl || match.reportUrl
 
@@ -59,7 +56,7 @@ export default async function MatchResultsPage() {
                     key={match.id}
                     className={clsx(
                       'flex h-full flex-col gap-2 justify-self-center rounded-3xl border border-white/70 bg-white/70 px-3 py-2 shadow-sm',
-                      cardWidth
+                      cardWidth,
                     )}
                   >
                     {/* Date */}
@@ -73,16 +70,20 @@ export default async function MatchResultsPage() {
                     )}
 
                     {/* Group - centered */}
-                    {match.groupName && <p className="mt-6 shrink-0 text-center tv-heading font-medium text-neutral-900 line-clamp-1">{match.groupName}</p>}
+                    {match.groupName && (
+                      <p className="mt-6 line-clamp-1 shrink-0 text-center tv-heading font-medium text-neutral-900">
+                        {match.groupName}
+                      </p>
+                    )}
 
                     {/* Teams and score - horizontal layout */}
-                    <div className="mb-2 mt-6 flex flex-col gap-1">
+                    <div className="mt-6 mb-2 flex flex-col gap-1">
                       <div className="mx-auto flex w-[90%] items-center justify-center gap-6 text-center">
                         <span
                           className={clsx(
-                            `flex-1 text-right ${teamText} font-medium line-clamp-2`,
+                            `flex-1 text-right ${teamText} line-clamp-2 font-medium`,
                             match.isHome ? 'text-neutral-900' : 'text-neutral-700',
-                            match.homeWins && 'underline'
+                            match.homeWins && 'underline',
                           )}
                         >
                           {match.homeTeam}
@@ -92,9 +93,9 @@ export default async function MatchResultsPage() {
                         )}
                         <span
                           className={clsx(
-                            `flex-1 text-left ${teamText} font-medium line-clamp-2`,
+                            `flex-1 text-left ${teamText} line-clamp-2 font-medium`,
                             !match.isHome ? 'text-neutral-900' : 'text-neutral-700',
-                            match.guestWins && 'underline'
+                            match.guestWins && 'underline',
                           )}
                         >
                           {match.guestTeam}
@@ -127,12 +128,22 @@ export default async function MatchResultsPage() {
 
                     {/* QR Codes */}
                     {hasAnyQrCode && (
-                      <div className="mt-6 flex items-center justify-center gap-18">
+                      <div className="mt-3 flex items-center justify-center gap-18">
                         {match.groupQrCode && match.groupUrl && (
-                          <QrCode linkUrl={match.groupUrl} qrCodeDataUrl={match.groupQrCode} label="Gruppe" size="large" />
+                          <QrCode
+                            linkUrl={match.groupUrl}
+                            qrCodeDataUrl={match.groupQrCode}
+                            label="Gruppe"
+                            size="large"
+                          />
                         )}
                         {match.reportQrCode && match.reportUrl && (
-                          <QrCode linkUrl={match.reportUrl} qrCodeDataUrl={match.reportQrCode} label="Spielbericht" size="large" />
+                          <QrCode
+                            linkUrl={match.reportUrl}
+                            qrCodeDataUrl={match.reportQrCode}
+                            label="Spielbericht"
+                            size="large"
+                          />
                         )}
                       </div>
                     )}
