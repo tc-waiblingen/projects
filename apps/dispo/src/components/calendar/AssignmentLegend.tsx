@@ -9,7 +9,7 @@ export function AssignmentLegend() {
         aria-label="Legende: Auslastung und Zuweisung pro Tag"
       >
         <g className="text-muted" stroke="currentColor" strokeWidth="0.75" fill="none" opacity="0.45">
-          <polyline points="268,108 240,122 220,122" />
+          <polyline points="268,108 235,122 205,122" />
           <polyline points="292,85 345,85" />
           <polyline points="347,62 352,50" />
         </g>
