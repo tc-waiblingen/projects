@@ -102,19 +102,19 @@ function TodayCircle() {
   return (
     <span
       aria-hidden
-      className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-red-500"
+      className="pointer-events-none absolute left-[calc(50%+4px)] top-[calc(50%-4px)] -translate-x-1/2 -translate-y-1/2 text-red-500"
     >
       <svg
-        width="54"
-        height="38"
-        viewBox="0 0 54 38"
+        width="74"
+        height="54"
+        viewBox="0 0 74 54"
         style={{ overflow: 'visible' }}
       >
         <path
-          d="M 32 4 C 46 2, 52 11, 48 19 C 52 29, 36 34, 22 32 C 8 34, 1 24, 5 15 C 2 4, 18 1, 28 4"
+          d="M 44 4 C 62 3, 72 14, 67 24 C 72 37, 52 48, 34 46 C 14 48, 2 35, 7 21 C 4 5, 26 1, 40 4"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2.75"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
