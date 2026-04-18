@@ -3,7 +3,7 @@ import { jwtVerify, SignJWT } from 'jose'
 import { timingSafeEqual } from 'crypto'
 
 export const COOKIE_NAME = 'dispo_session'
-export const MAX_AGE_SECONDS = 60 * 60 * 24 * 7
+export const MAX_AGE_SECONDS = 60 * 60 * 20
 
 export type Role = 'admin' | 'operator'
 
