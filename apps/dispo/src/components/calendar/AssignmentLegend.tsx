@@ -10,12 +10,12 @@ export function AssignmentLegend() {
       >
         <g className="text-muted" stroke="currentColor" strokeWidth="0.75" fill="none" opacity="0.45">
           <polyline points="272,108 240,148 220,148" />
-          <polyline points="292,82 345,50" />
+          <polyline points="292,85 345,85" />
           <polyline points="340,62 340,20 348,20" />
         </g>
         <g className="text-muted" fill="currentColor" opacity="0.55">
           <circle cx="272" cy="108" r="1.8" />
-          <circle cx="292" cy="82" r="1.8" />
+          <circle cx="292" cy="85" r="1.8" />
           <circle cx="340" cy="62" r="1.8" />
         </g>
 
@@ -48,7 +48,7 @@ export function AssignmentLegend() {
           </div>
         </foreignObject>
 
-        <foreignObject x="345" y="30" width="215" height="100">
+        <foreignObject x="345" y="68" width="215" height="110">
           <div className="pl-2 text-[11px] leading-tight">
             <div className="font-semibold text-body">Zuweisung</div>
             <div className="mt-1 flex flex-col gap-0.5 text-muted">
