@@ -1,0 +1,180 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/assets/fonts/OpenSans-VariableFont_wdth,wght.ttf') format('truetype');
+  font-weight: 300 800;
+  font-stretch: 75% 100%;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/assets/fonts/OpenSans-Italic-VariableFont_wdth,wght.ttf') format('truetype');
+  font-weight: 300 800;
+  font-stretch: 75% 100%;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('/assets/fonts/EBGaramond-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('/assets/fonts/EBGaramond-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-style: italic;
+}
+
+@theme {
+  --font-weight-bold: 600;
+  --font-weight-light: 300;
+  --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif: 'EB Garamond', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-heading: var(--font-sans);
+
+  /* tcw red */
+  --color-tcw-red-50: oklch(97.05% 0.015 33.07);
+  --color-tcw-red-500: oklch(58.41% 0.194 30.14);
+  --color-tcw-red-700: oklch(40.94% 0.164 30.14);
+  --color-tcw-red-900: oklch(21.06% 0.084 30.06);
+
+  /* tcw accent (warm beige) */
+  --color-tcw-accent-50: oklch(97.02% 0.015 90.23);
+  --color-tcw-accent-100: oklch(95% 0.016 86.43);
+  --color-tcw-accent-200: oklch(93.11% 0.015 90.24);
+  --color-tcw-accent-500: oklch(87.34% 0.018 89.37);
+  --color-tcw-accent-700: oklch(56.35% 0.07 90.56);
+  --color-tcw-accent-800: oklch(37.64% 0.077 90.4);
+  --color-tcw-accent-900: oklch(20.99% 0.043 89.63);
+
+  /* taupe (page backgrounds) */
+  --color-taupe-50: oklch(98.6% 0.002 67.8);
+  --color-taupe-100: oklch(96% 0.002 17.2);
+  --color-taupe-200: oklch(92.2% 0.005 34.3);
+  --color-taupe-800: oklch(26.8% 0.011 36.5);
+  --color-taupe-900: oklch(21.4% 0.009 43.1);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--color-taupe-100);
+
+    @variant dark {
+      background-color: var(--color-taupe-900);
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+    hyphens: auto;
+    font-family: var(--font-heading);
+  }
+
+  a {
+    overflow-wrap: break-word;
+  }
+
+  h1 {
+    font-size: var(--text-5xl);
+    line-height: var(--leading-12);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--color-tcw-accent-900);
+
+    @media (width >=40rem) {
+      font-size: 3.5rem;
+      line-height: var(--leading-14);
+    }
+
+    @variant dark {
+      color: white;
+    }
+  }
+
+  h2 {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-9);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--color-tcw-accent-900);
+
+    @media (width >=40rem) {
+      font-size: 2rem;
+      line-height: var(--leading-10);
+    }
+
+    @variant dark {
+      color: white;
+    }
+  }
+
+  h3 {
+    font-size: var(--text-xl);
+    line-height: var(--leading-7);
+    font-weight: 600;
+    color: var(--color-tcw-accent-900);
+
+    @variant dark {
+      color: white;
+    }
+  }
+
+  h4 {
+    font-size: var(--text-lg);
+    line-height: var(--leading-7);
+    font-weight: 600;
+    color: var(--color-tcw-accent-900);
+
+    @variant dark {
+      color: white;
+    }
+  }
+
+  h5 {
+    font-size: var(--text-base);
+    line-height: var(--leading-7);
+    font-weight: 600;
+    color: var(--color-tcw-accent-900);
+
+    @variant dark {
+      color: white;
+    }
+  }
+
+  h6 {
+    font-size: var(--text-sm);
+    line-height: var(--leading-6);
+    font-weight: 600;
+    color: var(--color-tcw-accent-900);
+
+    @variant dark {
+      color: white;
+    }
+  }
+}
+
+@utility text-body {
+  color: black;
+  @variant dark {
+    color: var(--color-tcw-accent-100);
+  }
+}
+
+@utility text-muted {
+  color: #545454;
+  @variant dark {
+    color: #e3e5e9;
+  }
+}

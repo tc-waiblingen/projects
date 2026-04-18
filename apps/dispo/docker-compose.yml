@@ -1,0 +1,26 @@
+services:
+  dispo:
+    build:
+      context: ../..  # monorepo root
+      dockerfile: apps/dispo/Dockerfile
+      args:
+        - NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
+      - DIRECTUS_TOKEN=${DIRECTUS_TOKEN}
+      - NR_API_URL=${NR_API_URL}
+      - NR_API_TOKEN=${NR_API_TOKEN}
+      - NR_CLUB_ID=${NR_CLUB_ID}
+      - DISPO_PASSWORD=${DISPO_PASSWORD}
+      - DISPO_SESSION_SECRET=${DISPO_SESSION_SECRET}
+      - DISPO_DB_PATH=/data/dispo.db
+    env_file:
+      - .env
+    volumes:
+      - dispo_data:/data
+
+volumes:
+  dispo_data:

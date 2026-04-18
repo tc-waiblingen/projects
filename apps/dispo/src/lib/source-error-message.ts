@@ -8,8 +8,8 @@ export interface SourceErrorCopy {
 
 const BLOCK: Record<ExternalSource, SourceErrorCopy> = {
   courts: {
-    title: 'Plätze nicht verfügbar.',
-    body: 'Directus ist derzeit nicht erreichbar — Zuweisung aktuell nicht möglich.',
+    title: 'Platzdaten nicht verfügbar.',
+    body: 'Die Platzdaten konnten nicht geladen werden, Platzzuweisungen sind aktuell nicht möglich.',
   },
   matches: {
     title: 'Spiele nicht verfügbar.',

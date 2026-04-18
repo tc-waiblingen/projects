@@ -6,11 +6,15 @@
   "scripts": {
     "dev:website": "pnpm --filter @tcw/website dev",
     "dev:tv": "pnpm --filter @tcw/tv dev",
+    "dev:dispo": "pnpm --filter @tcw/dispo dev",
     "build": "turbo run build",
     "build:website": "turbo run build --filter @tcw/website",
     "build:tv": "turbo run build --filter @tcw/tv",
+    "build:dispo": "turbo run build --filter @tcw/dispo",
     "lint": "turbo run lint",
+    "lint:dispo": "pnpm --filter @tcw/dispo lint",
     "test": "turbo run test",
+    "test:dispo": "pnpm --filter @tcw/dispo test",
     "generate:types": "pnpm -r generate:types"
   },
   "devDependencies": {
@@ -19,6 +23,9 @@
   "pnpm": {
     "overrides": {
       "flatted": ">=3.4.2"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
   }
 }

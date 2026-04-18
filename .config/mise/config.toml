@@ -16,6 +16,11 @@ description = "Run the TV in development mode"
 run = "pnpm run dev:tv"
 alias = "dev-tv"
 
+[tasks."dev:dispo"]
+description = "Run the dispo dev server (port 3002)"
+run = "pnpm run dev:dispo"
+alias = "dev-dispo"
+
 [tasks.lint]
 description = "Run the linter"
 run = "pnpm run lint"
@@ -36,6 +41,32 @@ description = "Build the TV project"
 run = "pnpm run build:tv"
 alias = "build-tv"
 
+[tasks."build:dispo"]
+description = "Build the dispo project"
+run = "pnpm run build:dispo"
+alias = "build-dispo"
+
+[tasks."lint:dispo"]
+description = "Lint the dispo project"
+run = "pnpm run lint:dispo"
+alias = "lint-dispo"
+
+[tasks."test:dispo"]
+description = "Run dispo tests (vitest)"
+run = "pnpm run test:dispo"
+alias = "test-dispo"
+
+[tasks."check:dispo"]
+description = "Lint, test and build dispo (full local check)"
+depends = ["lint:dispo", "test:dispo", "build:dispo"]
+alias = "check-dispo"
+
+[tasks."docker-up:dispo"]
+description = "Build & run dispo via docker compose"
+dir = "apps/dispo"
+run = "docker compose up --build"
+alias = "docker-up-dispo"
+
 [tasks."docker:context"]
 description = "Starts `ncdu` with patterns specified in `.dockerignore` excluded."
 run = "ncdu -X .dockerignore"
@@ -47,6 +78,18 @@ run = "pnpm run generate:types"
 [tasks."email:parse"]
 description = "Parse a Postmark inbound email webhook payload"
 run = "cd packages/email && npx tsx scripts/test-parse.ts {{option(name='file')}}"
+
+[tasks."revalidate:ebusy"]
+description = "Invalidate the eBuSy fetch cache on the running tv dev server"
+run = """
+curl -sS -w '\n%{http_code}\n' \
+  -X POST \
+  -H 'content-type: application/json' \
+  -H "x-revalidation-secret: ${REVALIDATION_SECRET}" \
+  -d '{"tag":"ebusy"}' \
+  http://localhost:3001/api/revalidate
+"""
+alias = "revalidate-ebusy"
 
 [tasks."test:postmark-webhook"]
 description = "Send a test Postmark inbound webhook to the local dev server"
