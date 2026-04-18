@@ -78,12 +78,12 @@ function DayPill({
     <span className="relative inline-block min-w-[26px] overflow-hidden rounded-md align-middle">
       <span
         aria-hidden
-        className={`absolute inset-0 ${USAGE_BG[usageDay.heatLevel]}`}
+        className={`absolute inset-0 ${STATUS_BG[status]}`}
         style={{ clipPath: 'polygon(0 0, 0 100%, 100% 100%)' }}
       />
       <span
         aria-hidden
-        className={`absolute inset-0 ${STATUS_BG[status]}`}
+        className={`absolute inset-0 ${USAGE_BG[usageDay.heatLevel]}`}
         style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%)' }}
       />
       <span
