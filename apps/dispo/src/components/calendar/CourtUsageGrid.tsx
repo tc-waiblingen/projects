@@ -22,17 +22,11 @@ const USAGE_TEXT = {
   high: 'text-red-200',
 } as const
 
-const USAGE_CSS: Record<keyof typeof USAGE_BG, string> = {
-  low: 'rgb(20 83 45 / 0.8)',
-  medium: 'rgb(120 53 15 / 0.8)',
-  high: 'rgb(127 29 29 / 0.8)',
-}
-
-const STATUS_CSS: Record<AssignmentStatus, string> = {
-  none: 'rgb(127 29 29 / 0.85)',
-  partial: 'rgb(194 65 12 / 0.9)',
-  exact: 'rgb(22 101 52 / 0.9)',
-  over: 'rgb(16 185 129 / 0.75)',
+const STATUS_BG: Record<AssignmentStatus, string> = {
+  none: 'bg-red-900/85',
+  partial: 'bg-orange-700/90',
+  exact: 'bg-green-800/90',
+  over: 'bg-emerald-500/75',
 }
 
 const NEUTRAL_BG = 'bg-tcw-accent-800/60'
@@ -80,34 +74,22 @@ function DayPill({
     )
   }
 
-  const usage = USAGE_CSS[usageDay.heatLevel]
-  const assign = STATUS_CSS[status]
-
   return (
     <span className="relative inline-block min-w-[26px] overflow-hidden rounded-md align-middle">
       <span
         aria-hidden
-        className="absolute inset-0"
-        style={{
-          background: usage,
-          clipPath: 'polygon(0 0, 0 100%, 100% 100%)',
-        }}
+        className={`absolute inset-0 ${USAGE_BG[usageDay.heatLevel]}`}
+        style={{ clipPath: 'polygon(0 0, 0 100%, 100% 100%)' }}
       />
       <span
         aria-hidden
-        className="absolute inset-0"
-        style={{
-          background: assign,
-          clipPath: 'polygon(0 0, 100% 0, 100% 100%)',
-        }}
+        className={`absolute inset-0 ${STATUS_BG[status]}`}
+        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%)' }}
       />
       <span
         aria-hidden
-        className="absolute inset-0"
-        style={{
-          background: 'rgba(0,0,0,0.45)',
-          clipPath: 'polygon(1% 0, 100% 99%, 99% 100%, 0 1%)',
-        }}
+        className="absolute inset-0 bg-black/40"
+        style={{ clipPath: 'polygon(1% 0, 100% 99%, 99% 100%, 0 1%)' }}
       />
       <span className="relative block px-1 py-0.5 text-center text-sm font-medium text-white">
         {dayNum}
