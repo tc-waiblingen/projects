@@ -82,14 +82,36 @@ function DayPill({
 
   const usage = USAGE_CSS[usageDay.heatLevel]
   const assign = STATUS_CSS[status]
-  const background = `linear-gradient(to top right, ${usage} 0 49%, rgba(0,0,0,0.45) 49% 51%, ${assign} 51% 100%)`
 
   return (
-    <span
-      className="inline-block min-w-[26px] rounded-md px-1 py-0.5 text-center text-sm font-medium text-white"
-      style={{ background }}
-    >
-      {dayNum}
+    <span className="relative inline-block min-w-[26px] overflow-hidden rounded-md align-middle">
+      <span
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background: usage,
+          clipPath: 'polygon(0 0, 0 100%, 100% 100%)',
+        }}
+      />
+      <span
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background: assign,
+          clipPath: 'polygon(0 0, 100% 0, 100% 100%)',
+        }}
+      />
+      <span
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background: 'rgba(0,0,0,0.45)',
+          clipPath: 'polygon(1% 0, 100% 99%, 99% 100%, 0 1%)',
+        }}
+      />
+      <span className="relative block px-1 py-0.5 text-center text-sm font-medium text-white">
+        {dayNum}
+      </span>
     </span>
   )
 }
