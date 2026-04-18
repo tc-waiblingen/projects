@@ -9,7 +9,7 @@ export function AssignmentLegend() {
         aria-label="Legende: Auslastung und Zuweisung pro Tag"
       >
         <g className="text-muted" stroke="currentColor" strokeWidth="0.75" fill="none" opacity="0.45">
-          <polyline points="268,108 240,125 30,125" />
+          <polyline points="268,108 240,122 220,122" />
           <polyline points="292,85 345,85" />
           <polyline points="347,62 352,50" />
         </g>
@@ -28,7 +28,7 @@ export function AssignmentLegend() {
           <text x="324" y="67" fontSize="11" fontWeight="700" fill="currentColor" className="text-body">2+3</text>
         </g>
 
-        <foreignObject x="30" y="115" width="190" height="75">
+        <foreignObject x="80" y="115" width="140" height="75">
           <div className="pl-2 text-left text-[11px] leading-tight">
             <div className="font-semibold text-body">Zuweisung</div>
             <div className="mt-1 flex flex-col items-start gap-0.5 text-muted">
