@@ -81,16 +81,32 @@ export function CourtUsageClient({
           <div className="flex flex-wrap gap-3">
             <span className="font-semibold text-body">Zuweisung:</span>
             <span>
-              <span className="mr-1 inline-block h-3 w-3 rounded bg-red-900/80" /> Keine
+              <span
+                className="mr-1 inline-block h-3 w-3 rounded"
+                style={{ background: 'rgb(127 29 29 / 0.85)' }}
+              />{' '}
+              Keine
             </span>
             <span>
-              <span className="mr-1 inline-block h-3 w-3 rounded bg-orange-800/80" /> Unvollständig
+              <span
+                className="mr-1 inline-block h-3 w-3 rounded"
+                style={{ background: 'rgb(194 65 12 / 0.9)' }}
+              />{' '}
+              Unvollständig
             </span>
             <span>
-              <span className="mr-1 inline-block h-3 w-3 rounded bg-green-800/80" /> Passt
+              <span
+                className="mr-1 inline-block h-3 w-3 rounded"
+                style={{ background: 'rgb(22 101 52 / 0.9)' }}
+              />{' '}
+              Passt
             </span>
             <span>
-              <span className="mr-1 inline-block h-3 w-3 rounded bg-emerald-500/70" /> Mehr als nötig
+              <span
+                className="mr-1 inline-block h-3 w-3 rounded"
+                style={{ background: 'rgb(16 185 129 / 0.75)' }}
+              />{' '}
+              Mehr als nötig
             </span>
           </div>
         </div>
