@@ -11,15 +11,15 @@ interface CourtUsageGridProps {
 }
 
 const USAGE_BG = {
-  low: 'bg-green-900/80',
-  medium: 'bg-amber-900/80',
-  high: 'bg-red-900/80',
+  low: 'bg-zinc-400/80',
+  medium: 'bg-zinc-600/80',
+  high: 'bg-zinc-800/80',
 } as const
 
 const USAGE_TEXT = {
-  low: 'text-green-200',
-  medium: 'text-amber-200',
-  high: 'text-red-200',
+  low: 'text-white',
+  medium: 'text-white',
+  high: 'text-white',
 } as const
 
 const STATUS_BG: Record<AssignmentStatus, string> = {

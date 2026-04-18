@@ -20,7 +20,7 @@ export function AssignmentLegend() {
         </g>
 
         <g>
-          <path d="M 240 70 L 240 120 L 320 120 Z" fill="rgb(120 53 15 / 0.8)" />
+          <path d="M 240 70 L 240 120 L 320 120 Z" fill="rgb(82 82 91 / 0.8)" />
           <path d="M 240 70 L 320 70 L 320 120 Z" fill="rgb(194 65 12 / 0.9)" />
           <line x1="240" y1="70" x2="320" y2="120" stroke="rgba(0,0,0,0.45)" strokeWidth="1.25" />
           <rect x="240" y="70" width="80" height="50" rx="6" fill="none" stroke="rgba(0,0,0,0.15)" strokeWidth="0.5" />
@@ -33,15 +33,15 @@ export function AssignmentLegend() {
             <div className="font-semibold text-body">Auslastung</div>
             <div className="mt-1 flex flex-wrap justify-end gap-x-2 gap-y-0.5 text-muted">
               <span>
-                <span className="mr-1 inline-block h-2 w-2 rounded align-middle bg-green-900/80" />
+                <span className="mr-1 inline-block h-2 w-2 rounded align-middle bg-zinc-400/80" />
                 niedrig
               </span>
               <span>
-                <span className="mr-1 inline-block h-2 w-2 rounded align-middle bg-amber-900/80" />
+                <span className="mr-1 inline-block h-2 w-2 rounded align-middle bg-zinc-600/80" />
                 mittel
               </span>
               <span>
-                <span className="mr-1 inline-block h-2 w-2 rounded align-middle bg-red-900/80" />
+                <span className="mr-1 inline-block h-2 w-2 rounded align-middle bg-zinc-800/80" />
                 hoch
               </span>
             </div>
