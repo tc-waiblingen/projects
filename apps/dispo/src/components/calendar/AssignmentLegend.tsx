@@ -74,7 +74,7 @@ export function AssignmentLegend() {
 
         <foreignObject x="345" y="0" width="215" height="28">
           <div className="pl-2 text-[11px] leading-tight text-muted">
-            <strong className="text-body">N+N</strong>: Plätze vorm./nachm. · <strong className="text-body">T</strong>: Turnier
+            <strong className="text-body">N+N</strong>: Platzbedarf vorm./nachm. · <strong className="text-body">T</strong>: Turnier
           </div>
         </foreignObject>
       </svg>
