@@ -1,5 +1,6 @@
 import type { CalendarEvent, MatchEventMetadata } from './types'
 import { getDateKey, getMonthKey } from './grouping'
+import { isTournamentEvent } from './event-predicates'
 
 const SMALL_TEAM_PATTERNS = [/staffel/i, /kids/i, /talentiade/i]
 
@@ -99,7 +100,7 @@ export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
   for (const event of events) {
     const dateKey = getDateKey(event.startDate)
 
-    if (event.source === 'tournament') {
+    if (isTournamentEvent(event)) {
       const endDate = event.endDate && event.isMultiDay ? event.endDate : event.startDate
       const current = new Date(event.startDate)
       const endTime = endDate.getTime()

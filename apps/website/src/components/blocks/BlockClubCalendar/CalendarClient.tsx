@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import type { CalendarEvent, ClubEventMetadata, MatchEventMetadata } from '@tcw/calendar'
+import { isTournamentEvent } from '@tcw/calendar'
 import { FilterControls, type CategoryFilter, type TeamEntry } from './FilterControls'
 import { EventList } from './EventList'
 import { useTocSafe } from '@/components/toc'
@@ -186,7 +187,7 @@ export function CalendarClient({ events, teamEntries, serverNow, filterCategory,
         if (state.category === 'matches' && event.source !== 'match') {
           return false
         }
-        if (state.category === 'tournaments' && event.source !== 'tournament') {
+        if (state.category === 'tournaments' && !isTournamentEvent(event)) {
           return false
         }
         if (state.category === 'club' && event.source !== 'club' && event.source !== 'app') {

@@ -7,7 +7,7 @@ import {
   getHeatLevel,
   computeCourtUsage,
 } from '../court-usage'
-import type { CalendarEvent, MatchEventMetadata, TournamentEventMetadata } from '../types'
+import type { CalendarEvent, ClubEventMetadata, MatchEventMetadata, TournamentEventMetadata } from '../types'
 
 describe('getCourtCount', () => {
   it('returns 2 for league names containing "staffel" (case-insensitive)', () => {
@@ -216,6 +216,45 @@ describe('computeCourtUsage', () => {
     expect(day.tournament).not.toBeNull()
     expect(day.tournament!.courts).toBe(4)
     expect(day.heatLevel).toBe('high')
+  })
+
+  it('treats Directus club events with category "tournament" as tournament days', () => {
+    const clubTournament: CalendarEvent = {
+      id: 'club-42',
+      source: 'club',
+      title: 'Klubmeisterschaften',
+      description: null,
+      location: null,
+      startDate: new Date(2026, 10, 14),
+      endDate: new Date(2026, 10, 15),
+      startTime: null,
+      endTime: null,
+      isAllDay: true,
+      isMultiDay: true,
+      url: 'https://example.com/klubmeister',
+      imageUrl: null,
+      metadata: {
+        important: false,
+        showOnTv: false,
+        category: 'tournament',
+      } as ClubEventMetadata,
+      displayWeight: 2,
+    }
+    const sameDayMatch = makeMatchEvent({
+      id: 'm-nov14',
+      startDate: new Date(2026, 10, 14),
+      startTime: '14:00',
+    })
+
+    const result = computeCourtUsage({ events: [clubTournament, sameDayMatch], ...config })
+    const month = result.find((m) => m.monthKey === '2026-11')!
+    expect(month.days).toHaveLength(2)
+    for (const day of month.days) {
+      expect(day.tournament).not.toBeNull()
+      expect(day.tournament!.title).toBe('Klubmeisterschaften')
+      expect(day.tournament!.url).toBe('https://example.com/klubmeister')
+      expect(day.heatLevel).toBe('high')
+    }
   })
 
   it('expands multi-day tournaments across all days', () => {

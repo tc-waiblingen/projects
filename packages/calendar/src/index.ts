@@ -39,6 +39,9 @@ export type {
   FetchNrMatchChangesOptions,
 } from './nr-client'
 
+// Event predicates
+export { isTournamentEvent } from './event-predicates'
+
 // Match-change summary
 export { buildMatchChangeSummary } from './match-change-summary'
 export type {

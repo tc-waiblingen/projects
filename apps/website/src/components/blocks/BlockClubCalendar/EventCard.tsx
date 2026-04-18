@@ -9,6 +9,7 @@ import type {
   MatchEventMetadata,
   TournamentEventMetadata,
 } from '@tcw/calendar'
+import { isTournamentEvent } from '@tcw/calendar'
 
 function formatDateRange(start: Date, end: Date): string {
   const startDay = start.getDate()
@@ -126,7 +127,7 @@ function TournamentLinks({ event }: { event: CalendarEvent }) {
 
 function EventItem({ event }: { event: CalendarEvent }) {
   const isMatch = event.source === 'match'
-  const isTournament = event.source === 'tournament'
+  const isTournament = isTournamentEvent(event)
   const isClub = event.source === 'club'
   const hasDateRange = event.endDate && event.endDate > event.startDate
 
@@ -192,7 +193,7 @@ function EventItem({ event }: { event: CalendarEvent }) {
                 )}
               </span>
             )}
-            {isClub && hasDateRange && (
+            {isClub && !isTournament && hasDateRange && (
               <span>{formatDateRange(event.startDate, event.endDate!)}</span>
             )}
             {event.location && (

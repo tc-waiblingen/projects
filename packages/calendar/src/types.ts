@@ -11,7 +11,7 @@ export interface AppEventMetadata {
 export interface ClubEventMetadata {
   important: boolean
   showOnTv: boolean
-  category?: 'beginners' | 'children' | null
+  category?: 'beginners' | 'children' | 'tournament' | null
 }
 
 export interface MatchEventMetadata {
@@ -114,7 +114,7 @@ export interface DirectusCalendarItem {
   website?: string | null
   important?: boolean
   show_on_tv?: boolean
-  category?: 'beginners' | 'children' | null
+  category?: 'beginners' | 'children' | 'tournament' | null
   logo?: { id: string } | string | null
   expand_days?: boolean
 }
