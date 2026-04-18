@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   const next = safeNext(form?.get('next')?.toString() ?? null)
 
   const provided = typeof password === 'string' ? password : undefined
-  if (!isValidPassword(provided)) {
+  if (!(await isValidPassword(provided))) {
     const url = new URL('/login', request.url)
     url.searchParams.set('error', '1')
     if (next !== '/') url.searchParams.set('next', next)

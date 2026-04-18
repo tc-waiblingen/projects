@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 import { jwtVerify, SignJWT } from 'jose'
-import { timingSafeEqual } from 'crypto'
+import { verifyPassword } from './settings'
 
 export const COOKIE_NAME = 'dispo_session'
 export const MAX_AGE_SECONDS = 60 * 60 * 20
@@ -55,14 +55,7 @@ export async function getSession(): Promise<Session | null> {
   return verifySessionToken(store.get(COOKIE_NAME)?.value)
 }
 
-export function isValidPassword(provided: string | undefined): boolean {
-  const expected = process.env.DISPO_PASSWORD
-  if (!expected) {
-    throw new Error('DISPO_PASSWORD is not set')
-  }
+export async function isValidPassword(provided: string | undefined): Promise<boolean> {
   if (!provided) return false
-  const a = Buffer.from(provided)
-  const b = Buffer.from(expected)
-  if (a.length !== b.length) return false
-  return timingSafeEqual(a, b)
+  return verifyPassword(provided)
 }

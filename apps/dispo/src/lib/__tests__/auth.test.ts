@@ -1,13 +1,12 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { isValidPassword, signSessionToken, verifySessionToken } from '../auth'
+import { signSessionToken, verifySessionToken } from '../auth'
 
 const SECRET = 'a'.repeat(32)
 
 describe('auth', () => {
   beforeEach(() => {
     vi.stubEnv('DISPO_SESSION_SECRET', SECRET)
-    vi.stubEnv('DISPO_PASSWORD', 'pa55word')
   })
   afterEach(() => vi.unstubAllEnvs())
 
@@ -79,24 +78,6 @@ describe('auth', () => {
     it('throws when secret is too short', async () => {
       vi.stubEnv('DISPO_SESSION_SECRET', 'tooshort')
       await expect(signSessionToken({ sub: 'x', role: 'operator' })).rejects.toThrow(/at least 32/)
-    })
-  })
-
-  describe('isValidPassword', () => {
-    it('accepts the right password', () => {
-      expect(isValidPassword('pa55word')).toBe(true)
-    })
-
-    it('rejects wrong passwords', () => {
-      expect(isValidPassword('pa55worD')).toBe(false)
-      expect(isValidPassword('wrong')).toBe(false)
-      expect(isValidPassword(undefined)).toBe(false)
-      expect(isValidPassword('')).toBe(false)
-    })
-
-    it('throws when no password configured', () => {
-      vi.stubEnv('DISPO_PASSWORD', '')
-      expect(() => isValidPassword('anything')).toThrow(/DISPO_PASSWORD/)
     })
   })
 })

@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { COOKIE_NAME, verifySessionToken } from '@/lib/auth'
 
-const PROTECTED_PATH_PREFIXES = ['/day']
-const PROTECTED_API_PREFIXES = ['/api/assignments']
+const PROTECTED_PATH_PREFIXES = ['/day', '/settings']
+const PROTECTED_API_PREFIXES = ['/api/assignments', '/api/settings']
 
 function isProtected(pathname: string): boolean {
   if (pathname === '/') return true
@@ -28,5 +28,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/day/:path*', '/api/assignments/:path*'],
+  matcher: ['/', '/day/:path*', '/settings/:path*', '/api/assignments/:path*', '/api/settings/:path*'],
 }

@@ -25,11 +25,12 @@ Equivalent without mise (from this directory): `pnpm dev`, `pnpm lint`, `pnpm te
 Copy `.env.example` to `.env` and fill in:
 - `DIRECTUS_TOKEN` — server-side token, used by `fetchCourts()`
 - `NR_API_TOKEN` — nuliga-reader bearer
-- `DISPO_PASSWORD` — shared password for the local "operator" login
 - `DISPO_SESSION_SECRET` — random 32+ bytes (`openssl rand -hex 32`); signs the session JWT (HS256)
 - `DISPO_DB_PATH` — defaults to `./data/dispo.db` locally, `/data/dispo.db` in Docker
 - `ENTRA_TENANT_ID`, `ENTRA_CLIENT_ID`, `ENTRA_CLIENT_SECRET` — Microsoft Entra app registration. Redirect URI must include `/api/auth/entra/callback` (per env)
 - `ENTRA_ADMIN_ROLE` — Entra app-role value mapped to `admin` (defaults to `Dispo.Admin`); other Entra users become `operator`
+
+The operator login password is stored as an argon2id hash in the SQLite `app_settings` table and set by an admin via `/settings`. Operator login is disabled until a password is set.
 
 ## Architecture
 

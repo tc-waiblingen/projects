@@ -12,6 +12,11 @@ const SCHEMA_STATEMENTS = [
     PRIMARY KEY (match_id, court_id)
   )`,
   `CREATE INDEX IF NOT EXISTS assignments_date_idx ON assignments (match_date)`,
+  `CREATE TABLE IF NOT EXISTS app_settings (
+    key        TEXT    PRIMARY KEY,
+    value      TEXT    NOT NULL,
+    updated_at INTEGER NOT NULL
+  )`,
 ]
 
 export function applySchema(d: Database.Database): void {
