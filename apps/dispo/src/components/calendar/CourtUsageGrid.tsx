@@ -105,16 +105,16 @@ function TodayCircle() {
       className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-red-500"
     >
       <svg
-        width="40"
-        height="28"
-        viewBox="0 0 40 28"
+        width="54"
+        height="38"
+        viewBox="0 0 54 38"
         style={{ overflow: 'visible' }}
       >
         <path
-          d="M 24 3 C 33 2, 38 8, 35 14 C 38 21, 27 25, 17 23 C 7 25, 1 18, 4 11 C 2 3, 14 1, 22 3"
+          d="M 32 4 C 46 2, 52 11, 48 19 C 52 29, 36 34, 22 32 C 8 34, 1 24, 5 15 C 2 4, 18 1, 28 4"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.75"
+          strokeWidth="2.75"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
