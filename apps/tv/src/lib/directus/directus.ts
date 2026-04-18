@@ -1,3 +1,4 @@
+import 'server-only'
 import type { Schema } from "@/types/directus-schema"
 import type { RestClient } from "@directus/sdk"
 import {

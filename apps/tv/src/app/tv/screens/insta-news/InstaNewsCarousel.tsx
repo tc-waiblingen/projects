@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { QrCode } from '@/components/tv'
+import { QrCode } from '@/components/tv/QrCode'
 import Image from 'next/image'
 
 const IMAGE_DURATION = 8000 // 8 seconds per image
