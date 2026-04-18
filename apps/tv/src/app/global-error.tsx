@@ -1,11 +1,15 @@
 'use client'
 
-export default function GlobalError({
-  reset,
-}: {
-  error: Error & { digest?: string }
-  reset: () => void
-}) {
+import { useEffect } from 'react'
+
+export default function GlobalError() {
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      window.location.reload()
+    }, 30000)
+    return () => clearTimeout(timeout)
+  }, [])
+
   return (
     <html lang="de">
       <body
@@ -28,40 +32,16 @@ export default function GlobalError({
             textAlign: 'center',
           }}
         >
-          <h1
-            style={{
-              fontSize: '1.875rem',
-              fontWeight: 500,
-              color: '#2e2b22',
-              margin: 0,
-            }}
-          >
-            Etwas ist schiefgelaufen
-          </h1>
           <p
             style={{
-              marginTop: '1rem',
+              fontSize: '1.875rem',
               color: '#6a6460',
+              margin: 0,
+              maxWidth: '48rem',
             }}
           >
-            Die Website kann momentan nicht geladen werden.
+            Hier gibt es leider ein Problem. Wir versuchen es gleich nochmal.
           </p>
-          <button
-            onClick={() => reset()}
-            style={{
-              marginTop: '2rem',
-              padding: '0.5rem 1rem',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              color: 'white',
-              backgroundColor: '#2e2b22',
-              border: 'none',
-              borderRadius: '9999px',
-              cursor: 'pointer',
-            }}
-          >
-            Erneut versuchen
-          </button>
         </div>
       </body>
     </html>
