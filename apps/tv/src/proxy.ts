@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { fetchRedirectByPath } from "@/lib/directus/fetchers"
+import { publicUrl } from "@/lib/public-url"
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
@@ -19,7 +20,7 @@ export async function proxy(request: NextRequest) {
     const redirect = await fetchRedirectByPath(pathname)
     if (redirect?.url_to) {
       const status = redirect.response_code === "302" ? 302 : 301
-      return NextResponse.redirect(new URL(redirect.url_to, request.url), status)
+      return NextResponse.redirect(publicUrl(redirect.url_to, request), status)
     }
   } catch {
     // On error, continue without redirect
@@ -81,7 +82,7 @@ export async function proxy(request: NextRequest) {
     }
 
     // Redirect to the canonical post URL
-    return NextResponse.redirect(new URL(redirectUrl, request.url), 301)
+    return NextResponse.redirect(publicUrl(redirectUrl, request), 301)
   } catch {
     // On error, let the request pass through
     return NextResponse.next()

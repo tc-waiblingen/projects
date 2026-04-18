@@ -6,6 +6,7 @@ import {
   PKCE_COOKIE,
   STATE_COOKIE,
 } from '@/lib/entra'
+import { publicUrl, publicOrigin } from '@/lib/public-url'
 import { NextResponse, type NextRequest } from 'next/server'
 
 function safeNext(raw: string | undefined): string {
@@ -15,7 +16,7 @@ function safeNext(raw: string | undefined): string {
 }
 
 function failure(request: NextRequest, code: string): NextResponse {
-  const url = new URL('/login', request.url)
+  const url = publicUrl('/login', request)
   url.searchParams.set('error', code)
   const response = NextResponse.redirect(url, { status: 303 })
   for (const name of [PKCE_COOKIE, STATE_COOKIE, NONCE_COOKIE, NEXT_COOKIE]) {
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
   let identity
   try {
     identity = await exchangeCallback({
-      callbackUrl: new URL(request.url),
+      callbackUrl: new URL(request.nextUrl.pathname + request.nextUrl.search, publicOrigin(request)),
       codeVerifier,
       expectedState,
       expectedNonce,
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
   }
 
   const token = await signSessionToken(identity)
-  const response = NextResponse.redirect(new URL(next, request.url), { status: 303 })
+  const response = NextResponse.redirect(publicUrl(next, request), { status: 303 })
   response.cookies.set({
     name: COOKIE_NAME,
     value: token,

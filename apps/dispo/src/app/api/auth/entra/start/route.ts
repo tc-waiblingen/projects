@@ -6,6 +6,7 @@ import {
   STATE_COOKIE,
   TEMP_MAX_AGE_SECONDS,
 } from '@/lib/entra'
+import { publicUrl } from '@/lib/public-url'
 import { NextResponse, type NextRequest } from 'next/server'
 
 function safeNext(raw: string | null): string {
@@ -15,7 +16,7 @@ function safeNext(raw: string | null): string {
 }
 
 function callbackUrl(request: NextRequest): string {
-  return new URL('/api/auth/entra/callback', request.url).toString()
+  return publicUrl('/api/auth/entra/callback', request).toString()
 }
 
 export async function GET(request: NextRequest) {

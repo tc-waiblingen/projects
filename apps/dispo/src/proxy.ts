@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { COOKIE_NAME, verifySessionToken } from '@/lib/auth'
+import { publicUrl } from '@/lib/public-url'
 
 const PROTECTED_PATH_PREFIXES = ['/day', '/settings']
 const PROTECTED_API_PREFIXES = ['/api/assignments', '/api/settings']
@@ -22,7 +23,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const loginUrl = new URL('/login', request.url)
+  const loginUrl = publicUrl('/login', request)
   loginUrl.searchParams.set('next', `${pathname}${search}`)
   return NextResponse.redirect(loginUrl)
 }
