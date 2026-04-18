@@ -64,7 +64,7 @@ export async function ebusyGet<T>(
   }
 
   const body = (await response.json()) as unknown
-  console.log(`[ebusy] ${path} raw response:`, JSON.stringify(body, null, 2))
+  // console.log(`[ebusy] ${path} raw response:`, JSON.stringify(body, null, 2))
   if (isEnvelope(body)) {
     if (body.error && Number(body.error) !== 0) {
       throw new Error(`eBuSy ${path} error ${body.error}: ${body.message ?? 'unknown'}`)

@@ -45,5 +45,5 @@ screenshots/
 *.tgz
 .npmrc.local
 
-.claude/settings.local.json
+.claude/
 .superpowers/brainstorm/
