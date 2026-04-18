@@ -1,3 +1,5 @@
+import { CrestLogo } from '@/components/CrestLogo'
+
 interface LoginPageProps {
   searchParams: Promise<{ next?: string; error?: string }>
 }
@@ -14,9 +16,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const entraHref = next ? `/api/auth/entra/start?next=${encodeURIComponent(next)}` : '/api/auth/entra/start'
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-6">
+      <CrestLogo className="h-16" />
+      <h1 className="text-2xl font-bold text-body">Platzzuweisung</h1>
       <div className="w-full max-w-sm space-y-4 rounded-xl border border-tcw-accent-200 bg-white p-6 shadow-sm dark:border-tcw-accent-800 dark:bg-tcw-accent-900">
-        <h1 className="text-2xl font-bold text-body">TCW Dispo</h1>
         {errorMessage && (
           <p className="rounded bg-tcw-red-50 px-3 py-2 text-sm text-tcw-red-700 dark:bg-tcw-red-900/30 dark:text-tcw-red-50">
             {errorMessage}

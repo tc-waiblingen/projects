@@ -1,5 +1,6 @@
 import { getSession } from '@/lib/auth'
 import Link from 'next/link'
+import { CrestLogo } from './CrestLogo'
 
 const ROLE_LABEL = { admin: 'Admin', operator: 'Operator' } as const
 
@@ -7,13 +8,18 @@ export async function AdminHeader({ subtitle }: { subtitle?: string }) {
   const session = await getSession()
 
   return (
-    <header className="mb-6 flex items-center justify-between border-b border-tcw-accent-200 pb-4 dark:border-tcw-accent-800">
-      <div>
-        <Link href="/" className="cursor-pointer text-xl font-bold text-body hover:text-tcw-red-700">
-          TCW Dispo
-        </Link>
-        {subtitle && <span className="ml-3 text-sm text-muted">{subtitle}</span>}
+    <header className="relative mb-6 flex items-center justify-between border-b border-tcw-accent-200 pb-4 dark:border-tcw-accent-800">
+      <div className="flex min-w-0 flex-col leading-tight">
+        <h1 className="text-lg font-bold text-body">Platzzuweisung</h1>
+        {subtitle && <span className="text-sm text-muted">{subtitle}</span>}
       </div>
+      <Link
+        href="/"
+        aria-label="TCW Dispo"
+        className="absolute left-1/2 -translate-x-1/2 cursor-pointer"
+      >
+        <CrestLogo />
+      </Link>
       <div className="flex items-center gap-3">
         {session?.name && (
           <div className="flex flex-col items-end leading-tight">

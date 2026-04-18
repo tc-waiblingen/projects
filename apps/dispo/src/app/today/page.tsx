@@ -9,9 +9,14 @@ import { settle } from '@/lib/fetch-result'
 import { dateKey, formatCourtType, formatDateLong } from '@/lib/format'
 import { fetchMatchesForDate, fetchTournamentForDate } from '@/lib/matches'
 import { getSeasonCourtType } from '@tcw/calendar'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
+
+export const metadata: Metadata = {
+  title: 'TCW-Platzbelegung heute',
+}
 
 export default async function TodayPage() {
   const today = new Date()
@@ -40,12 +45,14 @@ export default async function TodayPage() {
 
   return (
     <main className="mx-auto max-w-7xl p-6">
-      <header className="mb-6 border-b border-tcw-accent-200 pb-4 dark:border-tcw-accent-800">
-        <div className="mb-4 flex justify-center">
+      <header className="relative mb-6 flex items-center justify-between border-b border-tcw-accent-200 pb-4 dark:border-tcw-accent-800">
+        <div className="flex min-w-0 flex-col leading-tight">
+          <h1 className="text-2xl font-bold text-body">Platzbelegung heute</h1>
+          <span className="text-sm text-muted">{formatDateLong(today)} — {formatCourtType(courtType)}</span>
+        </div>
+        <div className="absolute left-1/2 -translate-x-1/2">
           <CrestLogo />
         </div>
-        <h1 className="text-2xl font-bold text-body">Platzbelegung heute</h1>
-        <p className="text-sm text-muted">{formatDateLong(today)} — {formatCourtType(courtType)}</p>
       </header>
 
       {!tournamentResult.ok && <SourceErrorBanner source="tournament" variant="inline" />}
