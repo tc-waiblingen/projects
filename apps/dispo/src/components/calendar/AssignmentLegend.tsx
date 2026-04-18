@@ -11,12 +11,12 @@ export function AssignmentLegend() {
         <g className="text-muted" stroke="currentColor" strokeWidth="0.75" fill="none" opacity="0.45">
           <polyline points="272,108 240,148 220,148" />
           <polyline points="292,85 345,85" />
-          <polyline points="340,62 340,20 348,20" />
+          <polyline points="347,62 352,50" />
         </g>
         <g className="text-muted" fill="currentColor" opacity="0.55">
           <circle cx="272" cy="108" r="1.8" />
           <circle cx="292" cy="85" r="1.8" />
-          <circle cx="340" cy="62" r="1.8" />
+          <circle cx="347" cy="62" r="1.8" />
         </g>
 
         <g>
@@ -72,9 +72,14 @@ export function AssignmentLegend() {
           </div>
         </foreignObject>
 
-        <foreignObject x="345" y="0" width="215" height="28">
+        <foreignObject x="352" y="32" width="208" height="36">
           <div className="pl-2 text-[11px] leading-tight text-muted">
-            <strong className="text-body">N+N</strong>: Platzbedarf vorm./nachm. · <strong className="text-body">T</strong>: Turnier
+            <div>
+              <strong className="text-body">N+N</strong>: Platzbedarf vorm./nachm.
+            </div>
+            <div>
+              <strong className="text-body">T</strong>: Turnier
+            </div>
           </div>
         </foreignObject>
       </svg>
