@@ -1,20 +1,36 @@
 'use client'
 
 import type { CourtUsageDay, CourtUsageMonth } from '@tcw/calendar'
+import type { AssignmentStatus } from '@/lib/assignment-status'
 
 interface CourtUsageGridProps {
   months: CourtUsageMonth[]
   onDayClick: (dateKey: string) => void
   neutral?: boolean
+  statusByDate?: Map<string, AssignmentStatus>
 }
 
-const HEAT_COLORS = {
-  low: 'bg-green-900/80 text-green-200',
-  medium: 'bg-amber-900/80 text-amber-200',
-  high: 'bg-red-900/80 text-red-200',
+const USAGE_BG = {
+  low: 'bg-green-900/80',
+  medium: 'bg-amber-900/80',
+  high: 'bg-red-900/80',
 } as const
 
-const NEUTRAL_COLOR = 'bg-tcw-accent-800/60 text-tcw-accent-200 dark:bg-tcw-accent-700/60 dark:text-tcw-accent-100'
+const STATUS_BG: Record<AssignmentStatus, string> = {
+  none: 'bg-red-900/80',
+  partial: 'bg-orange-800/80',
+  exact: 'bg-green-800/80',
+  over: 'bg-emerald-500/70',
+}
+
+const USAGE_TEXT = {
+  low: 'text-green-200',
+  medium: 'text-amber-200',
+  high: 'text-red-200',
+} as const
+
+const NEUTRAL_BG = 'bg-tcw-accent-800/60'
+const NEUTRAL_TEXT = 'text-tcw-accent-200 dark:text-tcw-accent-100'
 
 const WEEKDAY_HEADERS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
 
@@ -35,14 +51,58 @@ function getSuperscript(day: CourtUsageDay): string {
   return `${day.am.courts}+${day.pm.courts}`
 }
 
+function DayPill({
+  dayNum,
+  usageDay,
+  status,
+  neutral,
+}: {
+  dayNum: number
+  usageDay: CourtUsageDay
+  status: AssignmentStatus | undefined
+  neutral: boolean
+}) {
+  if (neutral || !status) {
+    const bg = neutral ? NEUTRAL_BG : USAGE_BG[usageDay.heatLevel]
+    const text = neutral ? NEUTRAL_TEXT : USAGE_TEXT[usageDay.heatLevel]
+    return (
+      <span
+        className={`inline-block min-w-[26px] rounded-md px-1 py-0.5 text-center text-sm font-medium ${bg} ${text}`}
+      >
+        {dayNum}
+      </span>
+    )
+  }
+
+  return (
+    <span className="relative inline-block min-w-[26px] overflow-hidden rounded-md">
+      <span
+        aria-hidden
+        className={`absolute inset-0 ${USAGE_BG[usageDay.heatLevel]}`}
+        style={{ clipPath: 'polygon(0 0, 0 100%, 100% 100%)' }}
+      />
+      <span
+        aria-hidden
+        className={`absolute inset-0 ${STATUS_BG[status]}`}
+        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%)' }}
+      />
+      <span className="relative block px-1 py-0.5 text-center text-sm font-medium text-white">
+        {dayNum}
+      </span>
+    </span>
+  )
+}
+
 function MonthGrid({
   month,
   onDayClick,
   neutral,
+  statusByDate,
 }: {
   month: CourtUsageMonth
   onDayClick: (dateKey: string) => void
   neutral: boolean
+  statusByDate: Map<string, AssignmentStatus>
 }) {
   const year = month.monthDate.getFullYear()
   const monthIndex = month.monthDate.getMonth()
@@ -81,7 +141,7 @@ function MonthGrid({
                 if (dayNum === null) return <td key={ci} className="p-1" />
                 const dateKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`
                 const usageDay = dayLookup.get(dateKey)
-                const colorClass = neutral ? NEUTRAL_COLOR : usageDay ? HEAT_COLORS[usageDay.heatLevel] : ''
+                const status = statusByDate.get(dateKey)
                 return (
                   <td key={ci} className="p-1 text-center">
                     <button
@@ -91,11 +151,12 @@ function MonthGrid({
                     >
                       {usageDay ? (
                         <>
-                          <span
-                            className={`inline-block min-w-[26px] rounded-md px-1 py-0.5 text-center text-sm font-medium ${colorClass}`}
-                          >
-                            {dayNum}
-                          </span>
+                          <DayPill
+                            dayNum={dayNum}
+                            usageDay={usageDay}
+                            status={status}
+                            neutral={neutral}
+                          />
                           <span className="absolute -right-3 -top-2 text-[10px] font-bold text-body">
                             {getSuperscript(usageDay)}
                           </span>
@@ -117,11 +178,23 @@ function MonthGrid({
   )
 }
 
-export function CourtUsageGrid({ months, onDayClick, neutral = false }: CourtUsageGridProps) {
+export function CourtUsageGrid({
+  months,
+  onDayClick,
+  neutral = false,
+  statusByDate,
+}: CourtUsageGridProps) {
+  const status = statusByDate ?? new Map<string, AssignmentStatus>()
   return (
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {months.map((month) => (
-        <MonthGrid key={month.monthKey} month={month} onDayClick={onDayClick} neutral={neutral} />
+        <MonthGrid
+          key={month.monthKey}
+          month={month}
+          onDayClick={onDayClick}
+          neutral={neutral}
+          statusByDate={status}
+        />
       ))}
     </div>
   )

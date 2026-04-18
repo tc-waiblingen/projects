@@ -2,6 +2,8 @@ import { AdminHeader } from '@/components/AdminHeader'
 import { CourtUsageChanges } from '@/components/calendar/CourtUsageChanges'
 import { CourtUsageClient } from '@/components/calendar/CourtUsageClient'
 import { SourceErrorBanner } from '@/components/SourceErrorBanner'
+import { getAssignmentCountsByMatchForYear } from '@/lib/assignments'
+import { getDb } from '@/lib/db'
 import { fetchCourts } from '@/lib/directus/courts'
 import { settle } from '@/lib/fetch-result'
 import { fetchMatchChangeGroups } from '@/lib/match-changes'
@@ -22,6 +24,8 @@ export default async function AdminHomePage() {
   const indoor = courts.filter((c) => c.type === 'tennis_indoor').length
   const outdoor = courts.filter((c) => c.type === 'tennis_outdoor').length
 
+  const assignmentsByMatch = getAssignmentCountsByMatchForYear(getDb(), year)
+
   return (
     <main className="mx-auto max-w-7xl p-6">
       <AdminHeader subtitle={`Übersicht ${year}`} />
@@ -36,6 +40,7 @@ export default async function AdminHomePage() {
           indoorCourtCount={indoor}
           outdoorCourtCount={outdoor}
           courtsUnavailable={!courtsResult.ok}
+          assignmentsByMatch={Object.fromEntries(assignmentsByMatch)}
         />
       ) : null}
 
