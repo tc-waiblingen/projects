@@ -1,4 +1,5 @@
 import { getSession } from '@/lib/auth'
+import { publicUrl } from '@/lib/public-url'
 import { setPassword } from '@/lib/settings'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -13,13 +14,13 @@ export async function POST(request: NextRequest) {
   const provided = typeof password === 'string' ? password : ''
 
   if (!provided) {
-    const url = new URL('/settings', request.url)
+    const url = publicUrl('/settings', request)
     url.searchParams.set('error', 'empty')
     return NextResponse.redirect(url, { status: 303 })
   }
 
   await setPassword(provided)
-  const url = new URL('/settings', request.url)
+  const url = publicUrl('/settings', request)
   url.searchParams.set('saved', '1')
   return NextResponse.redirect(url, { status: 303 })
 }
