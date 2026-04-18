@@ -28,7 +28,7 @@ export function AssignmentLegend() {
           <text x="324" y="67" fontSize="11" fontWeight="700" fill="currentColor" className="text-body">2+3</text>
         </g>
 
-        <foreignObject x="80" y="115" width="140" height="75">
+        <foreignObject x="105" y="115" width="115" height="75">
           <div className="pl-2 text-left text-[11px] leading-tight">
             <div className="font-semibold text-body">Zuweisung</div>
             <div className="mt-1 flex flex-col items-start gap-0.5 text-muted">
