@@ -29,9 +29,9 @@ export function AssignmentLegend() {
         </g>
 
         <foreignObject x="0" y="100" width="220" height="90">
-          <div className="pr-2 text-right text-[11px] leading-tight">
+          <div className="pl-2 text-left text-[11px] leading-tight">
             <div className="font-semibold text-body">Zuweisung</div>
-            <div className="mt-1 flex flex-col items-end gap-0.5 text-muted">
+            <div className="mt-1 flex flex-col items-start gap-0.5 text-muted">
               <span>
                 <span className="mr-1 inline-block h-2 w-2 rounded align-middle bg-red-900/85" />
                 keine

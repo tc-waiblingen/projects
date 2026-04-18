@@ -98,16 +98,43 @@ function DayPill({
   )
 }
 
+function TodayCircle() {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-red-500"
+    >
+      <svg
+        width="40"
+        height="28"
+        viewBox="0 0 40 28"
+        style={{ overflow: 'visible' }}
+      >
+        <path
+          d="M 24 3 C 33 2, 38 8, 35 14 C 38 21, 27 25, 17 23 C 7 25, 1 18, 4 11 C 2 3, 14 1, 22 3"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  )
+}
+
 function MonthGrid({
   month,
   onDayClick,
   neutral,
   statusByDate,
+  todayKey,
 }: {
   month: CourtUsageMonth
   onDayClick: (dateKey: string) => void
   neutral: boolean
   statusByDate: Map<string, AssignmentStatus>
+  todayKey: string
 }) {
   const year = month.monthDate.getFullYear()
   const monthIndex = month.monthDate.getMonth()
@@ -171,6 +198,7 @@ function MonthGrid({
                           {dayNum}
                         </span>
                       )}
+                      {dateKey === todayKey && <TodayCircle />}
                     </button>
                   </td>
                 )
@@ -190,6 +218,8 @@ export function CourtUsageGrid({
   statusByDate,
 }: CourtUsageGridProps) {
   const status = statusByDate ?? new Map<string, AssignmentStatus>()
+  const now = new Date()
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
   return (
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {months.map((month) => (
@@ -199,6 +229,7 @@ export function CourtUsageGrid({
           onDayClick={onDayClick}
           neutral={neutral}
           statusByDate={status}
+          todayKey={todayKey}
         />
       ))}
     </div>
