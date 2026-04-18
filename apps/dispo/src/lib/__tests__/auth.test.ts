@@ -22,6 +22,15 @@ describe('auth', () => {
       await expect(verifySessionToken(token)).resolves.toEqual({ sub: 'entra:abc-123', role: 'admin' })
     })
 
+    it('round-trips a session with a name claim', async () => {
+      const token = await signSessionToken({ sub: 'entra:abc', role: 'admin', name: 'Tom Siebers' })
+      await expect(verifySessionToken(token)).resolves.toEqual({
+        sub: 'entra:abc',
+        role: 'admin',
+        name: 'Tom Siebers',
+      })
+    })
+
     it('rejects undefined and empty', async () => {
       await expect(verifySessionToken(undefined)).resolves.toBeNull()
       await expect(verifySessionToken('')).resolves.toBeNull()

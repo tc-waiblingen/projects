@@ -67,6 +67,7 @@ export async function buildAuthRequest(redirectUri: string): Promise<AuthRequest
 export interface EntraIdentity {
   sub: string
   role: Role
+  name?: string
 }
 
 export async function exchangeCallback(params: {
@@ -88,5 +89,6 @@ export async function exchangeCallback(params: {
   }
   const roles = Array.isArray(claims.roles) ? (claims.roles as unknown[]).filter((r): r is string => typeof r === 'string') : []
   const role: Role = roles.includes(env.adminRole) ? 'admin' : 'operator'
-  return { sub: `entra:${claims.sub}`, role }
+  const rawName = typeof claims.name === 'string' ? claims.name : typeof claims.preferred_username === 'string' ? claims.preferred_username : undefined
+  return { sub: `entra:${claims.sub}`, role, name: rawName }
 }

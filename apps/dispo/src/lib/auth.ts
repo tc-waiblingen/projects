@@ -10,6 +10,7 @@ export type Role = 'admin' | 'operator'
 export interface Session {
   sub: string
   role: Role
+  name?: string
 }
 
 const ALG = 'HS256'
@@ -24,7 +25,9 @@ function getSecret(): Uint8Array {
 
 export async function signSessionToken(session: Session, now: number = Date.now()): Promise<string> {
   const iat = Math.floor(now / 1000)
-  return new SignJWT({ role: session.role })
+  const claims: Record<string, unknown> = { role: session.role }
+  if (session.name) claims.name = session.name
+  return new SignJWT(claims)
     .setProtectedHeader({ alg: ALG })
     .setSubject(session.sub)
     .setIssuedAt(iat)
@@ -39,7 +42,9 @@ export async function verifySessionToken(token: string | undefined): Promise<Ses
     if (typeof payload.sub !== 'string' || (payload.role !== 'admin' && payload.role !== 'operator')) {
       return null
     }
-    return { sub: payload.sub, role: payload.role }
+    const session: Session = { sub: payload.sub, role: payload.role }
+    if (typeof payload.name === 'string') session.name = payload.name
+    return session
   } catch {
     return null
   }
