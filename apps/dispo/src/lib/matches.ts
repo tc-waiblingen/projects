@@ -19,6 +19,7 @@ export interface DayMatch {
   league: string
   leagueShort: string
   leagueUrl: string | null
+  group: string
 }
 
 export interface DayTournament {
@@ -51,6 +52,7 @@ function toDayMatch(event: CalendarEvent): DayMatch | null {
     league: meta.leagueFull || meta.league || '',
     leagueShort: meta.league || '',
     leagueUrl: meta.leagueUrl || null,
+    group: meta.group || '',
   }
 }
 

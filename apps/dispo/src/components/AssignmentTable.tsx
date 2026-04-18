@@ -33,7 +33,7 @@ export function AssignmentTable({ courts, matches, selections }: AssignmentTable
                 key={m.id}
                 className={clsx('border-b border-tcw-accent-100 dark:border-tcw-accent-800/50', isUnassigned && 'opacity-60')}
               >
-                <td className="px-2 py-2 align-middle text-muted">{m.leagueShort}</td>
+                <td className="px-2 py-2 align-middle text-muted">{m.group}</td>
                 <td className="px-2 py-2 align-middle text-body">
                   {m.homeTeam} <span className="text-muted">vs</span> {m.opponent}
                 </td>

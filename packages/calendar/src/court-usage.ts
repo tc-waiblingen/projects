@@ -2,7 +2,7 @@ import type { CalendarEvent, MatchEventMetadata } from './types'
 import { getDateKey, getMonthKey } from './grouping'
 import { isTournamentEvent } from './event-predicates'
 
-const SMALL_TEAM_PATTERNS = [/staffel/i, /kids/i, /talentiade/i]
+const SMALL_TEAM_PATTERNS = [/staffel/i, /kids/i, /talentiade/i, /doppelrunde/i]
 
 export function getCourtCount(leagueName: string): number {
   return SMALL_TEAM_PATTERNS.some((p) => p.test(leagueName)) ? 2 : 3
@@ -143,7 +143,7 @@ export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
       courtType === 'tennis_indoor' ? indoorCourtCount : outdoorCourtCount
 
     const league = meta.leagueFull || meta.league || ''
-    const courts = getCourtCount(league)
+    const courts = getCourtCount(meta.group || league)
     const players = getPlayerCount(courts)
     const time = event.startTime || '00:00'
     const isAm = time < '12:00'

@@ -142,11 +142,11 @@ export function AssignmentForm({ date, courts, matches, initialSelections }: Ass
           <tbody>
             {matches.map((m) => {
               const selected = selections[m.id] ?? new Set<number>()
-              const expected = getCourtCount(m.league)
+              const expected = getCourtCount(m.group)
               const ratioOk = selected.size === expected
               return (
                 <tr key={m.id} className={clsx('border-b border-tcw-accent-100 dark:border-tcw-accent-800/50', !ratioOk && 'bg-amber-50/40 dark:bg-amber-900/10')}>
-                  <td className="px-2 py-2 align-middle text-muted">{m.leagueShort}</td>
+                  <td className="px-2 py-2 align-middle text-muted">{m.group}</td>
                   <td className="px-2 py-2 align-middle text-body">
                     {m.homeTeam} <span className="text-muted">vs</span> {m.opponent}
                   </td>
