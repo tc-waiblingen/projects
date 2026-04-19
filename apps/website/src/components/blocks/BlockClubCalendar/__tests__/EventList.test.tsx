@@ -105,12 +105,7 @@ describe('EventList', () => {
         startDate: new Date(2026, 1, 14), // Feb 14 (Saturday)
         endDate: new Date(2026, 1, 22), // Feb 22 (Sunday)
         isMultiDay: true,
-        playDates: [
-          new Date(2026, 1, 14),
-          new Date(2026, 1, 15),
-          new Date(2026, 1, 21),
-          new Date(2026, 1, 22),
-        ],
+        playDates: ['2026-02-14', '2026-02-15', '2026-02-21', '2026-02-22'],
       })
 
       render(<EventList events={[event]} />)

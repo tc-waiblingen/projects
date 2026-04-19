@@ -77,12 +77,12 @@ describe('groupEventsByMonth', () => {
       isMultiDay: true,
       isAllDay: true,
       playDates: [
-        new Date(2026, 1, 21),
-        new Date(2026, 1, 22),
-        new Date(2026, 1, 28),
-        new Date(2026, 2, 1),
-        new Date(2026, 2, 7),
-        new Date(2026, 2, 8),
+        '2026-02-21',
+        '2026-02-22',
+        '2026-02-28',
+        '2026-03-01',
+        '2026-03-07',
+        '2026-03-08',
       ],
     })
 

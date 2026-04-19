@@ -54,12 +54,7 @@ describe('eventActiveDays', () => {
       startDate: new Date(2026, 1, 21),
       endDate: new Date(2026, 2, 8),
       isMultiDay: true,
-      playDates: [
-        new Date(2026, 1, 21),
-        new Date(2026, 1, 22),
-        new Date(2026, 2, 7),
-        new Date(2026, 2, 8),
-      ],
+      playDates: ['2026-02-21', '2026-02-22', '2026-03-07', '2026-03-08'],
     })
     expect(keys(eventActiveDays(event))).toEqual([
       '2026-02-21',

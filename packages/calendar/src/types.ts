@@ -54,8 +54,6 @@ export interface TournamentEventMetadata {
   callForEntriesUrl?: string
   registrationUrl?: string
   competitions?: TournamentCompetition[]
-  /** Raw ISO (YYYY-MM-DD) play dates as returned by nuliga-reader. */
-  playDates?: string[]
 }
 
 export type CalendarEventMetadata =
@@ -83,11 +81,14 @@ export interface CalendarEvent {
   metadata: CalendarEventMetadata
   displayWeight: number // 1 = compact (title only), 2 = medium, 3 = large (long description)
   /**
-   * Authoritative list of days this event occupies. When present and non-empty,
-   * overrides enumeration of [startDate, endDate]. Currently populated only by
-   * nuliga-reader tournaments with specific play days (e.g. STS format).
+   * Authoritative list of days this event occupies as ISO date strings
+   * (YYYY-MM-DD). When non-empty, overrides enumeration of [startDate, endDate].
+   * Stored as strings for safe RSC serialization; consumers call
+   * `eventActiveDays` or `buildTournamentDateRuns` which parse them.
+   * Currently populated only by nuliga-reader tournaments with explicit
+   * play days (e.g. STS format).
    */
-  playDates?: Date[]
+  playDates?: string[]
 }
 
 export interface FetchCalendarOptions {

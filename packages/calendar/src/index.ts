@@ -45,7 +45,7 @@ export type {
 export { isTournamentEvent } from './event-predicates'
 
 // Active-days + date formatting
-export { eventActiveDays } from './active-days'
+export { eventActiveDays, parsePlayDate } from './active-days'
 export { formatTournamentPlayDates, buildTournamentDateRuns } from './format-dates'
 export type { FormatPlayDatesOptions, DateRun } from './format-dates'
 

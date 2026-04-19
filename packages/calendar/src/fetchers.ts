@@ -619,16 +619,13 @@ function mapNrTournament(tournament: NrTournament): CalendarEvent | null {
   if (!start) return null;
   const end = tournament.dateEnd ? parseNrDateTime(tournament.dateEnd) : null;
 
-  const playDates: Date[] = [];
-  if (tournament.playDates) {
-    for (const raw of tournament.playDates) {
-      const parsed = parseNrDateTime(raw);
-      if (parsed) playDates.push(parsed.jsDate);
-    }
-  }
+  const playDates =
+    tournament.playDates && tournament.playDates.length > 0
+      ? [...tournament.playDates]
+      : undefined;
 
-  const isMultiDay = playDates.length > 0
-    ? hasMultipleUniqueDays(playDates)
+  const isMultiDay = playDates
+    ? new Set(playDates).size > 1
     : !!(
         end &&
         (start.jsDate.getFullYear() !== end.jsDate.getFullYear() ||
@@ -642,7 +639,6 @@ function mapNrTournament(tournament: NrTournament): CalendarEvent | null {
     callForEntriesUrl: tournament.callForEntriesUrl,
     registrationUrl: tournament.registrationUrl,
     competitions: tournament.competitions,
-    playDates: tournament.playDates,
   };
 
   const description = tournament.registrationDeadline
@@ -666,17 +662,8 @@ function mapNrTournament(tournament: NrTournament): CalendarEvent | null {
     metadata,
     expandDays: true,
     displayWeight: 2,
-    playDates: playDates.length > 0 ? playDates : undefined,
+    playDates,
   };
-}
-
-function hasMultipleUniqueDays(dates: Date[]): boolean {
-  const keys = new Set<string>();
-  for (const d of dates) {
-    keys.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
-    if (keys.size > 1) return true;
-  }
-  return false;
 }
 
 /**

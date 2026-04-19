@@ -1,3 +1,5 @@
+import { parsePlayDate } from './active-days'
+
 const NBSP_EN_DASH = '\u202F\u2013\u202F'
 
 /** One inclusive run of consecutive days. */
@@ -19,14 +21,23 @@ function isConsecutive(prev: Date, next: Date): boolean {
   return sameDay(expected, next)
 }
 
+function coerceDate(d: Date | string): Date | null {
+  if (typeof d === 'string') return parsePlayDate(d)
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate())
+}
+
 /**
- * Group dates into runs of consecutive calendar days.
- * Sorts and dedupes first; each returned run's `start`/`end` are inclusive.
+ * Group dates into runs of consecutive calendar days. Accepts Date instances
+ * or ISO `YYYY-MM-DD` strings (matching `CalendarEvent.playDates`). Sorts and
+ * dedupes first; each returned run's `start`/`end` are inclusive.
  */
-export function buildTournamentDateRuns(dates: Date[]): DateRun[] {
-  const sorted = dates
-    .map((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()))
-    .sort((a, b) => a.getTime() - b.getTime())
+export function buildTournamentDateRuns(dates: Array<Date | string>): DateRun[] {
+  const sorted: Date[] = []
+  for (const raw of dates) {
+    const d = coerceDate(raw)
+    if (d) sorted.push(d)
+  }
+  sorted.sort((a, b) => a.getTime() - b.getTime())
   const deduped: Date[] = []
   for (const d of sorted) {
     if (deduped.length === 0 || !sameDay(deduped[deduped.length - 1]!, d)) {
@@ -80,12 +91,13 @@ export interface FormatPlayDatesOptions {
  * Only the last run carries the year.
  */
 export function formatTournamentPlayDates(
-  dates: Date[],
+  dates: Array<Date | string>,
   options: FormatPlayDatesOptions = {},
 ): string {
   if (dates.length === 0) return ''
   const dash = options.compact ? NBSP_EN_DASH : ' – '
   const runs = buildTournamentDateRuns(dates)
+  if (runs.length === 0) return ''
   return runs
     .map((run, i) => formatRun(run, i === runs.length - 1, dash))
     .join(', ')

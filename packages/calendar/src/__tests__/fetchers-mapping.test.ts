@@ -236,7 +236,7 @@ describe('mapNrTournament', () => {
     expect(event).toBeNull()
   })
 
-  it('parses playDates into Date[] and preserves raw strings on metadata', () => {
+  it('passes playDates through as ISO strings (for safe RSC serialization)', () => {
     const event = mapNrTournament(
       makeNrTournament({
         title: 'STS Damen',
@@ -245,13 +245,7 @@ describe('mapNrTournament', () => {
         playDates: ['2026-02-21', '2026-02-22', '2026-02-28', '2026-03-01', '2026-03-07', '2026-03-08'],
       }),
     )
-    expect(event!.playDates).toHaveLength(6)
-    expect(event!.playDates![0].getFullYear()).toBe(2026)
-    expect(event!.playDates![0].getMonth()).toBe(1)
-    expect(event!.playDates![0].getDate()).toBe(21)
-    expect(event!.isMultiDay).toBe(true)
-    const meta = event!.metadata as TournamentEventMetadata
-    expect(meta.playDates).toEqual([
+    expect(event!.playDates).toEqual([
       '2026-02-21',
       '2026-02-22',
       '2026-02-28',
@@ -259,6 +253,7 @@ describe('mapNrTournament', () => {
       '2026-03-07',
       '2026-03-08',
     ])
+    expect(event!.isMultiDay).toBe(true)
   })
 
   it('leaves playDates undefined when API omits the field', () => {
@@ -266,8 +261,6 @@ describe('mapNrTournament', () => {
       makeNrTournament({ dateStart: '2026-07-01', dateEnd: '2026-07-03' }),
     )
     expect(event!.playDates).toBeUndefined()
-    const meta = event!.metadata as TournamentEventMetadata
-    expect(meta.playDates).toBeUndefined()
   })
 
   it('maps nested competitions and stages onto metadata', () => {
