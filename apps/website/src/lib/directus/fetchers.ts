@@ -12,6 +12,7 @@ export const fetchAllPages = async () => {
     readItems("pages", {
       filter: { status: { _eq: "published" } },
       fields: ["permalink", "title", "date_updated"],
+      limit: -1,
     }),
   )
 
@@ -250,6 +251,7 @@ export const fetchAllPublishedPosts = async () => {
       readItems("posts", {
         filter: { status: { _eq: "published" } },
         fields: ["slug", "title", "published_at"],
+        limit: -1,
       }),
     )
 
