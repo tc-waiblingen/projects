@@ -3,7 +3,7 @@ import type { CalendarEvent, MatchChangeSummaryGroup, MatchEventMetadata } from 
 import {
   buildMatchChangeSummary,
   fetchNrMatchChanges,
-  fetchNrMatches,
+  fetchNrMatchesResponse,
   fetchNrTeams,
 } from '@tcw/calendar'
 import { Section } from '@/components/elements/section'
@@ -35,26 +35,27 @@ async function fetchMatchChangeGroups(dateRange: {
   from: Date
   to: Date
   now: Date
-}): Promise<MatchChangeSummaryGroup[]> {
+}): Promise<{ groups: MatchChangeSummaryGroup[]; matchesLastRefreshedAt: string | null }> {
   const thirtyDaysAgo = new Date(dateRange.now.getTime() - 30 * 24 * 60 * 60 * 1000)
   try {
-    const [changes, matches, teams] = await Promise.all([
+    const [changes, matchesResponse, teams] = await Promise.all([
       fetchNrMatchChanges({
         since: thirtyDaysAgo,
         fields: ['__created', 'match_date', 'match_time', 'location'],
       }),
-      fetchNrMatches(dateRange.from, dateRange.to),
+      fetchNrMatchesResponse(dateRange.from, dateRange.to),
       fetchNrTeams(),
     ])
-    return buildMatchChangeSummary({
+    const groups = buildMatchChangeSummary({
       changes,
-      matches,
+      matches: matchesResponse.items,
       teams,
       formatTeamLabel: (team) => teamLabelWithGroup(team.name, team.group),
     })
+    return { groups, matchesLastRefreshedAt: matchesResponse.lastRefreshedAt }
   } catch (error) {
     logger.warn('Failed to load match changes', error)
-    return []
+    return { groups: [], matchesLastRefreshedAt: null }
   }
 }
 
@@ -91,7 +92,14 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
     const indoorCourtCount = courts.filter((c) => c.type === 'tennis_indoor').length
     const outdoorCourtCount = courts.filter((c) => c.type === 'tennis_outdoor').length
 
-    const changeGroups = await fetchMatchChangeGroups(dateRange)
+    const { groups: changeGroups, matchesLastRefreshedAt } = await fetchMatchChangeGroups(dateRange)
+    const matchesLastRefreshedAtDisplay = matchesLastRefreshedAt
+      ? new Date(matchesLastRefreshedAt).toLocaleString('de-DE', {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+          timeZone: 'Europe/Berlin',
+        })
+      : null
 
     return (
       <Section headline={headline} eyebrow={tagline} alignment={alignment} editAttr={{ collection: 'block_club_calendar', item: String(id) }}>
@@ -100,6 +108,7 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
           indoorCourtCount={indoorCourtCount}
           outdoorCourtCount={outdoorCourtCount}
           serverNow={dateRange.now.getTime()}
+          matchesLastRefreshedAt={matchesLastRefreshedAtDisplay}
         />
         <CourtUsageChanges groups={changeGroups} now={dateRange.now} />
       </Section>

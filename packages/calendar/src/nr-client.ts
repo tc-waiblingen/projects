@@ -184,14 +184,20 @@ async function nrGet<T>(
   return (await response.json()) as T
 }
 
-export async function fetchNrMatches(from: Date, to: Date): Promise<NrMatch[]> {
+export async function fetchNrMatchesResponse(
+  from: Date,
+  to: Date,
+): Promise<NrListMatchesResponse> {
   const config = readConfig()
-  const data = await nrGet<NrListMatchesResponse>(
+  return nrGet<NrListMatchesResponse>(
     `/v1/clubs/${encodeURIComponent(config.clubId)}/matches`,
     { from: formatDate(from), to: formatDate(to) },
     86400,
   )
-  return data.items
+}
+
+export async function fetchNrMatches(from: Date, to: Date): Promise<NrMatch[]> {
+  return (await fetchNrMatchesResponse(from, to)).items
 }
 
 export async function fetchNrTournaments(

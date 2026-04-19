@@ -31,11 +31,13 @@ export {
 export {
   fetchNrTeams,
   fetchNrMatches,
+  fetchNrMatchesResponse,
   fetchNrMatchChanges,
 } from './nr-client'
 export type {
   NrTeam,
   NrMatch,
+  NrListMatchesResponse,
   NrMatchChange,
   NrListMatchChangesResponse,
   FetchNrMatchChangesOptions,

@@ -39,7 +39,7 @@ export function CourtUsageChanges({ groups, now }: CourtUsageChangesProps) {
   if (groups.length === 0) return null
 
   return (
-    <div className="mt-10 print:hidden">
+    <div className="mt-10">
       <h3 className="mb-4 text-lg font-bold text-body">Änderungen (letzte 30 Tage)</h3>
       <div className="flex flex-col gap-5">
         {groups.map((group) => (

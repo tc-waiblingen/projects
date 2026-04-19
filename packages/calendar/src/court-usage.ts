@@ -47,6 +47,7 @@ export interface CourtUsageEntry {
   league: string
   leagueUrl: string | null
   teamName: string
+  teamShortName: string | null
   opponent: string
 }
 
@@ -148,6 +149,7 @@ export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
       league,
       leagueUrl: meta.leagueUrl || null,
       teamName: meta.homeTeam,
+      teamShortName: meta.teamName ?? null,
       opponent: meta.awayTeam,
     }
 

@@ -6,16 +6,17 @@ import { computeCourtUsage } from '@tcw/calendar'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { CourtUsageGrid } from './CourtUsageGrid'
 import { CourtUsageDayDetail } from './CourtUsageDayDetail'
-import { CourtUsagePrintView } from './CourtUsagePrintView'
+import { CourtUsagePrintTable } from './CourtUsagePrintTable'
 
 interface CourtUsageClientProps {
   events: CalendarEvent[]
   indoorCourtCount: number
   outdoorCourtCount: number
   serverNow: number
+  matchesLastRefreshedAt: string | null
 }
 
-export function CourtUsageClient({ events, indoorCourtCount, outdoorCourtCount }: CourtUsageClientProps) {
+export function CourtUsageClient({ events, indoorCourtCount, outdoorCourtCount, matchesLastRefreshedAt }: CourtUsageClientProps) {
   const [mode, setMode] = useState<'courts' | 'teams'>('courts')
   const [dialogDay, setDialogDay] = useState<CourtUsageDay | null>(null)
 
@@ -33,6 +34,9 @@ export function CourtUsageClient({ events, indoorCourtCount, outdoorCourtCount }
 
   return (
     <div>
+      {matchesLastRefreshedAt && (
+        <div className="mb-3 text-xs text-muted">Stand: {matchesLastRefreshedAt}</div>
+      )}
       {/* Toggle + Print — visible on screen only */}
       <div className="mb-6 flex items-center gap-4 print:hidden">
         <div className="flex gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
@@ -107,7 +111,7 @@ export function CourtUsageClient({ events, indoorCourtCount, outdoorCourtCount }
       </Dialog>
 
       {/* Print view — hidden on screen, shown in print */}
-      <CourtUsagePrintView months={months} />
+      <CourtUsagePrintTable months={months} />
     </div>
   )
 }

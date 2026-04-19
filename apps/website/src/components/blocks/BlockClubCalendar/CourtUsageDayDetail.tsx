@@ -16,14 +16,6 @@ function formatDate(date: Date): string {
   })
 }
 
-function formatShortDate(date: Date): string {
-  return date.toLocaleDateString('de-DE', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'long',
-  })
-}
-
 function formatCourtType(courtType: 'tennis_indoor' | 'tennis_outdoor'): string {
   return courtType === 'tennis_indoor' ? 'Halle' : 'Freiplätze'
 }
@@ -96,4 +88,4 @@ export function CourtUsageDayDetail({ day, showDayHeader = true }: CourtUsageDay
   )
 }
 
-export { formatShortDate, formatCourtType }
+export { formatCourtType }
