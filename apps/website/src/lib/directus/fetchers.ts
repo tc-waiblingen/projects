@@ -387,7 +387,7 @@ export const fetchPostsForRSS = async (limit?: number) => {
         filter: { status: { _eq: "published" } },
         sort: ["-published_at"],
         limit: limit ?? 10,
-        fields: ["id", "title", "slug", "description", "content", "published_at"],
+        fields: ["id", "title", "slug", "description", "content", "published_at", { image: [...DIRECTUS_FILE_FIELDS, "filesize"] }],
       }),
     )
 

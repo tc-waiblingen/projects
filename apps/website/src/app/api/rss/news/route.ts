@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fetchPostsForRSS } from '@/lib/directus/fetchers'
 import { getDirectus } from '@/lib/directus/directus'
-import type { Global } from '@/types/directus-schema'
+import type { DirectusFile, Global } from '@/types/directus-schema'
 
 function escapeXml(text: string): string {
   return text
@@ -137,16 +137,32 @@ export async function GET(request: NextRequest) {
       const plainText = stripHtmlTags(post.content || '')
       const excerpt = truncateExcerpt(plainText, postUrl, post.title)
 
+      const image =
+        post.image && typeof post.image !== 'string'
+          ? (post.image as DirectusFile)
+          : null
+      const imageSrc = image?.id ? `${baseUrl}/api/images/${image.id}` : null
+      const imageAlt = image?.description || image?.title || post.title
+      const imageMime = image?.type || 'image/jpeg'
+      const imageSize = image?.filesize ?? 0
+
+      const enclosure = imageSrc
+        ? `\n\t\t<enclosure url="${escapeXml(imageSrc)}" length="${imageSize}" type="${escapeXml(imageMime)}" />`
+        : ''
+      const contentHtml = imageSrc
+        ? `<p><img src="${escapeXml(imageSrc)}" alt="${escapeXml(imageAlt)}" /></p>${post.content || ''}`
+        : post.content || ''
+
       xml += `	<item>
 		<title>${escapeXml(post.title)}</title>
 		<link>${escapeXml(postUrl)}</link>
 
 		<dc:creator><![CDATA[${globalSettings.clubName}]]></dc:creator>
 		<pubDate>${pubDate}</pubDate>
-		<guid isPermaLink="true">${escapeXml(postUrl)}</guid>
+		<guid isPermaLink="true">${escapeXml(postUrl)}</guid>${enclosure}
 
 					<description><![CDATA[${excerpt}]]></description>
-										<content:encoded><![CDATA[${post.content || ''}]]></content:encoded>
+										<content:encoded><![CDATA[${contentHtml}]]></content:encoded>
 
 
 
