@@ -1,6 +1,7 @@
 import type { CalendarEvent, MatchEventMetadata } from './types'
 import { getDateKey, getMonthKey } from './grouping'
 import { isTournamentEvent } from './event-predicates'
+import { eventActiveDays } from './active-days'
 
 const SMALL_TEAM_PATTERNS = [/staffel/i, /kids/i, /talentiade/i, /doppelrunde/i]
 
@@ -101,12 +102,7 @@ export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
     const dateKey = getDateKey(event.startDate)
 
     if (isTournamentEvent(event)) {
-      const endDate = event.endDate && event.isMultiDay ? event.endDate : event.startDate
-      const current = new Date(event.startDate)
-      const endTime = endDate.getTime()
-      let iterations = 0
-
-      while (current.getTime() <= endTime && iterations < 365) {
+      for (const current of eventActiveDays(event)) {
         const dayCourtType = getSeasonCourtType(current)
         const dayAvailable = dayCourtType === 'tennis_indoor' ? indoorCourtCount : outdoorCourtCount
         const dayKey = getDateKey(current)
@@ -127,9 +123,6 @@ export function computeCourtUsage(config: CourtUsageConfig): CourtUsageMonth[] {
         }
         day.tournament = { title: event.title, url: event.url, courts: dayAvailable }
         day.heatLevel = 'high'
-
-        current.setDate(current.getDate() + 1)
-        iterations++
       }
       continue
     }

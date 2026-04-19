@@ -1,3 +1,4 @@
+import { eventActiveDays } from './active-days'
 import type { CalendarEvent, CalendarEventSource } from './types'
 
 /**
@@ -115,42 +116,15 @@ export function addEventToDay(
   dayGroup.events.push(event)
 }
 
-export interface GroupEventsByMonthOptions {
-  /**
-   * Filter function for multi-day event expansion.
-   * Called for each day a multi-day event spans.
-   * Return true to include the event on that day, false to skip.
-   * Default: includes all days.
-   */
-  multiDayFilter?: (event: CalendarEvent, date: Date) => boolean
-  /**
-   * Whether to expand multi-day events across all days they span.
-   * When false, multi-day events only appear on their start date.
-   * Default: true.
-   */
-  expandDays?: boolean
-}
-
 /**
- * Default filter for multi-day events: STS tournaments only on weekends
+ * Group calendar events by month, expanding multi-day events.
+ *
+ * Each event's active days come from `eventActiveDays` — which honors
+ * `event.playDates` when present (e.g. STS tournaments with non-contiguous
+ * play dates) and otherwise enumerates `[startDate, endDate]`. An event with
+ * `expandDays === false` is pinned to its `startDate` regardless.
  */
-export function defaultMultiDayFilter(event: CalendarEvent, date: Date): boolean {
-  const isSts = event.title.includes('STS')
-  if (!isSts) return true
-
-  const dayOfWeek = date.getDay()
-  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 // Sunday or Saturday
-  return isWeekend
-}
-
-/**
- * Group calendar events by month, expanding multi-day events
- */
-export function groupEventsByMonth(
-  events: CalendarEvent[],
-  options: GroupEventsByMonthOptions = {}
-): MonthGroup[] {
-  const { multiDayFilter = defaultMultiDayFilter, expandDays = true } = options
+export function groupEventsByMonth(events: CalendarEvent[]): MonthGroup[] {
   const monthsMap = new Map<string, { monthDate: Date; daysMap: Map<string, DayGroup> }>()
 
   for (const event of events) {
@@ -158,28 +132,13 @@ export function groupEventsByMonth(
       continue
     }
 
-    // For multi-day events, add to each day they span
-    const shouldExpand = event.expandDays ?? expandDays
-    if (shouldExpand && event.isMultiDay && event.endDate && isValidDate(event.endDate)) {
-      const currentDate = new Date(event.startDate)
-      const endTime = event.endDate.getTime()
-
-      // Safety limit to prevent infinite loops (max 365 days)
-      let iterations = 0
-      const maxIterations = 365
-
-      while (currentDate.getTime() <= endTime && iterations < maxIterations) {
-        // Apply filter (e.g., STS tournaments only on weekends)
-        if (multiDayFilter(event, currentDate)) {
-          addEventToDay(monthsMap, event, currentDate)
-        }
-
-        currentDate.setDate(currentDate.getDate() + 1)
-        iterations++
-      }
-    } else {
-      // Single-day event: add only to start date
+    if (event.expandDays === false) {
       addEventToDay(monthsMap, event, event.startDate)
+      continue
+    }
+
+    for (const day of eventActiveDays(event)) {
+      addEventToDay(monthsMap, event, day)
     }
   }
 

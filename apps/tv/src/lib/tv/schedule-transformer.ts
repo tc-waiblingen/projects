@@ -4,6 +4,7 @@
  */
 
 import type { CalendarEvent, AppEventMetadata, ClubEventMetadata, MatchEventMetadata, TournamentEventMetadata } from '@tcw/calendar'
+import { eventActiveDays, formatTournamentPlayDates } from '@tcw/calendar'
 
 const MAX_DAY_PANELS = 6
 const MAX_WEIGHT_PER_DAY = 7
@@ -97,7 +98,10 @@ function normalizeEvent(event: ExpandedCalendarEvent): TvEvent | null {
       // Format date label for tournaments (use original start date for multi-day events)
       const labelStartDate = event.originalStartDate ?? event.startDate
       let dateLabel = ''
-      if (event.isMultiDay && event.endDate) {
+      const playDates = event.playDates
+      if (playDates && playDates.length > 1) {
+        dateLabel = formatTournamentPlayDates(playDates)
+      } else if (event.isMultiDay && event.endDate) {
         const startStr = labelStartDate.toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' })
         const endStr = event.endDate.toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' })
         dateLabel = `${startStr} – ${endStr}`
@@ -240,29 +244,18 @@ function expandMultiDayEvents(events: CalendarEvent[], todayStart: Date): Expand
 
   for (const event of events) {
     // Only expand multi-day tournaments
-    if (event.source === 'tournament' && event.isMultiDay && event.endDate) {
-      const start = new Date(event.startDate.getFullYear(), event.startDate.getMonth(), event.startDate.getDate())
-      const end = new Date(event.endDate.getFullYear(), event.endDate.getMonth(), event.endDate.getDate())
-
-      // Create an event instance for each day of the tournament
-      const currentDay = new Date(start)
-      let dayIndex = 0
-      while (currentDay <= end) {
-        // Only include days that are today or in the future
-        if (currentDay >= todayStart) {
+    if (event.source === 'tournament' && event.isMultiDay) {
+      const days = eventActiveDays(event)
+      days.forEach((day, dayIndex) => {
+        if (day >= todayStart) {
           expanded.push({
             ...event,
-            // Use a unique ID for each day instance
             id: `${event.id}-day-${dayIndex}`,
-            // Set displayDate for grouping
-            displayDate: new Date(currentDay),
-            // Preserve original startDate for label formatting
+            displayDate: new Date(day.getFullYear(), day.getMonth(), day.getDate()),
             originalStartDate: event.startDate,
           })
         }
-        currentDay.setDate(currentDay.getDate() + 1)
-        dayIndex++
-      }
+      })
     } else {
       expanded.push(event)
     }

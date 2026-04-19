@@ -7,6 +7,8 @@ export type {
   ClubEventMetadata,
   MatchEventMetadata,
   TournamentEventMetadata,
+  TournamentCompetition,
+  TournamentStage,
   FetchCalendarOptions,
   CalendarConfig,
   CalendarFetcherConfig,
@@ -42,6 +44,11 @@ export type {
 // Event predicates
 export { isTournamentEvent } from './event-predicates'
 
+// Active-days + date formatting
+export { eventActiveDays } from './active-days'
+export { formatTournamentPlayDates, buildTournamentDateRuns } from './format-dates'
+export type { FormatPlayDatesOptions, DateRun } from './format-dates'
+
 // Match-change summary
 export { buildMatchChangeSummary } from './match-change-summary'
 export type {
@@ -60,10 +67,9 @@ export {
   isValidDate,
   getDateKey,
   getMonthKey,
-  defaultMultiDayFilter,
 } from './grouping'
 
-export type { DayGroup, MonthGroup, GroupEventsByMonthOptions } from './grouping'
+export type { DayGroup, MonthGroup } from './grouping'
 
 // Court usage
 export {

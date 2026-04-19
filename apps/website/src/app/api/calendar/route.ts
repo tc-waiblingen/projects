@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import ical, { ICalCalendarMethod, ICalEventStatus } from 'ical-generator'
 import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
 import { isMatchPlayed } from '@/lib/match-utils'
-import { fetchNrTeams, type NrTeam } from '@tcw/calendar'
+import { buildTournamentDateRuns, fetchNrTeams, type NrTeam } from '@tcw/calendar'
 import {
   getCalendarName,
   type CategoryFilter,
@@ -176,17 +176,42 @@ export async function GET(request: NextRequest) {
         description += `Mehr: ${eventUrl}`
       }
 
-      calendar.createEvent({
-        id: event.id,
-        summary: summary,
+      const commonFields = {
+        summary,
         description: description || undefined,
         location: event.location ?? undefined,
-        start: startDate,
-        end: endDate,
         allDay: event.isAllDay,
         status: ICalEventStatus.CONFIRMED,
         url: eventUrl ?? undefined,
-      })
+      }
+
+      // Tournaments with explicit playDates are split into one VEVENT per run
+      // of consecutive calendar days. Otherwise the event uses its full span.
+      if (
+        event.source === 'tournament' &&
+        event.isAllDay &&
+        event.playDates &&
+        event.playDates.length > 0
+      ) {
+        const runs = buildTournamentDateRuns(event.playDates)
+        runs.forEach((run, i) => {
+          const runEnd = new Date(run.end)
+          runEnd.setDate(runEnd.getDate() + 1)
+          calendar.createEvent({
+            ...commonFields,
+            id: `${event.id}-run-${i}`,
+            start: run.start,
+            end: runEnd,
+          })
+        })
+      } else {
+        calendar.createEvent({
+          ...commonFields,
+          id: event.id,
+          start: startDate,
+          end: endDate,
+        })
+      }
     }
 
     const icsContent = calendar.toString()

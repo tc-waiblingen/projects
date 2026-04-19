@@ -96,17 +96,21 @@ describe('EventList', () => {
     })
   })
 
-  describe('STS tournament special handling', () => {
-    it('shows STS tournaments only on weekends', () => {
-      // Feb 14, 2026 is Saturday, Feb 22, 2026 is Sunday
-      // Range includes: Sat 14, Sun 15, Mon 16, Tue 17, Wed 18, Thu 19, Fri 20, Sat 21, Sun 22
-      // Only weekend days should show: Feb 14, 15, 21, 22 = 4 days
+  describe('tournaments with explicit playDates', () => {
+    it('shows the tournament only on its playDates, not on non-play days in the span', () => {
+      // STS format: only Saturdays and Sundays in Feb 14 – Feb 22 = 4 play days.
       const event = createEvent({
         id: 'sts-cup',
         title: 'STS-Cup Damen 30',
         startDate: new Date(2026, 1, 14), // Feb 14 (Saturday)
         endDate: new Date(2026, 1, 22), // Feb 22 (Sunday)
         isMultiDay: true,
+        playDates: [
+          new Date(2026, 1, 14),
+          new Date(2026, 1, 15),
+          new Date(2026, 1, 21),
+          new Date(2026, 1, 22),
+        ],
       })
 
       render(<EventList events={[event]} />)
@@ -114,8 +118,7 @@ describe('EventList', () => {
       expect(screen.getAllByText('STS-Cup Damen 30')).toHaveLength(4)
     })
 
-    it('shows regular tournaments on all days', () => {
-      // Same date range but without STS-Cup in name
+    it('tournaments without playDates expand across every day in the span', () => {
       const event = createEvent({
         id: 'regular',
         title: 'Regular Tournament',

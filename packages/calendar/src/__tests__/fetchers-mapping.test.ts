@@ -235,4 +235,59 @@ describe('mapNrTournament', () => {
     const event = mapNrTournament(makeNrTournament({ dateStart: 'bad' }))
     expect(event).toBeNull()
   })
+
+  it('parses playDates into Date[] and preserves raw strings on metadata', () => {
+    const event = mapNrTournament(
+      makeNrTournament({
+        title: 'STS Damen',
+        dateStart: '2026-02-21',
+        dateEnd: '2026-03-08',
+        playDates: ['2026-02-21', '2026-02-22', '2026-02-28', '2026-03-01', '2026-03-07', '2026-03-08'],
+      }),
+    )
+    expect(event!.playDates).toHaveLength(6)
+    expect(event!.playDates![0].getFullYear()).toBe(2026)
+    expect(event!.playDates![0].getMonth()).toBe(1)
+    expect(event!.playDates![0].getDate()).toBe(21)
+    expect(event!.isMultiDay).toBe(true)
+    const meta = event!.metadata as TournamentEventMetadata
+    expect(meta.playDates).toEqual([
+      '2026-02-21',
+      '2026-02-22',
+      '2026-02-28',
+      '2026-03-01',
+      '2026-03-07',
+      '2026-03-08',
+    ])
+  })
+
+  it('leaves playDates undefined when API omits the field', () => {
+    const event = mapNrTournament(
+      makeNrTournament({ dateStart: '2026-07-01', dateEnd: '2026-07-03' }),
+    )
+    expect(event!.playDates).toBeUndefined()
+    const meta = event!.metadata as TournamentEventMetadata
+    expect(meta.playDates).toBeUndefined()
+  })
+
+  it('maps nested competitions and stages onto metadata', () => {
+    const event = mapNrTournament(
+      makeNrTournament({
+        competitions: [
+          {
+            name: 'Herren 40 Einzel',
+            category: 'S-2',
+            lkRating: 'LK 15-25',
+            competitionFieldId: 'cf1',
+            stages: [{ name: 'Gruppe', level: 1, url: 'https://example/group' }],
+          },
+        ],
+      }),
+    )
+    const meta = event!.metadata as TournamentEventMetadata
+    expect(meta.competitions).toHaveLength(1)
+    expect(meta.competitions![0].name).toBe('Herren 40 Einzel')
+    expect(meta.competitions![0].category).toBe('S-2')
+    expect(meta.competitions![0].stages![0].url).toBe('https://example/group')
+  })
 })

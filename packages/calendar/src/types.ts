@@ -34,12 +34,28 @@ export interface MatchEventMetadata {
   groupUrl?: string
 }
 
-export interface TournamentEventMetadata {
+export interface TournamentStage {
+  name: string
+  level: number
+  url: string
+}
+
+export interface TournamentCompetition {
+  name: string
   category?: string
+  lkRating?: string
+  competitionFieldId?: string
+  stages?: TournamentStage[]
+}
+
+export interface TournamentEventMetadata {
   registrationDeadline?: string
   entryFee?: string
   callForEntriesUrl?: string
   registrationUrl?: string
+  competitions?: TournamentCompetition[]
+  /** Raw ISO (YYYY-MM-DD) play dates as returned by nuliga-reader. */
+  playDates?: string[]
 }
 
 export type CalendarEventMetadata =
@@ -66,6 +82,12 @@ export interface CalendarEvent {
   imageUrl: string | null
   metadata: CalendarEventMetadata
   displayWeight: number // 1 = compact (title only), 2 = medium, 3 = large (long description)
+  /**
+   * Authoritative list of days this event occupies. When present and non-empty,
+   * overrides enumeration of [startDate, endDate]. Currently populated only by
+   * nuliga-reader tournaments with specific play days (e.g. STS format).
+   */
+  playDates?: Date[]
 }
 
 export interface FetchCalendarOptions {

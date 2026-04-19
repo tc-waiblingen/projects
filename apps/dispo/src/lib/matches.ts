@@ -1,4 +1,5 @@
 import {
+  eventActiveDays,
   fetchClubEvents,
   fetchMatches,
   fetchTournaments,
@@ -78,7 +79,10 @@ export async function fetchTournamentForDate(date: Date): Promise<DayTournament 
       fetchTournaments(getCalendarConfig(), range),
       fetchClubEvents(getCalendarConfig(), range),
     ])
-    const t = [...nrTournaments, ...clubEvents].find(isTournamentEvent)
+    const target = dateKey(date)
+    const t = [...nrTournaments, ...clubEvents].find(
+      (ev) => isTournamentEvent(ev) && eventActiveDays(ev).some((d) => dateKey(d) === target),
+    )
     if (!t) return null
     const meta = t.metadata as TournamentEventMetadata | undefined
     return {

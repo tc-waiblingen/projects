@@ -25,6 +25,20 @@ export interface NrMatch {
   reportUrl?: string
 }
 
+export interface NrStage {
+  name: string
+  level: number
+  url: string
+}
+
+export interface NrCompetition {
+  name: string
+  category?: string
+  lkRating?: string
+  competitionFieldId?: string
+  stages?: NrStage[]
+}
+
 export interface NrTournament {
   id: string
   clubId: string
@@ -33,11 +47,17 @@ export interface NrTournament {
   lastRefreshedAt: string
   dateEnd?: string
   location?: string
-  category?: string
   entryFee?: string
   registrationDeadline?: string
   registrationUrl?: string
   callForEntriesUrl?: string
+  competitions?: NrCompetition[]
+  /**
+   * Actual playing days inside [dateStart, dateEnd] for tournaments whose
+   * upstream range overstates the real schedule (currently STS format).
+   * Empty/omitted for normal tournaments — callers fall back to dateStart/dateEnd.
+   */
+  playDates?: string[]
 }
 
 export interface NrTeam {

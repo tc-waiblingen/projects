@@ -9,7 +9,7 @@ import type {
   MatchEventMetadata,
   TournamentEventMetadata,
 } from '@tcw/calendar'
-import { isTournamentEvent } from '@tcw/calendar'
+import { isTournamentEvent, formatTournamentPlayDates } from '@tcw/calendar'
 
 function formatDateRange(start: Date, end: Date): string {
   const startDay = start.getDate()
@@ -25,6 +25,18 @@ function formatDateRange(start: Date, end: Date): string {
 
   // Different months: "31.1. – 8.2.2026"
   return `${startDay}.${startMonth}. – ${endDay}.${endMonth}.${endYear}`
+}
+
+function formatEventSpan(event: CalendarEvent, compact = false): string {
+  if (event.playDates && event.playDates.length > 0) {
+    return formatTournamentPlayDates(event.playDates, { compact })
+  }
+  if (event.endDate && event.endDate > event.startDate) {
+    return compact
+      ? formatCompactDateRange(event.startDate, event.endDate)
+      : formatDateRange(event.startDate, event.endDate)
+  }
+  return ''
 }
 
 function ExternalLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -79,17 +91,6 @@ function EventMetadata({ event }: { event: CalendarEvent }) {
     return null
   }
 
-  if (event.source === 'tournament') {
-    const metadata = event.metadata as TournamentEventMetadata
-    if (metadata.category) {
-      return (
-        <p className="text-sm text-muted">
-          Kategorie: {metadata.category}
-        </p>
-      )
-    }
-  }
-
   if (event.description) {
     return (
       <p className="text-sm text-muted">
@@ -129,7 +130,9 @@ function EventItem({ event }: { event: CalendarEvent }) {
   const isMatch = event.source === 'match'
   const isTournament = isTournamentEvent(event)
   const isClub = event.source === 'club'
-  const hasDateRange = event.endDate && event.endDate > event.startDate
+  const hasDateRange = !!(event.endDate && event.endDate > event.startDate)
+  const hasPlayDates = !!(event.playDates && event.playDates.length > 0)
+  const dateSpan = formatEventSpan(event)
 
   return (
     <div className="flex gap-3">
@@ -188,13 +191,13 @@ function EventItem({ event }: { event: CalendarEvent }) {
             {isTournament && (
               <span>
                 Turnier
-                {hasDateRange && (
-                  <> ({formatDateRange(event.startDate, event.endDate!)})</>
+                {(hasDateRange || hasPlayDates) && dateSpan && (
+                  <> ({dateSpan})</>
                 )}
               </span>
             )}
             {isClub && !isTournament && hasDateRange && (
-              <span>{formatDateRange(event.startDate, event.endDate!)}</span>
+              <span>{dateSpan}</span>
             )}
             {event.location && (
               <span className="inline-flex items-center gap-1">
@@ -248,7 +251,9 @@ export function CompactEventRow({ event, displayDate }: { event: CalendarEvent; 
     ? `${metadata.homeTeam} – ${metadata.awayTeam}`
     : event.title
 
-  const hasDateRange = event.endDate && event.endDate > event.startDate
+  const hasDateRange = !!(event.endDate && event.endDate > event.startDate)
+  const hasPlayDates = !!(event.playDates && event.playDates.length > 0)
+  const compactSpan = formatEventSpan(event, true)
 
   const time = event.isAllDay
     ? 'Ganztägig'
@@ -262,8 +267,8 @@ export function CompactEventRow({ event, displayDate }: { event: CalendarEvent; 
       <span className="w-20 shrink-0 tabular-nums text-muted">{time}</span>
       <span className="min-w-0 truncate font-medium text-body">
         {title}
-        {hasDateRange && (
-          <span className="font-normal text-muted"> ({formatCompactDateRange(event.startDate, event.endDate!)})</span>
+        {(hasDateRange || hasPlayDates) && compactSpan && (
+          <span className="font-normal text-muted"> ({compactSpan})</span>
         )}
       </span>
       {event.location && (

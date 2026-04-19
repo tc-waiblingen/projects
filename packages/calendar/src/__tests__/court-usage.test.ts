@@ -278,6 +278,36 @@ describe('computeCourtUsage', () => {
     }
   })
 
+  it('STS tournaments with playDates only block the listed days', () => {
+    const events = [makeTournamentEvent({
+      id: 'sts',
+      title: 'STS Damen',
+      startDate: new Date(2026, 1, 21), // Feb 21 (Sat)
+      endDate: new Date(2026, 2, 8),    // Mar 8 (Sun) — three weekends apart
+      isMultiDay: true,
+      playDates: [
+        new Date(2026, 1, 21),
+        new Date(2026, 1, 22),
+        new Date(2026, 1, 28),
+        new Date(2026, 2, 1),
+        new Date(2026, 2, 7),
+        new Date(2026, 2, 8),
+      ],
+    })]
+    const result = computeCourtUsage({ events, ...config })
+    const allDayKeys = result.flatMap((m) => m.days.map((d) => d.dateKey))
+    expect(allDayKeys).toEqual([
+      '2026-02-21',
+      '2026-02-22',
+      '2026-02-28',
+      '2026-03-01',
+      '2026-03-07',
+      '2026-03-08',
+    ])
+    // A weekday inside the range (e.g. Feb 25) must not appear
+    expect(allDayKeys).not.toContain('2026-02-25')
+  })
+
   it('assigns month court type based on calendar season', () => {
     const winterMatch = makeMatchEvent({ startDate: new Date(2026, 10, 5) })
     const summerMatch = makeMatchEvent({ id: '2', startDate: new Date(2026, 5, 15) })
