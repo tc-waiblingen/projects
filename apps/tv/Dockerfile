@@ -19,6 +19,7 @@ WORKDIR /app
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 
 # Copy package.json files for all workspace packages
+COPY packages/config/package.json ./packages/config/
 COPY packages/calendar/package.json ./packages/calendar/
 COPY packages/ebusy/package.json ./packages/ebusy/
 COPY apps/tv/package.json ./apps/tv/
@@ -36,6 +37,7 @@ COPY --from=deps /app/packages/ebusy/node_modules ./packages/ebusy/node_modules
 COPY --from=deps /app/apps/tv/node_modules ./apps/tv/node_modules
 
 # Copy shared package source and build it
+COPY packages/config ./packages/config
 COPY packages/calendar ./packages/calendar
 RUN cd packages/calendar && pnpm run build
 COPY packages/ebusy ./packages/ebusy
