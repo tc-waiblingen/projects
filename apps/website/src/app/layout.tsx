@@ -12,18 +12,30 @@ import { SponsorsSection } from '@/components/sections/sponsors-section'
 import type { Metadata } from 'next'
 import { getSiteData } from '@/lib/directus/fetchers'
 import { getEditAttr } from '@/lib/visual-editing'
+import { getSiteBaseUrl } from '@/lib/site-url'
 import './globals.css'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { globals } = await getSiteData()
+  const baseUrl = getSiteBaseUrl(globals.website)
+  const siteName = globals.club_name ?? globals.title ?? ''
 
   return {
-    metadataBase: new URL(globals.website || process.env.NEXT_PUBLIC_SITE_URL || 'https://tc-waiblingen.de'),
+    metadataBase: new URL(baseUrl),
     title: {
       default: globals.title ?? "",
       template: `%s · ${globals.title ?? ""}`,
     },
     description: globals.description ?? undefined,
+    openGraph: {
+      type: 'website',
+      url: baseUrl,
+      siteName,
+      locale: 'de_DE',
+    },
+    twitter: {
+      card: 'summary_large_image',
+    },
   }
 }
 
@@ -36,10 +48,7 @@ export default async function RootLayout({
 }>) {
   const { globals, navFooter, sponsors } = await getSiteData()
 
-  // Make sure that globals.website does not end with a slash
-  const baseUrl = globals.website?.endsWith('/')
-    ? globals.website.slice(0, -1)
-    : globals.website || '';
+  const baseUrl = getSiteBaseUrl(globals.website)
 
   const feedUrl = `${baseUrl}/api/rss/news`
 

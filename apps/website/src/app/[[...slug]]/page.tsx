@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { fetchAllPages, fetchPageData } from "@/lib/directus/fetchers"
+import { fetchAllPages, fetchPageData, getSiteData } from "@/lib/directus/fetchers"
+import { getSiteBaseUrl } from "@/lib/site-url"
+import { buildDynamicOgImage, resolveOgImageFromFileId } from "@/lib/og-image"
 import { BlockRenderer } from "@/components/blocks/BlockRenderer"
 import type { PageBlock } from "@/types/directus-schema"
 import { Heading } from "@/components/elements/heading"
@@ -65,11 +67,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const permalink = slugToPermalink(slug)
 
   try {
-    const page = await fetchPageData(permalink)
+    const [page, { globals }] = await Promise.all([
+      fetchPageData(permalink),
+      getSiteData(),
+    ])
     const visibility = await checkVisibility(page.status, page.published_at)
 
     const title = page.seo?.title || page.title
     const description = page.seo?.meta_description || undefined
+    const baseUrl = getSiteBaseUrl(globals.website)
+    const canonical = `${baseUrl}${permalink === '/' ? '' : permalink}`
+    const ogImage =
+      resolveOgImageFromFileId(page.seo?.og_image, title, baseUrl) ??
+      buildDynamicOgImage(title, undefined, baseUrl)
 
     // Preview content should not be indexed
     const isPreview = visibility.previewReason !== null
@@ -77,11 +87,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {
       title,
       description,
-      openGraph: page.seo?.og_image
-        ? {
-          images: [{ url: page.seo.og_image }],
-        }
-        : undefined,
+      alternates: { canonical },
+      openGraph: {
+        type: 'website',
+        url: canonical,
+        siteName: globals.club_name ?? globals.title ?? undefined,
+        locale: 'de_DE',
+        images: [ogImage],
+      },
       robots: {
         index: isPreview ? false : !page.seo?.no_index,
         follow: !page.seo?.no_follow,

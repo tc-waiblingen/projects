@@ -1,7 +1,9 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import { notFound, redirect } from "next/navigation"
-import { fetchAllPublishedPosts, fetchPostForPreview } from "@/lib/directus/fetchers"
+import { fetchAllPublishedPosts, fetchPostForPreview, getSiteData } from "@/lib/directus/fetchers"
+import { getSiteBaseUrl } from "@/lib/site-url"
+import { buildDynamicOgImage, resolveOgImageFromDirectusFile, resolveOgImageFromFileId } from "@/lib/og-image"
 import { DocumentLeftAligned } from "@/components/sections/document-left-aligned"
 import type { DirectusFile, PostBlock } from "@/types/directus-schema"
 import { BlockRenderer } from "@/components/blocks/BlockRenderer"
@@ -56,7 +58,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Beitrag nicht gefunden" }
   }
 
-  const post = await fetchPostForPreview(parsed.slug, parsed.year)
+  const [post, { globals }] = await Promise.all([
+    fetchPostForPreview(parsed.slug, parsed.year),
+    getSiteData(),
+  ])
 
   if (!post) {
     return { title: "Beitrag nicht gefunden" }
@@ -66,6 +71,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const title = post.seo?.title || post.title
   const description = post.seo?.meta_description || post.description || undefined
+  const baseUrl = getSiteBaseUrl(globals.website)
+  const year = post.published_at
+    ? new Date(post.published_at).getFullYear().toString()
+    : parsed.year
+  const canonical = year
+    ? `${baseUrl}/news/${year}/${post.slug}`
+    : `${baseUrl}/news/${post.slug}`
+
+  const formattedDate = post.published_at
+    ? new Date(post.published_at).toLocaleDateString('de-DE', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : undefined
+
+  const ogImage =
+    resolveOgImageFromFileId(post.seo?.og_image, title, baseUrl) ??
+    resolveOgImageFromDirectusFile(post.image, title, baseUrl) ??
+    buildDynamicOgImage(title, formattedDate, baseUrl)
 
   // Preview content should not be indexed
   const isPreview = visibility.previewReason !== null
@@ -73,9 +98,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
-    openGraph: post.seo?.og_image
-      ? { images: [{ url: post.seo.og_image }] }
-      : undefined,
+    alternates: { canonical },
+    openGraph: {
+      type: 'article',
+      url: canonical,
+      siteName: globals.club_name ?? globals.title ?? undefined,
+      locale: 'de_DE',
+      publishedTime: post.published_at ?? undefined,
+      modifiedTime: post.date_updated ?? post.published_at ?? undefined,
+      images: [ogImage],
+    },
     robots: {
       index: isPreview ? false : !post.seo?.no_index,
       follow: !post.seo?.no_follow,
