@@ -1,22 +1,24 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 export function FooterPrintInfo() {
-  const [info, setInfo] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const now = new Date()
-    const timestamp = now.toLocaleString('de-DE', {
+    const node = ref.current
+    if (!node) return
+    const timestamp = new Date().toLocaleString('de-DE', {
       dateStyle: 'medium',
       timeStyle: 'short',
     })
-    setInfo(`${window.location.href} — ${timestamp}`)
+    node.textContent = `${window.location.href} — ${timestamp}`
   }, [])
 
   return (
-    <div className="hidden py-4 text-center text-xs text-muted print:block">
-      {info}
-    </div>
+    <div
+      ref={ref}
+      className="hidden py-4 text-center text-xs text-muted print:block"
+    />
   )
 }

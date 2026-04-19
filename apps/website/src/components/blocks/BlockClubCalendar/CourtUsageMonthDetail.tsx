@@ -1,7 +1,7 @@
 'use client'
 
 import type { CourtUsageMonth } from '@tcw/calendar'
-import { CourtUsageDayDetail, formatCourtType } from './CourtUsageDayDetail'
+import { CourtUsageDayDetail } from './CourtUsageDayDetail'
 
 interface CourtUsageMonthDetailProps {
   month: CourtUsageMonth

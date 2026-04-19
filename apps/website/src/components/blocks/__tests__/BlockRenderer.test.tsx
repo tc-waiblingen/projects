@@ -48,6 +48,10 @@ vi.mock('../BlockClubCalendar', () => ({
   BlockClubCalendar: () => <div data-testid="block-club-calendar">Calendar</div>,
 }))
 
+vi.mock('../BlockClubOffice', () => ({
+  BlockClubOffice: () => <div data-testid="block-club-office">Club Office</div>,
+}))
+
 vi.mock('../BlockMatchResults', () => ({
   BlockMatchResults: () => <div data-testid="block-match-results">Match Results</div>,
 }))
@@ -85,6 +89,7 @@ describe('BlockRenderer', () => {
       { collection: 'block_team', testId: 'block-team' },
       { collection: 'block_trainers', testId: 'block-trainers' },
       { collection: 'block_club_calendar', testId: 'block-club-calendar' },
+      { collection: 'block_club_office', testId: 'block-club-office' },
       { collection: 'block_match_results', testId: 'block-match-results' },
       { collection: 'block_instagram', testId: 'block-instagram' },
       { collection: 'block_iframe', testId: 'block-iframe' },

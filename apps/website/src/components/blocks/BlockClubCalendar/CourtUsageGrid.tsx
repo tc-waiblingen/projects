@@ -28,10 +28,6 @@ function formatMonthLabel(date: Date): string {
   return date.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })
 }
 
-function formatCourtTypeLabel(courtType: 'tennis_indoor' | 'tennis_outdoor'): string {
-  return courtType === 'tennis_indoor' ? 'Halle' : 'Freiplätze'
-}
-
 function getSuperscript(day: CourtUsageDay, mode: 'courts' | 'teams'): string {
   if (day.tournament) return 'T'
   const am = mode === 'courts' ? day.am.courts : day.am.teams
