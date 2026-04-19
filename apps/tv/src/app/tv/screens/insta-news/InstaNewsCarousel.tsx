@@ -80,10 +80,10 @@ export function InstaNewsCarousel({ content, nextIndex }: InstaNewsCarouselProps
     if (!currentContent) return
 
     const startTime = Date.now()
+    const video = videoRef.current
 
     if (currentContent.media_type === 'VIDEO') {
       // Video - will auto-advance on end
-      const video = videoRef.current
       if (video) {
         video.currentTime = 0
         video.play().catch(() => {})
@@ -119,6 +119,7 @@ export function InstaNewsCarousel({ content, nextIndex }: InstaNewsCarouselProps
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
       if (progressIntervalRef.current) clearInterval(progressIntervalRef.current)
+      if (video) video.onended = null
     }
   }, [currentPosition, content, advanceCarousel])
 
@@ -148,8 +149,9 @@ export function InstaNewsCarousel({ content, nextIndex }: InstaNewsCarouselProps
   }
 
   // Single item case
-  if (content.length === 1) {
-    const item = content[0]!
+  const [soloItem] = content
+  if (content.length === 1 && soloItem) {
+    const item = soloItem
     return (
       <div className="relative h-full w-full">
         <div className="absolute left-1/2 top-1/2 h-[75vh] w-[25vw] -translate-x-1/2 -translate-y-1/2">

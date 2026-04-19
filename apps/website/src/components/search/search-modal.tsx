@@ -196,6 +196,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       <div className="font-medium text-tcw-accent-900 dark:text-white">
                         {result.meta.title || 'Ohne Titel'}
                       </div>
+                      {/* Pagefind excerpt; wraps query matches in <mark> tags — Pagefind escapes user input before indexing. */}
                       <div
                         className="mt-1 line-clamp-2 text-sm text-tcw-accent-600 dark:text-tcw-accent-300"
                         dangerouslySetInnerHTML={{ __html: result.excerpt }}

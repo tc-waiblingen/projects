@@ -24,7 +24,6 @@ export {
   fetchTournaments,
   fetchMatchResults,
   DIRECTUS_FILE_FIELDS,
-  _testHelpers,
 } from './fetchers'
 
 // Nr-client (nuliga-reader)

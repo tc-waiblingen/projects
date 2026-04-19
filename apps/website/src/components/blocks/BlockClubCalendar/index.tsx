@@ -85,14 +85,17 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
   const { id, headline, tagline, alignment, filter_category, style } = data
 
   const dateRange = getCalendarDateRange()
-  const events = await fetchAllCalendarEvents(dateRange)
 
   if (style === 'court_usage') {
-    const courts = await fetchCourtsWithSponsors()
+    const [events, courts, matchChanges] = await Promise.all([
+      fetchAllCalendarEvents(dateRange),
+      fetchCourtsWithSponsors(),
+      fetchMatchChangeGroups(dateRange),
+    ])
     const indoorCourtCount = courts.filter((c) => c.type === 'tennis_indoor').length
     const outdoorCourtCount = courts.filter((c) => c.type === 'tennis_outdoor').length
 
-    const { groups: changeGroups, matchesLastRefreshedAt } = await fetchMatchChangeGroups(dateRange)
+    const { groups: changeGroups, matchesLastRefreshedAt } = matchChanges
     const matchesLastRefreshedAtDisplay = matchesLastRefreshedAt
       ? new Date(matchesLastRefreshedAt).toLocaleString('de-DE', {
           dateStyle: 'medium',
@@ -115,6 +118,7 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
     )
   }
 
+  const events = await fetchAllCalendarEvents(dateRange)
   const teamEntries = extractTeamEntries(events)
   const serverNow = dateRange.now.getTime()
 

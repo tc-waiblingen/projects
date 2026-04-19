@@ -14,19 +14,6 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "printWidth": 120,
-    "plugins": [
-      "prettier-plugin-organize-imports",
-      "prettier-plugin-tailwindcss"
-    ],
-    "tailwindStylesheet": "./src/app/globals.css",
-    "tailwindFunctions": [
-      "clsx"
-    ]
-  },
   "dependencies": {
     "@directus/sdk": "^21.2.0",
     "@node-rs/argon2": "^2.0.2",
@@ -34,7 +21,7 @@
     "better-sqlite3": "^11.10.0",
     "clsx": "^2.1.1",
     "jose": "^6.1.0",
-    "next": "^16.2.1",
+    "next": "^16.2.4",
     "openid-client": "^6.8.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -43,6 +30,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",
+    "@tcw/config": "workspace:*",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

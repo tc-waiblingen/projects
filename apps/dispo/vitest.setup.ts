@@ -1,1 +1,1 @@
-import '@testing-library/jest-dom/vitest'
+import '@tcw/config/vitest-setup'

@@ -1,0 +1,31 @@
+{
+  "name": "@tcw/config",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./eslint": "./eslint.base.mjs",
+    "./vitest": "./vitest.base.ts",
+    "./vitest-setup": "./vitest.setup.ts",
+    "./postcss": "./postcss.config.mjs",
+    "./prettier": "./prettier.config.mjs"
+  },
+  "files": [
+    "tsconfig.base.json",
+    "eslint.base.mjs",
+    "vitest.base.ts",
+    "vitest.setup.ts",
+    "postcss.config.mjs",
+    "prettier.config.mjs"
+  ],
+  "peerDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6",
+    "@vitejs/plugin-react": "^5",
+    "eslint": "^9",
+    "eslint-config-next": "^16",
+    "vitest": "^4"
+  }
+}

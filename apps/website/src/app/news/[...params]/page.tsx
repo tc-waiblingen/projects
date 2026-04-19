@@ -40,13 +40,13 @@ export async function generateStaticParams() {
   const posts = await fetchAllPublishedPosts()
 
   return posts
-    .filter((post) => post.slug)
+    .filter((post): post is typeof post & { slug: string } => Boolean(post.slug))
     .map((post) => {
       if (post.published_at) {
         const year = new Date(post.published_at).getFullYear().toString()
-        return { params: [year, post.slug!] }
+        return { params: [year, post.slug] }
       }
-      return { params: [post.slug!] }
+      return { params: [post.slug] }
     })
 }
 

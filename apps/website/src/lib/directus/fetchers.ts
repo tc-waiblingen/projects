@@ -18,7 +18,7 @@ export const fetchAllPages = async () => {
   return pages
 }
 
-export const fetchPageData = async (permalink: string /*, postPage = 1 */) => {
+const fetchPageDataUncached = async (permalink: string /*, postPage = 1 */) => {
   const { directus, readItems } = getDirectus()
 
   try {
@@ -51,6 +51,8 @@ export const fetchPageData = async (permalink: string /*, postPage = 1 */) => {
     throw new Error("Failed to fetch page data")
   }
 }
+
+export const fetchPageData = cache(fetchPageDataUncached)
 
 /**
  * Fetches global site data, header navigation, and footer navigation.
@@ -258,56 +260,11 @@ export const fetchAllPublishedPosts = async () => {
   }
 }
 
-export const fetchPostBySlug = async (slug: string, year?: string) => {
-  const { directus, readItems } = getDirectus()
-
-  try {
-    const posts = await directus.request(
-      readItems("posts", {
-        filter: {
-          status: { _eq: "published" },
-          slug: { _eq: slug },
-        },
-        limit: 1,
-        fields: [
-          "*",
-          "blocks.*",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
-          "blocks.item.*.*.*.*" as any,
-          { image: [...DIRECTUS_FILE_FIELDS], author: ["first_name", "last_name"] },
-        ],
-        deep: {
-          blocks: { _sort: ["sort"], _filter: { hide_block: { _neq: true } } },
-        },
-      }),
-    )
-
-    if (!posts.length) {
-      return null
-    }
-
-    const post = posts[0] as unknown as Post
-
-    // If year is provided, verify it matches
-    if (year && post.published_at) {
-      const postYear = new Date(post.published_at).getFullYear().toString()
-      if (postYear !== year) {
-        return null
-      }
-    }
-
-    return post
-  } catch (error) {
-    console.error("Error fetching post:", error)
-    throw new Error("Failed to fetch post")
-  }
-}
-
 /**
  * Fetches a post by slug without status filtering, for preview purposes.
  * Used to display drafts and scheduled posts in development mode.
  */
-export const fetchPostForPreview = async (slug: string, year?: string) => {
+const fetchPostForPreviewUncached = async (slug: string, year?: string) => {
   const { directus, readItems } = getDirectus()
 
   try {
@@ -351,32 +308,7 @@ export const fetchPostForPreview = async (slug: string, year?: string) => {
   }
 }
 
-export const fetchPostBySlugOnly = async (slug: string) => {
-  const { directus, readItems } = getDirectus()
-
-  try {
-    const posts = await directus.request(
-      readItems("posts", {
-        filter: {
-          status: { _eq: "published" },
-          slug: { _eq: slug },
-          published_at: { _null: true },
-        },
-        limit: 1,
-        fields: ["*", { image: [...DIRECTUS_FILE_FIELDS], author: ["first_name", "last_name"] }],
-      }),
-    )
-
-    if (!posts.length) {
-      return null
-    }
-
-    return posts[0] as unknown as Post
-  } catch (error) {
-    console.error("Error fetching post:", error)
-    throw new Error("Failed to fetch post")
-  }
-}
+export const fetchPostForPreview = cache(fetchPostForPreviewUncached)
 
 export const fetchPostsForRSS = async (limit?: number) => {
   const { directus, readItems } = getDirectus()

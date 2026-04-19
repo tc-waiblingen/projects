@@ -96,9 +96,9 @@ npm run generate:types   # Regenerate Directus types
 
 ## Monorepo Structure
 
-- **pnpm** (9.15.4) for package management with workspaces
+- **pnpm** for package management with workspaces (tool versions pinned in `.config/mise/config.toml`)
 - **Turbo** for build orchestration — `build` tasks depend on `^build` (packages first)
-- Package scopes: `@tcw/website`, `@tcw/tv`, `@tcw/calendar`
+- Package scopes: `@tcw/website`, `@tcw/tv`, `@tcw/dispo`, `@tcw/calendar`
 
 **Important:** Shared packages (e.g., `@tcw/calendar`) must be rebuilt after making changes for apps to pick up the updates:
 ```bash

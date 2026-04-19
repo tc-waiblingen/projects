@@ -128,7 +128,7 @@ export function SitePlanMap({ areaMapId, courtSponsorsMap }: SitePlanMapProps) {
 
   return (
     <div className="relative">
-      {/* Inline SVG */}
+      {/* SVG from our own /api/images endpoint (admin-uploaded Directus assets; not user input). */}
       <div
         ref={containerRef}
         className="w-full [&_svg]:h-auto [&_svg]:w-full"
