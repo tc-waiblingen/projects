@@ -110,12 +110,13 @@ export async function GET(request: NextRequest) {
       const homeAway = metadata.isHome ? 'Heimspiel' : 'Auswärtsspiel'
 
       // Only show score in title if match has been played
+      const titlePrefix = metadata.group || metadata.league
       const itemTitle = matchPlayed
-        ? (metadata.league
-          ? `${metadata.league}: ${metadata.homeTeam} vs. ${metadata.awayTeam} - ${metadata.result}`
+        ? (titlePrefix
+          ? `${titlePrefix}: ${metadata.homeTeam} vs. ${metadata.awayTeam} - ${metadata.result}`
           : `${metadata.homeTeam} vs. ${metadata.awayTeam} - ${metadata.result}`)
-        : (metadata.league
-          ? `${metadata.league}: ${metadata.homeTeam} vs. ${metadata.awayTeam}`
+        : (titlePrefix
+          ? `${titlePrefix}: ${metadata.homeTeam} vs. ${metadata.awayTeam}`
           : `${metadata.homeTeam} vs. ${metadata.awayTeam}`)
 
       const itemLink = metadata.reportUrl || feedLink
