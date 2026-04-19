@@ -11,7 +11,7 @@ export const fetchAllPages = async () => {
   const pages = await directus.request(
     readItems("pages", {
       filter: { status: { _eq: "published" } },
-      fields: ["permalink"],
+      fields: ["permalink", "title", "date_updated"],
     }),
   )
 
@@ -249,7 +249,7 @@ export const fetchAllPublishedPosts = async () => {
     const posts = await directus.request(
       readItems("posts", {
         filter: { status: { _eq: "published" } },
-        fields: ["slug", "published_at"],
+        fields: ["slug", "title", "published_at"],
       }),
     )
 

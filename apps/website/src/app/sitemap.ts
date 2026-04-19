@@ -1,17 +1,22 @@
 import type { MetadataRoute } from 'next'
 import { fetchAllPages, fetchAllPublishedPosts } from '@/lib/directus/fetchers'
+import { getSiteBaseUrl } from '@/lib/site-url'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://tc-waiblingen.de'
+  const baseUrl = getSiteBaseUrl()
 
-  // Fetch all published pages
   const pages = await fetchAllPages()
   const pageUrls = pages.map((page) => ({
     url: page.permalink === '/' ? baseUrl : `${baseUrl}${page.permalink}`,
+    lastModified: page.date_updated ? new Date(page.date_updated) : undefined,
     changeFrequency: 'weekly' as const,
   }))
 
-  // Fetch all published posts
+  const newsIndexUrl = {
+    url: `${baseUrl}/news`,
+    changeFrequency: 'weekly' as const,
+  }
+
   const posts = await fetchAllPublishedPosts()
   const postUrls = posts
     .filter((post) => post.slug)
@@ -26,5 +31,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     })
 
-  return [...pageUrls, ...postUrls]
+  return [...pageUrls, newsIndexUrl, ...postUrls]
 }
