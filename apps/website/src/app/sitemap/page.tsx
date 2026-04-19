@@ -77,7 +77,13 @@ export default async function SitemapPage() {
               Alle News
             </Link>
           </div>
-          {[...postsByYear.entries()].map(([year, yearPosts]) => (
+          {[...postsByYear.entries()]
+            .sort(([a], [b]) => {
+              if (a === 'Ohne Datum') return 1
+              if (b === 'Ohne Datum') return -1
+              return Number(b) - Number(a)
+            })
+            .map(([year, yearPosts]) => (
             <div key={year} className="flex flex-col gap-3">
               <h3 className="text-lg text-body">{year}</h3>
               <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-x-8">
