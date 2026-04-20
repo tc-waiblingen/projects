@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { fetchMatchResults } from '@/lib/directus/calendar-fetchers'
 import { getDirectus } from '@/lib/directus/directus'
 import { isMatchPlayed } from '@/lib/match-utils'
+import { publicOrigin } from '@/lib/public-url'
 import type { MatchEventMetadata } from '@tcw/calendar'
 import type { Global } from '@/types/directus-schema'
 
@@ -70,10 +71,9 @@ export async function GET(request: NextRequest) {
       })
       : allResults
 
-    // Use request URL to determine the current host
-    const requestUrl = new URL(request.url)
-    const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`
+    const baseUrl = publicOrigin(request)
     const imageUrl = `${baseUrl}/assets/logo/tcw-crest.png`
+    const selfUrl = `${baseUrl}${new URL(request.url).pathname}${new URL(request.url).search}`
 
     // Derive a display name for the selected team from the first match's metadata
     const teamLabel = teamId
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
     <description>${escapeXml(feedDescription)}</description>
     <language>de-de</language>
     <lastBuildDate>${formatRFC822Date(new Date())}</lastBuildDate>
-    <atom:link href="${escapeXml(request.url)}" rel="self" type="application/rss+xml"/>
+    <atom:link href="${escapeXml(selfUrl)}" rel="self" type="application/rss+xml"/>
     <image>
       <url>${escapeXml(imageUrl)}</url>
       <title>${escapeXml(globalSettings.clubName)}</title>

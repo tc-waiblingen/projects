@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fetchPostsForRSS } from '@/lib/directus/fetchers'
 import { getDirectus } from '@/lib/directus/directus'
+import { publicOrigin } from '@/lib/public-url'
 import type { DirectusFile, Global } from '@/types/directus-schema'
 
 function escapeXml(text: string): string {
@@ -89,9 +90,7 @@ export async function GET(request: NextRequest) {
       fetchPostsForRSS(10),
     ])
 
-    // Use request URL to determine the current host
-    const requestUrl = new URL(request.url)
-    const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`
+    const baseUrl = publicOrigin(request)
     const imageUrl = `${baseUrl}/assets/logo/tcw-crest.png`
     const feedUrl = `${baseUrl}/api/rss/news`
 
