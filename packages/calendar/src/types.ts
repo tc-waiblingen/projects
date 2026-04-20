@@ -53,6 +53,7 @@ export interface TournamentEventMetadata {
   entryFee?: string
   callForEntriesUrl?: string
   registrationUrl?: string
+  tournamentUrl?: string
   competitions?: TournamentCompetition[]
 }
 

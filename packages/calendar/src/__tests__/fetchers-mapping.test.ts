@@ -224,7 +224,20 @@ describe('mapNrTournament', () => {
     expect(meta.registrationDeadline).toBe('24.06.2026')
   })
 
-  it('sets url from registrationUrl', () => {
+  it('prefers tournamentUrl for event.url', () => {
+    const event = mapNrTournament(
+      makeNrTournament({
+        tournamentUrl: 'https://tennis.de/detail/42',
+        registrationUrl: 'https://example/register',
+      }),
+    )
+    expect(event!.url).toBe('https://tennis.de/detail/42')
+    const meta = event!.metadata as TournamentEventMetadata
+    expect(meta.tournamentUrl).toBe('https://tennis.de/detail/42')
+    expect(meta.registrationUrl).toBe('https://example/register')
+  })
+
+  it('falls back to registrationUrl when tournamentUrl is missing', () => {
     const event = mapNrTournament(
       makeNrTournament({ registrationUrl: 'https://example/register' }),
     )

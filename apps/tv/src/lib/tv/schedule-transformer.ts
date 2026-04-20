@@ -32,6 +32,7 @@ export interface TvEvent {
   dateLabel?: string
   registrationUrl?: string | null
   callForEntriesUrl?: string | null
+  tournamentUrl?: string | null
   imageUrl?: string | null
   website?: string | null
 }
@@ -119,6 +120,7 @@ function normalizeEvent(event: ExpandedCalendarEvent): TvEvent | null {
         dateLabel,
         registrationUrl: meta.registrationUrl,
         callForEntriesUrl: meta.callForEntriesUrl,
+        tournamentUrl: meta.tournamentUrl,
       }
     }
     default:

@@ -638,6 +638,7 @@ function mapNrTournament(tournament: NrTournament): CalendarEvent | null {
     entryFee: tournament.entryFee,
     callForEntriesUrl: tournament.callForEntriesUrl,
     registrationUrl: tournament.registrationUrl,
+    tournamentUrl: tournament.tournamentUrl,
     competitions: tournament.competitions,
   };
 
@@ -657,7 +658,7 @@ function mapNrTournament(tournament: NrTournament): CalendarEvent | null {
     endTime: null,
     isAllDay: true,
     isMultiDay,
-    url: tournament.registrationUrl ?? null,
+    url: tournament.tournamentUrl ?? tournament.registrationUrl ?? null,
     imageUrl: null,
     metadata,
     expandDays: true,

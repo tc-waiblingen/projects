@@ -51,6 +51,7 @@ export interface NrTournament {
   registrationDeadline?: string
   registrationUrl?: string
   callForEntriesUrl?: string
+  tournamentUrl?: string
   competitions?: NrCompetition[]
   /**
    * Actual playing days inside [dateStart, dateEnd] for tournaments whose

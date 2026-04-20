@@ -27,6 +27,7 @@ export default async function ClubSchedulePage() {
             groupQrCode?: string | null
             callForEntriesQrCode?: string | null
             registrationQrCode?: string | null
+            tournamentQrCode?: string | null
           }
 
           if (event.source === 'match' && event.groupUrl) {
@@ -39,6 +40,9 @@ export default async function ClubSchedulePage() {
             }
             if (event.registrationUrl) {
               qrData.registrationQrCode = await generateQrCodeForView(event.registrationUrl, 'small')
+            }
+            if (event.tournamentUrl) {
+              qrData.tournamentQrCode = await generateQrCodeForView(event.tournamentUrl, 'small')
             }
           }
 
@@ -170,7 +174,7 @@ export default async function ClubSchedulePage() {
                                 {event.source === 'match' && event.groupUrl && 'groupQrCode' in event && event.groupQrCode && (
                                   <QrCode linkUrl={event.groupUrl} qrCodeDataUrl={event.groupQrCode} label="Gruppe" size="small" />
                                 )}
-                                {event.source === 'tournament' && (event.registrationUrl || event.callForEntriesUrl) && (
+                                {event.source === 'tournament' && (event.registrationUrl || event.callForEntriesUrl || event.tournamentUrl) && (
                                   <div className="flex shrink-0 gap-3">
                                     {'callForEntriesQrCode' in event && event.callForEntriesQrCode && event.callForEntriesUrl && (
                                       <QrCode
@@ -185,6 +189,14 @@ export default async function ClubSchedulePage() {
                                         linkUrl={event.registrationUrl}
                                         qrCodeDataUrl={event.registrationQrCode}
                                         label="Anmeldung"
+                                        size="small"
+                                      />
+                                    )}
+                                    {'tournamentQrCode' in event && event.tournamentQrCode && event.tournamentUrl && (
+                                      <QrCode
+                                        linkUrl={event.tournamentUrl}
+                                        qrCodeDataUrl={event.tournamentQrCode}
+                                        label="Details"
                                         size="small"
                                       />
                                     )}
