@@ -123,10 +123,12 @@ export async function GET(request: NextRequest) {
 
       // Build description with links
       const descParts: string[] = []
-      if (metadata.league && metadata.leagueUrl) {
-        descParts.push(`<p><a href="${metadata.leagueUrl}">${metadata.league}</a></p>`)
-      } else if (metadata.league) {
-        descParts.push(`<p>${metadata.league}</p>`)
+      const contextLabel = metadata.group || metadata.league
+      const contextUrl = metadata.group ? metadata.groupUrl : metadata.leagueUrl
+      if (contextLabel && contextUrl) {
+        descParts.push(`<p><a href="${contextUrl}">${contextLabel}</a></p>`)
+      } else if (contextLabel) {
+        descParts.push(`<p>${contextLabel}</p>`)
       }
 
       const homeLink = metadata.homeTeamUrl
