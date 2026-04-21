@@ -5,6 +5,8 @@ import { welcomeGuestsScreen } from './screen'
 
 const { url: SCREEN_URL, title: SCREEN_TITLE, screenMeta: { duration: SCREEN_DURATION } } = welcomeGuestsScreen
 
+export const revalidate = 300
+
 export default async function WelcomeGuestsPage() {
   const data = await fetchWelcomeGuestsData()
   const nextIndex = await getNextScreenIndex(SCREEN_URL)
@@ -41,6 +43,7 @@ export default async function WelcomeGuestsPage() {
                         <p className="tv-body text-muted">
                           zu Gast bei unseren {m.homeTeamShortName}
                           {m.startTime && ` · Beginn ${m.startTime} Uhr`}
+                          {m.courts.length > 0 && ` auf ${m.courts.join(', ')}`}
                         </p>
                       </li>
                     ))}

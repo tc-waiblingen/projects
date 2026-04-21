@@ -15,6 +15,7 @@ import {
   type EbusyReservation,
 } from '@tcw/ebusy'
 import { cache } from 'react'
+import { fetchTodayCourtAssignments } from './dispo-fetcher'
 import { transformMatchResultsForTv, type MatchResultsData } from './match-results-transformer'
 import { generateQrCodeForView } from './qr-code'
 import { transformScheduleForTv, type ScheduleData } from './schedule-transformer'
@@ -294,8 +295,12 @@ export const fetchWelcomeGuestsData = cache(async (): Promise<WelcomeGuestsDispl
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
   const sevenDaysAhead = new Date(startOfDay.getTime() + WIDE_MATCH_WINDOW_MS)
 
-  const events = await fetchAllCalendarEvents({ from: startOfDay, to: sevenDaysAhead })
+  const [events, courtAssignments] = await Promise.all([
+    fetchAllCalendarEvents({ from: startOfDay, to: sevenDaysAhead }),
+    fetchTodayCourtAssignments(),
+  ])
   const data = transformWelcomeGuestsForTv(events, now)
+  const matches = data.matches.map((m) => ({ ...m, courts: courtAssignments.get(m.id) ?? [] }))
 
   let tournament: TournamentGreetingWithQr | null = null
   if (data.tournament) {
@@ -306,7 +311,7 @@ export const fetchWelcomeGuestsData = cache(async (): Promise<WelcomeGuestsDispl
     tournament = { ...data.tournament, tournamentQrCode, callForEntriesQrCode }
   }
 
-  return { matches: data.matches, tournament }
+  return { matches, tournament }
 })
 
 /**

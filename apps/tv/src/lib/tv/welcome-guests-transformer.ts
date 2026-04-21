@@ -21,6 +21,7 @@ export interface MatchGreeting {
   guestClubName: string
   homeTeamShortName: string
   startTime: string | null
+  courts: string[]
 }
 
 export interface TournamentGreeting {
@@ -136,6 +137,7 @@ function buildMatchGreeting(event: CalendarEvent): MatchGreeting | null {
     guestClubName,
     homeTeamShortName,
     startTime: event.startTime,
+    courts: [],
   }
 }
 
