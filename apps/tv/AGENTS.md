@@ -253,6 +253,7 @@ All screens are at `http://localhost:3001/tv/screens/<name>`:
 
 | Screen | URL |
 |--------|-----|
+| Welcome Guests | `/tv/screens/welcome-guests` |
 | Match Results | `/tv/screens/match-results` |
 | Club Schedule | `/tv/screens/club-schedule` |
 | Court Status | `/tv/screens/court-status` |

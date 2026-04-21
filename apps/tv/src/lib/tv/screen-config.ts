@@ -25,6 +25,19 @@ export interface Screen {
  */
 export const SCREENS: Screen[] = [
   {
+    url: '/tv/screens/welcome-guests',
+    title: 'Herzlich willkommen',
+    screenMeta: {
+      sortKey: 5,
+      visible: true,
+      duration: 20000,
+      illustrationPath: '/assets/tv/illustrations/welcome-guests-illustration.svg',
+      illustrationAlt: 'Willkommen',
+      angle: 90,
+      rayLength: 200,
+    },
+  },
+  {
     url: '/tv/screens/insta-news',
     title: 'Insta-News',
     screenMeta: {

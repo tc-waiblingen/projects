@@ -17,6 +17,12 @@ import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
 import { fetchInstagramFeed } from '@/lib/instagram/fetchers'
 import { transformScheduleForTv, type ScheduleData } from './schedule-transformer'
 import { transformMatchResultsForTv, type MatchResultsData } from './match-results-transformer'
+import {
+  transformWelcomeGuestsForTv,
+  type TournamentGreeting,
+  type WelcomeGuestsData,
+} from './welcome-guests-transformer'
+import { generateQrCodeForView } from './qr-code'
 
 const COURT_STATUS_REVALIDATE_SECONDS = 300
 
@@ -249,6 +255,41 @@ export const fetchScheduleData = cache(async (): Promise<ScheduleData> => {
   })
 
   return transformScheduleForTv(events)
+})
+
+export interface TournamentGreetingWithQr extends TournamentGreeting {
+  tournamentQrCode: string | null
+  callForEntriesQrCode: string | null
+}
+
+export interface WelcomeGuestsDisplayData extends Omit<WelcomeGuestsData, 'tournament'> {
+  tournament: TournamentGreetingWithQr | null
+}
+
+/**
+ * Fetch welcome-guests data for TV display (today's home-match opponents
+ * and tournament participants). Pre-generates QR codes for the tournament
+ * links so the page stays a simple server component.
+ */
+export const fetchWelcomeGuestsData = cache(async (): Promise<WelcomeGuestsDisplayData> => {
+  const now = new Date()
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
+  // TEMP: widened from end-of-today to 7 days ahead for visual testing.
+  const sevenDaysAhead = new Date(startOfDay.getTime() + 7 * 24 * 60 * 60 * 1000)
+
+  const events = await fetchAllCalendarEvents({ from: startOfDay, to: sevenDaysAhead })
+  const data = transformWelcomeGuestsForTv(events, now)
+
+  let tournament: TournamentGreetingWithQr | null = null
+  if (data.tournament) {
+    const [tournamentQrCode, callForEntriesQrCode] = await Promise.all([
+      data.tournament.tournamentUrl ? generateQrCodeForView(data.tournament.tournamentUrl, 'large') : null,
+      data.tournament.callForEntriesUrl ? generateQrCodeForView(data.tournament.callForEntriesUrl, 'large') : null,
+    ])
+    tournament = { ...data.tournament, tournamentQrCode, callForEntriesQrCode }
+  }
+
+  return { matches: data.matches, tournament }
 })
 
 /**
