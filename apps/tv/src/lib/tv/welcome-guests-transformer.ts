@@ -22,6 +22,7 @@ export interface MatchGreeting {
   homeTeamShortName: string
   startTime: string | null
   courts: string[]
+  groupUrl: string | null
 }
 
 export interface TournamentGreeting {
@@ -138,6 +139,7 @@ function buildMatchGreeting(event: CalendarEvent): MatchGreeting | null {
     homeTeamShortName,
     startTime: event.startTime,
     courts: [],
+    groupUrl: meta.groupUrl ?? null,
   }
 }
 

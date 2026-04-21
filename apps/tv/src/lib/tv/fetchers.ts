@@ -267,7 +267,12 @@ export interface TournamentGreetingWithQr extends TournamentGreeting {
   callForEntriesQrCode: string | null
 }
 
-export interface WelcomeGuestsDisplayData extends Omit<WelcomeGuestsData, 'tournament'> {
+export interface MatchGreetingWithQr extends Omit<WelcomeGuestsData['matches'][number], never> {
+  groupQrCode: string | null
+}
+
+export interface WelcomeGuestsDisplayData extends Omit<WelcomeGuestsData, 'tournament' | 'matches'> {
+  matches: MatchGreetingWithQr[]
   tournament: TournamentGreetingWithQr | null
 }
 
@@ -300,7 +305,13 @@ export const fetchWelcomeGuestsData = cache(async (): Promise<WelcomeGuestsDispl
     fetchTodayCourtAssignments(),
   ])
   const data = transformWelcomeGuestsForTv(events, now)
-  const matches = data.matches.map((m) => ({ ...m, courts: courtAssignments.get(m.id) ?? [] }))
+  const matches: MatchGreetingWithQr[] = await Promise.all(
+    data.matches.map(async (m) => ({
+      ...m,
+      courts: courtAssignments.get(m.id) ?? [],
+      groupQrCode: m.groupUrl ? await generateQrCodeForView(m.groupUrl, 'small') : null,
+    })),
+  )
 
   let tournament: TournamentGreetingWithQr | null = null
   if (data.tournament) {

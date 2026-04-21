@@ -36,15 +36,27 @@ export default async function WelcomeGuestsPage() {
                   ) : (
                     <h2 className="tv-title font-light text-neutral-900">Wir begrüßen unsere Gäste</h2>
                   )}
-                  <ul className="flex flex-col gap-8">
+                  <ul className="grid grid-cols-[auto_auto] items-center justify-center gap-x-8 gap-y-8">
                     {data.matches.map((m) => (
-                      <li key={m.id} className="flex flex-col gap-1">
-                        <p className="tv-message font-semibold text-neutral-900">{m.guestClubName}</p>
-                        <p className="tv-body text-muted">
-                          zu Gast bei unseren {m.homeTeamShortName}
-                          {m.startTime && ` · Beginn ${m.startTime} Uhr`}
-                          {m.courts.length > 0 && ` auf ${m.courts.join(', ')}`}
-                        </p>
+                      <li key={m.id} className="col-span-2 grid grid-cols-subgrid items-center">
+                        <div className="flex flex-col gap-1">
+                          <p className="tv-message font-semibold text-neutral-900">{m.guestClubName}</p>
+                          <p className="tv-body text-muted">
+                            zu Gast bei unseren {m.homeTeamShortName}
+                            {m.startTime && ` · Beginn ${m.startTime} Uhr`}
+                            {m.courts.length > 0 && ` auf ${m.courts.join(', ')}`}
+                          </p>
+                        </div>
+                        {m.groupQrCode && m.groupUrl ? (
+                          <QrCode
+                            linkUrl={m.groupUrl}
+                            qrCodeDataUrl={m.groupQrCode}
+                            label="Tabelle"
+                            size="small"
+                          />
+                        ) : (
+                          <div />
+                        )}
                       </li>
                     ))}
                   </ul>
