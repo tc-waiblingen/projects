@@ -1,10 +1,9 @@
 import { LocationPin, QrCode, ScreenAutoAdvance, StarBadge, TvScreenLayout } from '@/components/tv'
 import { fetchScheduleData, formatTimeRange, generateQrCodeForView, getNextScreenIndex, getRelativeDateText, isImportantEvent } from '@/lib/tv'
 import Image from 'next/image'
+import { clubScheduleScreen } from './screen'
 
-const SCREEN_URL = '/tv/screens/club-schedule'
-const SCREEN_TITLE = 'Vereinskalender'
-const SCREEN_DURATION = 30000
+const { url: SCREEN_URL, title: SCREEN_TITLE, screenMeta: { duration: SCREEN_DURATION } } = clubScheduleScreen
 const SHORT_DURATION = 2000
 
 const CALENDAR_URL = 'https://tc-waiblingen.de/kalender'
@@ -12,7 +11,7 @@ const CALENDAR_URL = 'https://tc-waiblingen.de/kalender'
 export default async function ClubSchedulePage() {
   const schedule = await fetchScheduleData()
   const today = new Date()
-  const nextIndex = getNextScreenIndex(SCREEN_URL)
+  const nextIndex = await getNextScreenIndex(SCREEN_URL)
 
   // Generate QR code for website calendar
   const calendarQrCode = await generateQrCodeForView(CALENDAR_URL, 'large', true)

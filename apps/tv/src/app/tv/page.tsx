@@ -1,12 +1,12 @@
 import { CalendarIllustration, Crest, FlashMessage } from '@/components/tv'
-import { getVisibleScreens, isHatSeasonInBerlin, isChampagneSeasonInBerlin } from '@/lib/tv'
+import { getActiveScreens, isHatSeasonInBerlin, isChampagneSeasonInBerlin } from '@/lib/tv'
 import { HomeAutoTransition } from './HomeAutoTransition'
 import { Snowflakes } from './Snowflakes'
 import { Fireworks } from './Fireworks'
 import Image from 'next/image'
 
-export default function TvHomePage() {
-  const screens = getVisibleScreens()
+export default async function TvHomePage() {
+  const screens = await getActiveScreens()
   const isHatSeason = isHatSeasonInBerlin()
   const isChampagneSeason = isChampagneSeasonInBerlin()
 

@@ -1,15 +1,14 @@
 import { QrCode, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchInstagramFeedData, generateQrCodeForView, getNextScreenIndex } from '@/lib/tv'
 import { InstaNewsCarousel } from './InstaNewsCarousel'
+import { instaNewsScreen } from './screen'
 
-const SCREEN_URL = '/tv/screens/insta-news'
-const SCREEN_TITLE = 'Insta-News'
-const SCREEN_DURATION = 35000
+const { url: SCREEN_URL, title: SCREEN_TITLE, screenMeta: { duration: SCREEN_DURATION } } = instaNewsScreen
 const SHORT_DURATION = 2000
 
 export default async function InstaNewsPage() {
   const instagramFeed = await fetchInstagramFeedData()
-  const nextIndex = getNextScreenIndex(SCREEN_URL)
+  const nextIndex = await getNextScreenIndex(SCREEN_URL)
 
   // Generate profile QR code
   const profileQrCode = instagramFeed.profileUrl

@@ -72,8 +72,8 @@ function parseHHMM(time: string): { hours: number; minutes: number } | null {
 }
 
 // TEMP: widen match greeting window for visual testing. Revert by setting to false.
-const WIDE_MATCH_WINDOW_FOR_TESTING = true
-const WIDE_MATCH_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
+export const WIDE_MATCH_WINDOW_FOR_TESTING = true
+export const WIDE_MATCH_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
 
 /**
  * Decide if a match event should be greeted right now.

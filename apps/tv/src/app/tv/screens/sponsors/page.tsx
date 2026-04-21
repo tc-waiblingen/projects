@@ -2,14 +2,13 @@ import { ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchSponsors, getNextScreenIndex } from '@/lib/tv'
 import { getDirectusAssetURL } from '@/lib/directus/directus-utils'
 import Image from 'next/image'
+import { sponsorsScreen } from './screen'
 
-const SCREEN_URL = '/tv/screens/sponsors'
-const SCREEN_TITLE = 'Vielen Dank!'
-const SCREEN_DURATION = 10000
+const { url: SCREEN_URL, title: SCREEN_TITLE, screenMeta: { duration: SCREEN_DURATION } } = sponsorsScreen
 
 export default async function SponsorsPage() {
   const sponsors = await fetchSponsors()
-  const nextIndex = getNextScreenIndex(SCREEN_URL)
+  const nextIndex = await getNextScreenIndex(SCREEN_URL)
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION}>

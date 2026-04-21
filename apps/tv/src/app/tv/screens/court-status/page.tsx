@@ -1,15 +1,14 @@
 import { CourtStatusMap, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchAreaMapSvg } from '@/lib/directus/fetchAreaMapSvg'
 import { fetchCourtStatusData, getNextScreenIndex } from '@/lib/tv'
+import { courtStatusScreen } from './screen'
 
-const SCREEN_URL = '/tv/screens/court-status'
-const SCREEN_TITLE = 'Platzbelegung'
-const SCREEN_DURATION = 20000
+const { url: SCREEN_URL, title: SCREEN_TITLE, screenMeta: { duration: SCREEN_DURATION } } = courtStatusScreen
 
 export default async function CourtStatusPage() {
   const data = await fetchCourtStatusData()
   const svg = data.areaMapId ? await fetchAreaMapSvg(data.areaMapId) : null
-  const nextIndex = getNextScreenIndex(SCREEN_URL)
+  const nextIndex = await getNextScreenIndex(SCREEN_URL)
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION}>

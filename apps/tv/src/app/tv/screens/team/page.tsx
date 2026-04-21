@@ -2,10 +2,9 @@ import { ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchTeamMembers, getNextScreenIndex } from '@/lib/tv'
 import { getDirectusAssetURL } from '@/lib/directus/directus-utils'
 import Image from 'next/image'
+import { teamScreen } from './screen'
 
-const SCREEN_URL = '/tv/screens/team'
-const SCREEN_TITLE = 'Vorstands-Team'
-const SCREEN_DURATION = 10000
+const { url: SCREEN_URL, title: SCREEN_TITLE, screenMeta: { duration: SCREEN_DURATION } } = teamScreen
 
 function getInitials(name: string): string {
   return name
@@ -18,7 +17,7 @@ function getInitials(name: string): string {
 
 export default async function TeamPage() {
   const team = await fetchTeamMembers()
-  const nextIndex = getNextScreenIndex(SCREEN_URL)
+  const nextIndex = await getNextScreenIndex(SCREEN_URL)
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION}>

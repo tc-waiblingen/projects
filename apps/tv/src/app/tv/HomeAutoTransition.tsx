@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect } from 'react'
-import type { Screen } from '@/lib/tv/screen-config'
+import type { ResolvedScreen } from '@/lib/tv/screen-config'
 
 interface HomeAutoTransitionProps {
-  screens: Screen[]
+  screens: ResolvedScreen[]
   hasSeasonalMessage: boolean
 }
 

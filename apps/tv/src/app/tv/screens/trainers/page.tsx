@@ -2,14 +2,13 @@ import { EmailAddress, PhoneNumber, ScreenAutoAdvance, TvScreenLayout } from '@/
 import { fetchTrainers, getNextScreenIndex } from '@/lib/tv'
 import { getDirectusAssetURL } from '@/lib/directus/directus-utils'
 import Image from 'next/image'
+import { trainersScreen } from './screen'
 
-const SCREEN_URL = '/tv/screens/trainers'
-const SCREEN_TITLE = 'Akkreditierte Trainer'
-const SCREEN_DURATION = 10000
+const { url: SCREEN_URL, title: SCREEN_TITLE, screenMeta: { duration: SCREEN_DURATION } } = trainersScreen
 
 export default async function TrainersPage() {
   const trainers = await fetchTrainers()
-  const nextIndex = getNextScreenIndex(SCREEN_URL)
+  const nextIndex = await getNextScreenIndex(SCREEN_URL)
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION} showLogo={false} showFooter={false}>

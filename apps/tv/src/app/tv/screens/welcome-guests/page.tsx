@@ -1,14 +1,13 @@
-import { redirect } from 'next/navigation'
 import { QrCode, ScreenAutoAdvance, TvScreenLayout } from '@/components/tv'
 import { fetchWelcomeGuestsData, getNextScreenIndex } from '@/lib/tv'
+import { redirect } from 'next/navigation'
+import { welcomeGuestsScreen } from './screen'
 
-const SCREEN_URL = '/tv/screens/welcome-guests'
-const SCREEN_TITLE = 'Herzlich willkommen'
-const SCREEN_DURATION = 20000
+const { url: SCREEN_URL, title: SCREEN_TITLE, screenMeta: { duration: SCREEN_DURATION } } = welcomeGuestsScreen
 
 export default async function WelcomeGuestsPage() {
   const data = await fetchWelcomeGuestsData()
-  const nextIndex = getNextScreenIndex(SCREEN_URL)
+  const nextIndex = await getNextScreenIndex(SCREEN_URL)
 
   if (data.matches.length === 0 && data.tournament == null) {
     redirect(`/tv?next=${nextIndex}`)

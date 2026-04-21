@@ -10,10 +10,9 @@ import {
   getNextScreenIndex,
   type DayName,
 } from '@/lib/tv'
+import { clubOfficeScreen } from './screen'
 
-const SCREEN_URL = '/tv/screens/club-office'
-const SCREEN_TITLE = 'Geschäftsstelle'
-const SCREEN_DURATION = 15000
+const { url: SCREEN_URL, title: SCREEN_TITLE, screenMeta: { duration: SCREEN_DURATION } } = clubOfficeScreen
 
 export default async function ClubOfficePage() {
   const [office, globals, courtStatus] = await Promise.all([
@@ -21,7 +20,7 @@ export default async function ClubOfficePage() {
     fetchGlobals(),
     fetchCourtStatusData(),
   ])
-  const nextIndex = getNextScreenIndex(SCREEN_URL)
+  const nextIndex = await getNextScreenIndex(SCREEN_URL)
 
   const showCourtStatus = !office.announcement
   const courtStatusSvg = showCourtStatus && courtStatus.areaMapId ? await fetchAreaMapSvg(courtStatus.areaMapId) : null

@@ -2,7 +2,10 @@
  * Data fetchers for TV display screens.
  */
 
-import { cache } from 'react'
+import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
+import { getDirectus } from '@/lib/directus/directus'
+import { fetchInstagramFeed } from '@/lib/instagram/fetchers'
+import type { Court, DirectusFile, Global, OfficeHour, Sponsor, Team, Trainer } from '@/types/directus-schema'
 import {
   computeCourtStatus,
   formatEbusyDate,
@@ -11,23 +14,30 @@ import {
   listModules,
   type EbusyReservation,
 } from '@tcw/ebusy'
-import { getDirectus } from '@/lib/directus/directus'
-import type { Court, DirectusFile, Global, OfficeHour, Sponsor, Team, Trainer } from '@/types/directus-schema'
-import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
-import { fetchInstagramFeed } from '@/lib/instagram/fetchers'
-import { transformScheduleForTv, type ScheduleData } from './schedule-transformer'
+import { cache } from 'react'
 import { transformMatchResultsForTv, type MatchResultsData } from './match-results-transformer'
+import { generateQrCodeForView } from './qr-code'
+import { transformScheduleForTv, type ScheduleData } from './schedule-transformer'
 import {
   transformWelcomeGuestsForTv,
+  WIDE_MATCH_WINDOW_MS,
   type TournamentGreeting,
   type WelcomeGuestsData,
 } from './welcome-guests-transformer'
-import { generateQrCodeForView } from './qr-code'
 
 const COURT_STATUS_REVALIDATE_SECONDS = 300
 
 /** Common DirectusFile fields needed for image display */
-const DIRECTUS_FILE_FIELDS = ['id', 'filename_disk', 'filename_download', 'title', 'description', 'type', 'width', 'height'] as const
+const DIRECTUS_FILE_FIELDS = [
+  'id',
+  'filename_disk',
+  'filename_download',
+  'title',
+  'description',
+  'type',
+  'width',
+  'height',
+] as const
 
 /** Maximum age in days for Instagram posts/stories to be shown */
 const MAX_INSTAGRAM_AGE_DAYS = 14
@@ -88,7 +98,7 @@ export const fetchGlobals = cache(async (): Promise<Global> => {
   const globals = await directus.request(
     readSingleton('global', {
       fields: ['*'],
-    })
+    }),
   )
 
   return globals as Global
@@ -106,7 +116,7 @@ export const fetchOfficeData = cache(async (): Promise<OfficeData> => {
       readItems('office_hours', {
         sort: ['sort', 'starts_at'],
         fields: ['id', 'day', 'starts_at', 'ends_at'],
-      })
+      }),
     ),
     directus.request(
       readItems('office_closing_days', {
@@ -115,12 +125,12 @@ export const fetchOfficeData = cache(async (): Promise<OfficeData> => {
         sort: ['date'],
         fields: ['date'],
         limit: 5,
-      })
+      }),
     ),
     directus.request(
       readSingleton('office_announcement', {
         fields: ['status', 'message', 'from', 'until'],
-      })
+      }),
     ),
   ])
 
@@ -185,14 +195,8 @@ export const fetchSponsors = cache(async (): Promise<SponsorsData> => {
     readItems('sponsors', {
       filter: { status: { _eq: 'active' } },
       sort: ['category', 'sort'],
-      fields: [
-        'id',
-        'name',
-        'category',
-        'website',
-        { logo_web: [...DIRECTUS_FILE_FIELDS] },
-      ],
-    })
+      fields: ['id', 'name', 'category', 'website', { logo_web: [...DIRECTUS_FILE_FIELDS] }],
+    }),
   )
 
   // Group by category
@@ -219,7 +223,7 @@ export const fetchTeamMembers = cache(async (): Promise<Team[]> => {
       filter: { status: { _eq: 'published' } },
       sort: ['sort'],
       fields: ['id', 'name', 'function', { picture: [...DIRECTUS_FILE_FIELDS] }],
-    })
+    }),
   )
 
   return team as unknown as Team[]
@@ -236,7 +240,7 @@ export const fetchTrainers = cache(async (): Promise<Trainer[]> => {
       filter: { status: { _eq: 'published' } },
       sort: ['sort'],
       fields: ['id', 'name', 'phone', 'email', 'website', { banner: [...DIRECTUS_FILE_FIELDS] }],
-    })
+    }),
   )
 
   return trainers as unknown as Trainer[]
@@ -267,6 +271,20 @@ export interface WelcomeGuestsDisplayData extends Omit<WelcomeGuestsData, 'tourn
 }
 
 /**
+ * Cheap presence check for the home page — does today have any welcome-guests
+ * content? Reuses the same eligibility logic as the welcome-guests screen
+ * itself, but skips QR-code generation.
+ */
+export const fetchWelcomeGuestsPresence = cache(async (): Promise<{ hasGuests: boolean }> => {
+  const now = new Date()
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
+  const until = new Date(startOfDay.getTime() + WIDE_MATCH_WINDOW_MS)
+  const events = await fetchAllCalendarEvents({ from: startOfDay, to: until })
+  const data = transformWelcomeGuestsForTv(events, now)
+  return { hasGuests: data.matches.length > 0 || data.tournament != null }
+})
+
+/**
  * Fetch welcome-guests data for TV display (today's home-match opponents
  * and tournament participants). Pre-generates QR codes for the tournament
  * links so the page stays a simple server component.
@@ -274,8 +292,7 @@ export interface WelcomeGuestsDisplayData extends Omit<WelcomeGuestsData, 'tourn
 export const fetchWelcomeGuestsData = cache(async (): Promise<WelcomeGuestsDisplayData> => {
   const now = new Date()
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
-  // TEMP: widened from end-of-today to 7 days ahead for visual testing.
-  const sevenDaysAhead = new Date(startOfDay.getTime() + 7 * 24 * 60 * 60 * 1000)
+  const sevenDaysAhead = new Date(startOfDay.getTime() + WIDE_MATCH_WINDOW_MS)
 
   const events = await fetchAllCalendarEvents({ from: startOfDay, to: sevenDaysAhead })
   const data = transformWelcomeGuestsForTv(events, now)
