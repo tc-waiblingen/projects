@@ -15,6 +15,10 @@ const ALL_DAY_MATCH_END_HOUR = 18
 
 const TOURNAMENT_CUTOFF_HOUR = 12
 
+// TEMP: widen match greeting window for visual testing. Revert by setting to false.
+export const WIDE_MATCH_WINDOW_FOR_TESTING = false
+export const WIDE_MATCH_WINDOW_MS = 0 // 7 * 24 * 60 * 60 * 1000
+
 export interface MatchGreeting {
   id: string
   artikel: 'der' | 'des'
@@ -72,10 +76,6 @@ function parseHHMM(time: string): { hours: number; minutes: number } | null {
   if (!m) return null
   return { hours: parseInt(m[1]!, 10), minutes: parseInt(m[2]!, 10) }
 }
-
-// TEMP: widen match greeting window for visual testing. Revert by setting to false.
-export const WIDE_MATCH_WINDOW_FOR_TESTING = true
-export const WIDE_MATCH_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
 
 /**
  * Decide if a match event should be greeted right now.
