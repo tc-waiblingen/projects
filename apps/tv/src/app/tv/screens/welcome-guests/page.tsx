@@ -13,7 +13,9 @@ export default async function WelcomeGuestsPage() {
     redirect(`/tv?next=${nextIndex}`)
   }
 
-  const showDivider = data.matches.length > 0 && data.tournament != null
+  const hasMatches = data.matches.length > 0
+  const hasTournament = data.tournament != null
+  const showBoth = hasMatches && hasTournament
 
   return (
     <TvScreenLayout title={SCREEN_TITLE} duration={SCREEN_DURATION}>
@@ -21,18 +23,24 @@ export default async function WelcomeGuestsPage() {
         <div className="relative z-10 h-full px-16 pt-44 pb-10">
           <div className="flex h-full items-center justify-center">
             <div className="flex max-w-5xl flex-col gap-10 rounded-3xl border border-white/70 bg-white/70 px-16 py-12 shadow-sm">
-              {data.matches.length > 0 && (
+              {showBoth && (
+                <h2 className="tv-title text-center font-light text-neutral-900">Herzlich willkommen</h2>
+              )}
+
+              {hasMatches && (
                 <section className="flex flex-col items-center gap-8 text-center">
-                  <h2 className="tv-title font-light text-neutral-900">Wir begrüßen unsere Gäste</h2>
-                  <ul className="flex flex-col gap-5">
+                  {showBoth ? (
+                    <p className="tv-small uppercase text-muted">Heimspiele heute</p>
+                  ) : (
+                    <h2 className="tv-title font-light text-neutral-900">Wir begrüßen unsere Gäste</h2>
+                  )}
+                  <ul className="flex flex-col gap-8">
                     {data.matches.map((m) => (
-                      <li key={m.id}>
-                        <p className="tv-body-lg text-neutral-900">
-                          {m.artikel} <span className="font-semibold">{m.guestClubName}</span>
-                        </p>
-                        <p className="mt-1 tv-body text-muted">
-                          empfangen von unseren {m.homeTeamShortName}
-                          {m.startTime && ` (Beginn um ${m.startTime} Uhr)`}
+                      <li key={m.id} className="flex flex-col gap-1">
+                        <p className="tv-message font-semibold text-neutral-900">{m.guestClubName}</p>
+                        <p className="tv-body text-muted">
+                          zu Gast bei unseren {m.homeTeamShortName}
+                          {m.startTime && ` · Beginn ${m.startTime} Uhr`}
                         </p>
                       </li>
                     ))}
@@ -40,14 +48,18 @@ export default async function WelcomeGuestsPage() {
                 </section>
               )}
 
-              {showDivider && <hr className="border-tcw-accent-200/70" />}
+              {showBoth && <hr className="my-4 border-tcw-accent-200/70" />}
 
               {data.tournament && (
                 <section className="flex flex-col items-center gap-6 text-center">
-                  <h2 className="tv-title font-light text-neutral-900">
-                    Wir begrüßen die Teilnehmer des heutigen Turniers
-                  </h2>
-                  <p className="tv-heading font-medium text-neutral-900">{data.tournament.title}</p>
+                  {showBoth ? (
+                    <p className="tv-small uppercase text-muted">Turnier heute</p>
+                  ) : (
+                    <h2 className="tv-title font-light text-neutral-900">
+                      Wir begrüßen die Teilnehmer des heutigen Turniers
+                    </h2>
+                  )}
+                  <p className="tv-message font-semibold text-neutral-900">{data.tournament.title}</p>
 
                   {(data.tournament.tournamentQrCode || data.tournament.callForEntriesQrCode) && (
                     <div className="mt-2 flex items-start justify-center gap-16">
