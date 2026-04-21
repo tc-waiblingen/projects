@@ -32,6 +32,10 @@ export interface MatchEventMetadata {
   seasonSort?: number
   group?: string
   groupUrl?: string
+  /** Opponent-side label from nuliga-reader (awayTeam when isHome, else homeTeam). */
+  opponentClub?: string
+  /** Opponent club id derived upstream; empty when unrecognised. */
+  opponentClubId?: string
 }
 
 export interface TournamentStage {

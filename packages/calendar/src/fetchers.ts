@@ -589,6 +589,8 @@ function mapNrMatch(
     seasonSort: team?.seasonSort,
     group: team?.group,
     groupUrl: team?.groupUrl,
+    opponentClub: match.opponentClub,
+    opponentClubId: match.opponentClubId,
   };
 
   return {

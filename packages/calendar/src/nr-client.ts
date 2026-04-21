@@ -23,6 +23,10 @@ export interface NrMatch {
   homeTeamUrl?: string
   awayTeamUrl?: string
   reportUrl?: string
+  /** Opponent-side label (awayTeam when isHome, else homeTeam). Derived upstream. */
+  opponentClub?: string
+  /** Opponent club id, derived from the opponent team URL; empty when unrecognised. */
+  opponentClubId?: string
 }
 
 export interface NrStage {
