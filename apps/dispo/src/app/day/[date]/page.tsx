@@ -200,6 +200,7 @@ export default async function DayPage({ params }: DayPageProps) {
           prevDateKey={prevMobileKey}
           nextDateKey={nextMobileKey}
           formattedDate={mobileFormattedDate}
+          statusByKey={dayStatusByKey}
         />
       ) : null}
     </div>

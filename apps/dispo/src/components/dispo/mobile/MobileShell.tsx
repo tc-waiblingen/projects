@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import type { DayStatus } from '@/components/DayNavigator'
 import type { DispoState } from '../useDispoState'
 import { MobileTopBar } from './MobileTopBar'
 import { MobileTabs, type MobileTab } from './MobileTabs'
@@ -10,9 +11,11 @@ import { MobilePlanView } from './MobilePlanView'
 
 interface MobileShellProps {
   state: DispoState
+  date: string
   prevDateKey: string | null
   nextDateKey: string | null
   formattedDate: string
+  statusByKey: Record<string, DayStatus>
 }
 
 function useIsNarrowViewport(): boolean {
@@ -27,7 +30,7 @@ function useIsNarrowViewport(): boolean {
   return isNarrow
 }
 
-export function MobileShell({ state, prevDateKey, nextDateKey, formattedDate }: MobileShellProps) {
+export function MobileShell({ state, date, prevDateKey, nextDateKey, formattedDate, statusByKey }: MobileShellProps) {
   const [tab, setTab] = useState<MobileTab>('spiele')
   const isNarrow = useIsNarrowViewport()
   const selectedMatch = useMemo(
@@ -42,9 +45,11 @@ export function MobileShell({ state, prevDateKey, nextDateKey, formattedDate }: 
   return (
     <div className="mobile-shell">
       <MobileTopBar
+        dateKey={date}
         prevDateKey={prevDateKey}
         nextDateKey={nextDateKey}
         formattedDate={formattedDate}
+        statusByKey={statusByKey}
         issues={state.issues}
         onIssueSelect={(id) => {
           setTab('spiele')

@@ -886,13 +886,24 @@
 }
 .dispo-root.dispo-root-mobile .mobile-chevron:disabled { opacity: 0.3; }
 .dispo-root.dispo-root-mobile .mobile-chevron:hover:not(:disabled) { background: color-mix(in oklch, black 6%, transparent); color: var(--fg-heading); }
+.dispo-root.dispo-root-mobile .mobile-date-wrap { position: relative; display: flex; min-width: 0; }
 .dispo-root.dispo-root-mobile .mobile-date {
+  border: 0;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
   font-size: 13px;
   font-weight: 700;
   color: var(--fg-heading);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background .15s;
+}
+.dispo-root.dispo-root-mobile .mobile-date:hover,
+.dispo-root.dispo-root-mobile .mobile-date[aria-expanded="true"] {
+  background: color-mix(in oklch, black 6%, transparent);
 }
 .dispo-root.dispo-root-mobile .mobile-topbar-spacer { flex: 1; }
 .dispo-root.dispo-root-mobile .mobile-save-icon {

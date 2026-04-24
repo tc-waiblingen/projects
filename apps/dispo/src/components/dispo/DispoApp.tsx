@@ -2,6 +2,7 @@
 
 import type { DispoCourt } from '@/lib/directus/courts'
 import type { BookingsByCourt } from '@/lib/ebusy/reservations'
+import type { DayStatus } from '@/components/DayNavigator'
 import { DesktopShell } from './desktop/DesktopShell'
 import { MobileShell } from './mobile/MobileShell'
 import type { DispoAssignment, DispoMatch } from './types'
@@ -19,6 +20,7 @@ interface DispoAppProps {
   prevDateKey: string | null
   nextDateKey: string | null
   formattedDate: string
+  statusByKey: Record<string, DayStatus>
 }
 
 export function DispoApp(props: DispoAppProps) {
@@ -31,9 +33,11 @@ export function DispoApp(props: DispoAppProps) {
       <div className="dispo-root dispo-root-mobile md:hidden flex">
         <MobileShell
           state={state}
+          date={props.date}
           prevDateKey={props.prevDateKey}
           nextDateKey={props.nextDateKey}
           formattedDate={props.formattedDate}
+          statusByKey={props.statusByKey}
         />
       </div>
     </>

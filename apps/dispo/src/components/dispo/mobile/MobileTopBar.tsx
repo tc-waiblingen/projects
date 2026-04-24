@@ -2,14 +2,19 @@
 
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
-import type { Issue } from '../types'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { DatePickerPopover } from '@/components/DatePickerPopover'
+import type { DayStatus } from '@/components/DayNavigator'
+import { dateKey as formatDateKey } from '@/lib/format'
 import { formatTime } from '@/lib/plan-helpers'
+import type { Issue } from '../types'
 
 interface MobileTopBarProps {
+  dateKey: string
   prevDateKey: string | null
   nextDateKey: string | null
   formattedDate: string
+  statusByKey: Record<string, DayStatus>
   issues: Issue[]
   onIssueSelect: (matchId: string) => void
   saving: boolean
@@ -18,9 +23,11 @@ interface MobileTopBarProps {
 }
 
 export function MobileTopBar({
+  dateKey,
   prevDateKey,
   nextDateKey,
   formattedDate,
+  statusByKey,
   issues,
   onIssueSelect,
   saving,
@@ -29,7 +36,12 @@ export function MobileTopBar({
 }: MobileTopBarProps) {
   const router = useRouter()
   const [issuesOpen, setIssuesOpen] = useState(false)
+  const [pickerOpen, setPickerOpen] = useState(false)
   const issuesRef = useRef<HTMLDivElement>(null)
+  const pickerTriggerRef = useRef<HTMLButtonElement>(null)
+  const pickerPopoverRef = useRef<HTMLDivElement>(null)
+
+  const todayKey = useMemo(() => formatDateKey(new Date()), [])
 
   useEffect(() => {
     if (!issuesOpen) return
@@ -48,6 +60,23 @@ export function MobileTopBar({
     }
   }, [issuesOpen])
 
+  useEffect(() => {
+    if (!pickerOpen) return
+    function onPointerDown(e: PointerEvent) {
+      const target = e.target as Node
+      if (pickerPopoverRef.current?.contains(target)) return
+      if (pickerTriggerRef.current?.contains(target)) return
+      setPickerOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [pickerOpen])
+
+  const closePicker = () => {
+    setPickerOpen(false)
+    pickerTriggerRef.current?.focus()
+  }
+
   const issueCount = issues.length
   const hasIssues = issueCount > 0
 
@@ -65,7 +94,33 @@ export function MobileTopBar({
         </svg>
       </button>
 
-      <div className="mobile-date">{formattedDate}</div>
+      <div className="mobile-date-wrap">
+        <button
+          ref={pickerTriggerRef}
+          type="button"
+          className="mobile-date"
+          aria-haspopup="dialog"
+          aria-expanded={pickerOpen}
+          onClick={() => setPickerOpen((v) => !v)}
+          title="Datum wählen"
+        >
+          {formattedDate}
+        </button>
+        {pickerOpen && (
+          <DatePickerPopover
+            selectedKey={dateKey}
+            statusByKey={statusByKey}
+            todayKey={todayKey}
+            onSelect={(key) => {
+              setPickerOpen(false)
+              if (key !== dateKey) router.push(`/day/${key}`)
+              else pickerTriggerRef.current?.focus()
+            }}
+            onClose={closePicker}
+            popoverRef={pickerPopoverRef}
+          />
+        )}
+      </div>
 
       <button
         type="button"
