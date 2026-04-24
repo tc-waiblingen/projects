@@ -5,8 +5,9 @@
 .dispo-root input { font-family: inherit; }
 
 /* ---------- App shell ---------- */
+/* display is owned by Tailwind utilities on the wrapper (hidden md:flex)
+   so the CSS swap at the md breakpoint can actually hide this subtree. */
 .dispo-root.app {
-  display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
@@ -849,8 +850,9 @@
 }
 
 /* ---------- Mobile shell ---------- */
+/* display is owned by Tailwind utilities on the wrapper (md:hidden flex)
+   so the CSS swap at the md breakpoint can actually hide this subtree. */
 .dispo-root.dispo-root-mobile {
-  display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
