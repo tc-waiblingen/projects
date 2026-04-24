@@ -130,6 +130,10 @@ export default async function DayPage({ params }: DayPageProps) {
     ? `Platzdisposition für ${matches.length} ${matches.length === 1 ? 'Heimspiel' : 'Heimspiele'} (min. ${minCourtsTotal} ${minCourtsTotal === 1 ? 'Platz' : 'Plätze'} benötigt)`
     : undefined
 
+  const prevMobileKey = [...homeMatchDateKeys].reverse().find((k) => k < dateParam) ?? null
+  const nextMobileKey = homeMatchDateKeys.find((k) => k > dateParam) ?? null
+  const mobileFormattedDate = formatDateLong(date)
+
   return (
     <div className="flex h-screen flex-col">
       <main className="mx-auto w-full max-w-7xl shrink-0 px-6 pt-6 pb-2">
@@ -187,6 +191,9 @@ export default async function DayPage({ params }: DayPageProps) {
           recentChangeMatchIds={recentChangeMatchIds}
           lageplanSvg={lageplanSvg}
           bookingsByCourt={bookingsByCourt}
+          prevDateKey={prevMobileKey}
+          nextDateKey={nextMobileKey}
+          formattedDate={mobileFormattedDate}
         />
       ) : null}
     </div>

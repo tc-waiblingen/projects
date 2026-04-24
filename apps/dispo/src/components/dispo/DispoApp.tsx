@@ -16,6 +16,9 @@ interface DispoAppProps {
   recentChangeMatchIds: string[]
   lageplanSvg: string | null
   bookingsByCourt: BookingsByCourt
+  prevDateKey: string | null
+  nextDateKey: string | null
+  formattedDate: string
 }
 
 export function DispoApp(props: DispoAppProps) {
@@ -26,7 +29,13 @@ export function DispoApp(props: DispoAppProps) {
         <DesktopShell state={state} lageplanSvg={props.lageplanSvg} />
       </div>
       <div className="dispo-root dispo-root-mobile md:hidden flex">
-        <MobileShell state={state} />
+        <MobileShell
+          state={state}
+          prevDateKey={props.prevDateKey}
+          nextDateKey={props.nextDateKey}
+          formattedDate={props.formattedDate}
+          date={props.date}
+        />
       </div>
     </>
   )
