@@ -1018,7 +1018,7 @@
 .mobile-sheet .btn-step {
   background: transparent;
   border: 0;
-  width: 36px; height: 36px;
+  width: 44px; height: 44px;
   border-radius: var(--radius-md);
   font-size: 18px; font-weight: 700;
   color: var(--fg-heading);
