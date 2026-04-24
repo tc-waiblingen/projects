@@ -1,6 +1,7 @@
 import { replaceAssignmentsForDate, type MatchAssignmentInput } from '@/lib/assignments'
 import { getDb } from '@/lib/db'
 import { parseIsoDate } from '@/lib/format'
+import { replacePlansForDate, type MatchPlanInput } from '@/lib/match-plans'
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 
@@ -10,9 +11,16 @@ const RowSchema = z.object({
   courtIds: z.array(z.number().int().positive()),
 })
 
+const PlanSchema = z.object({
+  matchId: z.string().min(1),
+  startTime: z.string().regex(/^\d{2}:\d{2}$/),
+  durationH: z.number().positive().max(14),
+})
+
 const BodySchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   rows: z.array(RowSchema),
+  plans: z.array(PlanSchema).optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -32,11 +40,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid date' }, { status: 400 })
   }
 
-  // Drop rows with no court selected — saving an empty selection is the same as removal.
   const inputs: MatchAssignmentInput[] = parsed.data.rows.filter((r) => r.courtIds.length > 0)
+  const planInputs: MatchPlanInput[] = parsed.data.plans ?? []
 
   try {
-    replaceAssignmentsForDate(getDb(), parsed.data.date, inputs)
+    const db = getDb()
+    replaceAssignmentsForDate(db, parsed.data.date, inputs)
+    replacePlansForDate(db, parsed.data.date, planInputs)
   } catch (err) {
     return NextResponse.json(
       { error: 'Database write failed', detail: err instanceof Error ? err.message : String(err) },
@@ -44,5 +54,5 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  return NextResponse.json({ ok: true, date: parsed.data.date, count: inputs.length })
+  return NextResponse.json({ ok: true, date: parsed.data.date, count: inputs.length, plans: planInputs.length })
 }

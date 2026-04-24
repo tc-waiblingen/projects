@@ -1,16 +1,23 @@
 import { getSession } from '@/lib/auth'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import { CrestLogo } from './CrestLogo'
 
 const ROLE_LABEL = { admin: 'Admin', operator: 'Operator' } as const
 
-export async function AdminHeader({ subtitle }: { subtitle?: string }) {
+export async function AdminHeader({
+  title = 'Platzzuweisung',
+  subtitle,
+}: {
+  title?: ReactNode
+  subtitle?: string
+}) {
   const session = await getSession()
 
   return (
     <header className="relative mb-6 flex items-center justify-between border-b border-tcw-accent-200 pb-4 dark:border-tcw-accent-800">
       <div className="flex min-w-0 flex-col leading-tight">
-        <h1 className="text-lg font-bold text-body">Platzzuweisung</h1>
+        {typeof title === 'string' ? <h1 className="text-lg font-bold text-body">{title}</h1> : title}
         {subtitle && <span className="text-sm text-muted">{subtitle}</span>}
       </div>
       <Link

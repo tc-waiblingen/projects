@@ -12,6 +12,15 @@ const SCHEMA_STATEMENTS = [
     PRIMARY KEY (match_id, court_id)
   )`,
   `CREATE INDEX IF NOT EXISTS assignments_date_idx ON assignments (match_date)`,
+  `CREATE TABLE IF NOT EXISTS match_plans (
+    match_id   TEXT    NOT NULL,
+    match_date TEXT    NOT NULL,
+    start_time TEXT    NOT NULL,
+    duration_h REAL    NOT NULL,
+    updated_at INTEGER NOT NULL,
+    PRIMARY KEY (match_id, match_date)
+  )`,
+  `CREATE INDEX IF NOT EXISTS match_plans_date_idx ON match_plans (match_date)`,
   `CREATE TABLE IF NOT EXISTS app_settings (
     key        TEXT    PRIMARY KEY,
     value      TEXT    NOT NULL,

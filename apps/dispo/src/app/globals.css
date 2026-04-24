@@ -57,8 +57,34 @@
   --color-taupe-50: oklch(98.6% 0.002 67.8);
   --color-taupe-100: oklch(96% 0.002 17.2);
   --color-taupe-200: oklch(92.2% 0.005 34.3);
+  --color-taupe-300: oklch(86.8% 0.007 39.5);
+  --color-taupe-400: oklch(71.8% 0.012 37.4);
+  --color-taupe-600: oklch(43.8% 0.017 39.3);
+  --color-taupe-700: oklch(36.7% 0.016 35.7);
   --color-taupe-800: oklch(26.8% 0.011 36.5);
   --color-taupe-900: oklch(21.4% 0.009 43.1);
+
+  /* tcw-red variants used by dispo UI */
+  --color-tcw-red-200: oklch(88% 0.06 30);
+  --color-tcw-red-600: oklch(50.95% 0.203 30.16);
+  --color-tcw-red-800: oklch(30.26% 0.121 30.07);
+
+  /* tcw-accent extras */
+  --color-tcw-accent-800: oklch(37.64% 0.077 90.4);
+
+  /* Radii and semantic tokens used by the Platzdisposition components */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 9999px;
+  --border-subtle: color-mix(in oklch, black 8%, transparent);
+  --border-strong: color-mix(in oklch, black 18%, transparent);
+  --focus-ring: var(--color-tcw-red-500);
+  --bg-page: var(--color-taupe-100);
+  --fg-body: var(--color-tcw-accent-900);
+  --fg-muted: var(--color-tcw-accent-800);
+  --fg-heading: var(--color-tcw-accent-900);
 }
 
 @layer base {

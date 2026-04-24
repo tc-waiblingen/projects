@@ -16,6 +16,7 @@ export interface DayMatch {
   id: string
   startTime: string
   homeTeam: string
+  homeTeamShort: string | null
   opponent: string
   league: string
   leagueShort: string
@@ -49,6 +50,7 @@ function toDayMatch(event: CalendarEvent): DayMatch | null {
     id: event.id,
     startTime: event.startTime || '00:00',
     homeTeam: meta.homeTeam,
+    homeTeamShort: meta.teamName || null,
     opponent: meta.awayTeam,
     league: meta.leagueFull || meta.league || '',
     leagueShort: meta.league || '',
