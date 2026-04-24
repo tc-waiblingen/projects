@@ -1069,3 +1069,22 @@
   margin-top: 4px;
 }
 .mobile-sheet .conflict-row svg { flex-shrink: 0; margin-top: 1px; }
+.dispo-root.dispo-root-mobile .mobile-vtl { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.dispo-root.dispo-root-mobile .mobile-vtl-scroll { flex: 1; overflow: auto; padding: 0 8px 12px; }
+.dispo-root.dispo-root-mobile .mobile-vtl-inner { position: relative; }
+.dispo-root.dispo-root-mobile .mobile-vtl-header { position: sticky; top: 0; z-index: 3; display: flex; background: var(--color-taupe-100); border-bottom: 1px solid var(--border-subtle); }
+.dispo-root.dispo-root-mobile .mobile-vtl-corner { position: sticky; left: 0; z-index: 2; background: var(--color-taupe-100); border-right: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--fg-muted); }
+.dispo-root.dispo-root-mobile .mobile-vtl-col-head { flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 3px; font-weight: 700; font-variant-numeric: tabular-nums; border-right: 1px solid color-mix(in oklch, black 5%, transparent); background: #fff; font-size: 11px; }
+.dispo-root.dispo-root-mobile .mobile-vtl-col-head.is-indoor { background: color-mix(in oklch, var(--color-tcw-accent-200) 80%, white); }
+.dispo-root.dispo-root-mobile .mobile-vtl-body { position: relative; display: flex; }
+.dispo-root.dispo-root-mobile .mobile-vtl-time-col { position: sticky; left: 0; z-index: 2; flex-shrink: 0; background: var(--color-taupe-100); border-right: 1px solid var(--border-subtle); }
+.dispo-root.dispo-root-mobile .mobile-vtl-hour-label { position: absolute; left: 0; right: 0; padding-right: 6px; text-align: right; font-size: 10px; color: var(--fg-muted); font-weight: 600; font-variant-numeric: tabular-nums; transform: translateY(-6px); }
+.dispo-root.dispo-root-mobile .mobile-vtl-col { position: relative; flex-shrink: 0; background: #fff; border-right: 1px solid color-mix(in oklch, black 5%, transparent); }
+.dispo-root.dispo-root-mobile .mobile-vtl-col.is-indoor { background: color-mix(in oklch, var(--color-tcw-accent-200) 40%, white); }
+.dispo-root.dispo-root-mobile .mobile-vtl-gridline { position: absolute; left: 0; right: 0; height: 1px; background: color-mix(in oklch, black 5%, transparent); }
+.dispo-root.dispo-root-mobile .mobile-vtl-booking { position: absolute; left: 0; right: 0; z-index: 0; background-image: repeating-linear-gradient(135deg, color-mix(in oklch, black 18%, transparent) 0 2px, transparent 2px 6px); }
+.dispo-root.dispo-root-mobile .mobile-vtl-block { position: absolute; left: 2px; right: 2px; border-radius: 5px; padding: 3px 5px; overflow: hidden; display: flex; flex-direction: column; font-size: 10px; line-height: 1.15; border: 0; z-index: 1; text-align: left; cursor: pointer; }
+.dispo-root.dispo-root-mobile .mobile-vtl-block.is-selected { box-shadow: 0 0 0 2px var(--color-tcw-red-500), 0 0 0 5px color-mix(in oklch, var(--color-tcw-red-500) 25%, transparent); z-index: 3; }
+.dispo-root.dispo-root-mobile .mobile-vtl-block-time { font-weight: 700; font-variant-numeric: tabular-nums; opacity: 0.9; font-size: 9px; }
+.dispo-root.dispo-root-mobile .mobile-vtl-block-teams { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dispo-root.dispo-root-mobile .mobile-vtl-now { position: absolute; left: 0; height: 2px; background: var(--color-tcw-red-500); z-index: 4; pointer-events: none; }
