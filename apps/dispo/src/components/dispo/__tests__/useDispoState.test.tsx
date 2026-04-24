@@ -9,6 +9,7 @@ const court = (id: number, type: 'tennis_indoor' | 'tennis_outdoor' = 'tennis_ou
   name: type === 'tennis_indoor' ? `H${id}` : `P${id}`,
   type,
   sort: id,
+  ebusyId: null,
 })
 
 const baseMatch = (overrides: Partial<DispoMatch> = {}): DispoMatch =>
