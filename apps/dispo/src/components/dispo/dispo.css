@@ -1121,6 +1121,7 @@
 .dispo-root.dispo-root-mobile .mobile-strip-blk {
   position: absolute;
   top: 1px; bottom: 1px;
+  min-width: 22px;
   border: 0;
   border-radius: 3px;
   font-size: 10px;
@@ -1134,7 +1135,7 @@
   cursor: pointer;
 }
 .dispo-root.dispo-root-mobile .mobile-strip-blk:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-.dispo-root.dispo-root-mobile .mobile-strip-blk.is-conflict { box-shadow: 0 0 0 2px var(--color-tcw-red-500); }
+.dispo-root.dispo-root-mobile .mobile-strip-blk.is-conflict { outline: 2px solid var(--color-tcw-red-500); outline-offset: -2px; }
 .dispo-root.dispo-root-mobile .mobile-strip-booking {
   position: absolute;
   top: 1px; bottom: 1px;
