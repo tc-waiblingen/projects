@@ -47,6 +47,25 @@ The operator login password is stored as an argon2id hash in the SQLite `app_set
 - `src/lib/matches.ts` + `src/lib/match-cache.ts` — wraps `@tcw/calendar`'s `fetchMatches` with a 5-minute in-memory cache.
 - `src/lib/directus/courts.ts` — single-purpose `fetchCourts()`.
 
+### Mobile shell
+
+- `useDispoState` (`src/components/dispo/useDispoState.ts`) is the single source of truth for assignment state. Both shells consume it; only the hook calls `/api/assignments`.
+- Two shells are always mounted. Tailwind `md:` (768 px) toggles visibility:
+  - `desktop/DesktopShell.tsx` — Header + Sidebar + MapView/VerticalTimeline, drag & drop, hover previews, resize handle, time cursor.
+  - `mobile/MobileShell.tsx` — MobileTopBar + MobileTabs + MobileMatchList + MobileEditorSheet + MobilePlanView (Spalten / Streifen sub-toggle).
+- Desktop-only CSS rules in `dispo.css` target class names that only exist under the desktop subtree (`.app-body`, `.sidebar`, `.vtl-*`, `.court-zone`, etc.), so they are inert on the mobile subtree without explicit re-scoping. Mobile-only rules live under `.dispo-root.dispo-root-mobile`. Shared helpers (`.btn`, `.court-picker`, chips, `.issues-*`) stay at `.dispo-root`.
+- `CourtPicker.tsx` is shared between both shells' editors; its parent is responsible for wiring `onChange` back to the hook's `toggleCourt` / `removeCourtFromAssignment`.
+- When adding a new state action, extend `useDispoState` rather than either shell. Shells should never hold assignment state directly.
+- Desktop shell owns ephemeral drag state (`draggingMatchId`); mobile has no drag and must not re-introduce it.
+- Mobile bottom sheets (e.g. `MobileEditorSheet`) place notices/conflict rows **above** the editable fields, not below, so toggling notice visibility never shifts the form underneath the user's finger.
+
+### Watch-outs when touching either shell
+
+- **Bundle size.** Both shells ship in one bundle today. If mobile profiling shows it pays for desktop code meaningfully, wrap one shell in `next/dynamic` with SSR disabled — but do not trade off the flash-free CSS swap lightly.
+- **Effect scope.** Hook effects (auto-save, now-ticker) run once regardless of visible shell — intentional. Shell-local effects must not assume their DOM exists; avoid `useLayoutEffect` against refs, prefer `useEffect` with null guards.
+- **CSS leakage.** When adding a rule to `dispo.css`, ask which shell it applies to and scope accordingly: `.dispo-root.app .foo` for desktop-only (the `.app` class sits on the desktop wrapper), `.dispo-root.dispo-root-mobile .foo` for mobile-only, `.dispo-root .foo` for both.
+- **Body scroll.** `MobileEditorSheet` locks `document.body.style.overflow` while open and restores it on unmount; any other component doing the same needs to cooperate to avoid stuck scroll locks.
+
 ## Design Decisions
 
 - Assignments are normalized one row per (match, court) — see `src/lib/db.ts`.
