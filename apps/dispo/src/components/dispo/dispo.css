@@ -912,3 +912,46 @@
 }
 .dispo-root.dispo-root-mobile .mobile-shell { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .dispo-root.dispo-root-mobile .mobile-scroll { flex: 1; overflow-y: auto; padding: 12px; }
+.dispo-root.dispo-root-mobile .mobile-tabs {
+  display: flex;
+  gap: 0;
+  padding: 8px 12px;
+  background: #fff;
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 56px;
+  z-index: 9;
+}
+.dispo-root.dispo-root-mobile .mobile-tab {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-muted);
+  border-bottom: 2px solid transparent;
+  transition: color .15s, border-color .15s;
+}
+.dispo-root.dispo-root-mobile .mobile-tab.is-active {
+  color: var(--color-tcw-accent-900);
+  border-bottom-color: var(--color-tcw-red-500);
+}
+.dispo-root.dispo-root-mobile .mobile-match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dispo-root.dispo-root-mobile .mobile-match-list .match-card {
+  text-align: left;
+  font: inherit;
+}
+.dispo-root.dispo-root-mobile .mobile-match-list .match-card-teams,
+.dispo-root.dispo-root-mobile .mobile-match-list .match-card-group,
+.dispo-root.dispo-root-mobile .mobile-match-list .match-card-meta,
+.dispo-root.dispo-root-mobile .mobile-match-list .match-card-body { display: flex; }
+.dispo-root.dispo-root-mobile .mobile-match-list .match-card-body { flex-direction: column; padding: 10px 12px; flex: 1; min-width: 0; }
+.dispo-root.dispo-root-mobile .mobile-match-list .match-card-group { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--fg-muted); gap: 6px; align-items: center; margin-bottom: 2px; }
+.dispo-root.dispo-root-mobile .mobile-match-list .match-card-teams { font-size: 14px; font-weight: 600; color: var(--fg-heading); gap: 6px; flex-wrap: wrap; align-items: baseline; line-height: 1.3; }
+.dispo-root.dispo-root-mobile .mobile-match-list .match-card-meta { font-size: 12px; color: var(--fg-muted); gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
+.dispo-root.dispo-root-mobile .mobile-match-list .mobile-reset { align-self: flex-start; margin-top: 12px; }
