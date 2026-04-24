@@ -6,6 +6,7 @@ import { MobileTopBar } from './MobileTopBar'
 import { MobileTabs, type MobileTab } from './MobileTabs'
 import { MobileMatchList } from './MobileMatchList'
 import { MobileEditorSheet } from './MobileEditorSheet'
+import { MobilePlanView } from './MobilePlanView'
 
 interface MobileShellProps {
   state: DispoState
@@ -52,7 +53,7 @@ export function MobileShell({ state, prevDateKey, nextDateKey, formattedDate }: 
             onResetAssignments={state.resetAssignments}
           />
         )}
-        {tab === 'plan' && <div className="empty-hint">Plan view folgt in Task 8/9.</div>}
+        {tab === 'plan' && <MobilePlanView state={state} />}
       </div>
       {selectedMatch && (
         <MobileEditorSheet

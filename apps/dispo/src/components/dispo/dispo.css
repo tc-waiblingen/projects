@@ -1089,3 +1089,57 @@
 .dispo-root.dispo-root-mobile .mobile-vtl-block-time { font-weight: 700; font-variant-numeric: tabular-nums; opacity: 0.9; font-size: 9px; }
 .dispo-root.dispo-root-mobile .mobile-vtl-block-teams { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dispo-root.dispo-root-mobile .mobile-vtl-now { position: absolute; left: 0; height: 2px; background: var(--color-tcw-red-500); z-index: 4; pointer-events: none; }
+.dispo-root.dispo-root-mobile .mobile-plan-view { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.dispo-root.dispo-root-mobile .mobile-subtoggle {
+  display: inline-flex;
+  background: color-mix(in oklch, black 4%, transparent);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  margin: 0 auto 10px;
+  font-size: 12px;
+}
+.dispo-root.dispo-root-mobile .mobile-subtoggle-btn {
+  border: 0;
+  background: transparent;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+.dispo-root.dispo-root-mobile .mobile-subtoggle-btn.is-active { background: var(--color-tcw-accent-900); color: #fff; }
+
+.dispo-root.dispo-root-mobile .mobile-strips { display: flex; flex-direction: column; gap: 5px; padding: 4px 0 16px; }
+.dispo-root.dispo-root-mobile .mobile-strips-hours { display: flex; align-items: center; font-size: 10px; color: var(--fg-muted); font-variant-numeric: tabular-nums; margin-bottom: 4px; }
+.dispo-root.dispo-root-mobile .mobile-strips-hours-label { width: 32px; flex-shrink: 0; }
+.dispo-root.dispo-root-mobile .mobile-strips-hours-rail { position: relative; flex: 1; height: 14px; }
+.dispo-root.dispo-root-mobile .mobile-strips-hours-rail span { position: absolute; transform: translateX(-50%); }
+.dispo-root.dispo-root-mobile .mobile-strip { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 6px 8px; }
+.dispo-root.dispo-root-mobile .mobile-strip.is-indoor { background: color-mix(in oklch, var(--color-tcw-accent-200) 40%, white); }
+.dispo-root.dispo-root-mobile .mobile-strip-label { width: 28px; flex-shrink: 0; font-size: 11px; font-weight: 700; color: var(--color-tcw-accent-900); font-variant-numeric: tabular-nums; }
+.dispo-root.dispo-root-mobile .mobile-strip-rail { position: relative; flex: 1; height: 22px; background: color-mix(in oklch, black 4%, transparent); border-radius: 5px; overflow: hidden; }
+.dispo-root.dispo-root-mobile .mobile-strip-blk {
+  position: absolute;
+  top: 1px; bottom: 1px;
+  border: 0;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 0 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: left;
+  line-height: 20px;
+  cursor: pointer;
+}
+.dispo-root.dispo-root-mobile .mobile-strip-blk:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.dispo-root.dispo-root-mobile .mobile-strip-blk.is-conflict { box-shadow: 0 0 0 2px var(--color-tcw-red-500); }
+.dispo-root.dispo-root-mobile .mobile-strip-booking {
+  position: absolute;
+  top: 1px; bottom: 1px;
+  background-image: repeating-linear-gradient(135deg, color-mix(in oklch, black 35%, transparent) 0 2px, transparent 2px 5px);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.dispo-root.dispo-root-mobile .mobile-strip-label-text { font-size: 10px; }
