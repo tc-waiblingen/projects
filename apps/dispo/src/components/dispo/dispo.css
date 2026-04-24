@@ -906,6 +906,12 @@
   background: color-mix(in oklch, black 6%, transparent);
 }
 .dispo-root.dispo-root-mobile .mobile-topbar-spacer { flex: 1; }
+.dispo-root.dispo-root-mobile .mobile-topbar .issues-dropdown {
+  left: auto;
+  right: 0;
+  min-width: 240px;
+  max-width: calc(100vw - 24px);
+}
 .dispo-root.dispo-root-mobile .mobile-save-icon {
   display: inline-flex;
   align-items: center;
@@ -1082,6 +1088,8 @@
   margin-top: 4px;
 }
 .mobile-sheet .conflict-row svg { flex-shrink: 0; margin-top: 1px; }
+.mobile-sheet .conflict-row-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mobile-sheet .conflict-row-body strong { font-weight: 700; }
 .dispo-root.dispo-root-mobile .mobile-vtl { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .dispo-root.dispo-root-mobile .mobile-vtl-scroll { flex: 1; overflow: auto; padding: 0 0 12px; }
 .dispo-root.dispo-root-mobile .mobile-vtl-inner { position: relative; }

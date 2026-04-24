@@ -78,7 +78,7 @@ export function MobileShell({ state, date, prevDateKey, nextDateKey, formattedDa
           match={selectedMatch}
           assignment={selectedAssignment}
           courts={state.courts}
-          conflicts={state.conflicts}
+          issues={state.issues}
           onClose={state.clearSelection}
           onToggleCourt={state.toggleCourt}
           onUpdateAssignment={state.updateAssignment}

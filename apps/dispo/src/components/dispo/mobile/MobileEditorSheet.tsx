@@ -5,14 +5,13 @@ import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import type { DispoCourt } from '@/lib/directus/courts'
 import { CourtPicker } from '../CourtPicker'
-import type { DispoAssignment, DispoMatch } from '../types'
-import type { PlanConflict } from '@/lib/plan-helpers'
+import type { DispoAssignment, DispoMatch, Issue } from '../types'
 
 interface MobileEditorSheetProps {
   match: DispoMatch
   assignment: DispoAssignment | null
   courts: DispoCourt[]
-  conflicts: PlanConflict[]
+  issues: Issue[]
   onClose: () => void
   onToggleCourt: (courtId: number) => void
   onUpdateAssignment: (matchId: string, patch: Partial<DispoAssignment>) => void
@@ -23,7 +22,7 @@ export function MobileEditorSheet({
   match,
   assignment,
   courts,
-  conflicts,
+  issues,
   onClose,
   onToggleCourt,
   onUpdateAssignment,
@@ -46,7 +45,7 @@ export function MobileEditorSheet({
 
   const courtIds = assignment?.courtIds ?? []
   const assigned = courtIds.length
-  const matchConflicts = conflicts.filter((c) => c.matchIds.includes(match.id))
+  const matchIssues = issues.filter((i) => i.matchId === match.id)
   const groupLabel = match.group || match.leagueShort || match.league || ''
 
   const countClass = assigned < match.minCourts ? 'is-under' : assigned > match.maxCourts ? 'is-over' : 'is-ok'
@@ -82,15 +81,18 @@ export function MobileEditorSheet({
         </div>
 
         <div className="mobile-sheet-body">
-          {matchConflicts.length > 0 && (
+          {matchIssues.length > 0 && (
             <div className="field conflicts">
-              <label>Konflikte</label>
-              {matchConflicts.map((c) => (
-                <div key={`${c.courtId}:${c.matchIds[0]}:${c.matchIds[1]}`} className="conflict-row">
+              <label>Hinweise</label>
+              {matchIssues.map((i) => (
+                <div key={i.key} className="conflict-row">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
                   </svg>
-                  Platz doppelt belegt
+                  <span className="conflict-row-body">
+                    {i.key.startsWith('conflict:') && <strong>{i.title}</strong>}
+                    <span>{i.detail}</span>
+                  </span>
                 </div>
               ))}
             </div>
