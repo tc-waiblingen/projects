@@ -75,6 +75,7 @@ export function DesktopShell({ state, lageplanSvg }: DesktopShellProps) {
         <Sidebar
           matches={state.matches}
           assignments={state.assignments}
+          courts={state.courts}
           selectedId={state.selectedId}
           recentChangeMatchIds={state.recentChangeIds}
           onSelectMatch={state.selectMatch}

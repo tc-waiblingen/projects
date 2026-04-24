@@ -1,12 +1,14 @@
 'use client'
 
 import clsx from 'clsx'
+import type { DispoCourt } from '@/lib/directus/courts'
 import { groupColor } from '@/lib/plan-helpers'
 import type { DispoAssignment, DispoMatch } from '../types'
 
 interface MobileMatchListProps {
   matches: DispoMatch[]
   assignments: DispoAssignment[]
+  courts: DispoCourt[]
   selectedId: string | null
   recentChangeIds: Set<string>
   onSelectMatch: (id: string) => void
@@ -16,12 +18,14 @@ interface MobileMatchListProps {
 export function MobileMatchList({
   matches,
   assignments,
+  courts,
   selectedId,
   recentChangeIds,
   onSelectMatch,
   onResetAssignments,
 }: MobileMatchListProps) {
   const byId = new Map(assignments.map((a) => [a.matchId, a]))
+  const courtById = new Map(courts.map((c) => [c.id, c]))
   return (
     <div className="mobile-match-list">
       {matches.length === 0 ? (
@@ -34,6 +38,7 @@ export function MobileMatchList({
           const assigned = a?.courtIds.length ?? 0
           const under = !!a && assigned < m.minCourts
           const changed = recentChangeIds.has(m.id)
+          const courtNames = a ? a.courtIds.map((id) => courtById.get(id)?.name ?? `#${id}`) : []
           return (
             <button
               key={m.id}
@@ -60,7 +65,7 @@ export function MobileMatchList({
                     <>
                       <span className="dot">·</span>
                       <span className={clsx('courts-assigned', under && 'is-under')}>
-                        {assigned} zugeteilt
+                        {courtNames.join(', ')}
                       </span>
                     </>
                   )}

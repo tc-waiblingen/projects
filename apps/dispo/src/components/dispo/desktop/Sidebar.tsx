@@ -1,12 +1,14 @@
 'use client'
 
 import clsx from 'clsx'
+import type { DispoCourt } from '@/lib/directus/courts'
 import { groupColor } from '@/lib/plan-helpers'
 import type { DispoAssignment, DispoMatch } from '../types'
 
 interface SidebarProps {
   matches: DispoMatch[]
   assignments: DispoAssignment[]
+  courts: DispoCourt[]
   selectedId: string | null
   recentChangeMatchIds: Set<string>
   onSelectMatch: (id: string) => void
@@ -19,6 +21,7 @@ interface SidebarProps {
 export function Sidebar({
   matches,
   assignments,
+  courts,
   selectedId,
   recentChangeMatchIds,
   onSelectMatch,
@@ -28,6 +31,7 @@ export function Sidebar({
   onResetAssignments,
 }: SidebarProps) {
   const assignmentByMatchId = new Map(assignments.map((a) => [a.matchId, a]))
+  const courtById = new Map(courts.map((c) => [c.id, c]))
 
   return (
     <aside className="sidebar">
@@ -39,6 +43,7 @@ export function Sidebar({
               key={m.id}
               match={m}
               assignment={assignmentByMatchId.get(m.id)}
+              courtById={courtById}
               selected={isSelected}
               changed={recentChangeMatchIds.has(m.id)}
               onClick={() => (isSelected ? onClearSelection() : onSelectMatch(m.id))}
@@ -62,6 +67,7 @@ export function Sidebar({
 interface MatchCardProps {
   match: DispoMatch
   assignment?: DispoAssignment
+  courtById: Map<number, DispoCourt>
   selected: boolean
   changed: boolean
   onClick: () => void
@@ -70,10 +76,13 @@ interface MatchCardProps {
   onDragEnd: () => void
 }
 
-function MatchCard({ match, assignment, selected, changed, onClick, onClearSelection, onDragStart, onDragEnd }: MatchCardProps) {
+function MatchCard({ match, assignment, courtById, selected, changed, onClick, onClearSelection, onDragStart, onDragEnd }: MatchCardProps) {
   const gc = groupColor(match.group || match.league || '')
   const under = assignment ? assignment.courtIds.length < match.minCourts : false
   const groupLabel = match.group || match.leagueShort || match.league || ''
+  const assignedCourtNames = assignment
+    ? assignment.courtIds.map((id) => courtById.get(id)?.name ?? `#${id}`)
+    : []
   return (
     <div
       className={clsx('match-card', selected && 'is-selected', assignment && 'is-assigned')}
@@ -121,7 +130,7 @@ function MatchCard({ match, assignment, selected, changed, onClick, onClearSelec
             <>
               <span className="dot">·</span>
               <span className={clsx('courts-assigned', under && 'is-under')}>
-                {assignment.courtIds.length} zugeteilt
+                {assignedCourtNames.join(', ')}
               </span>
             </>
           )}

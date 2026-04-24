@@ -65,6 +65,7 @@ export function MobileShell({ state, date, prevDateKey, nextDateKey, formattedDa
           <MobileMatchList
             matches={state.matches}
             assignments={state.assignments}
+            courts={state.courts}
             selectedId={state.selectedId}
             recentChangeIds={state.recentChangeIds}
             onSelectMatch={state.selectMatch}
