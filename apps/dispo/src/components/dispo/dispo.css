@@ -531,7 +531,7 @@
 
 /* ---------- Vertical Timeline (courts = columns, time = y) ---------- */
 .dispo-root .vtl-view { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.dispo-root .vtl-scroll { flex: 1; overflow: auto; padding: 0 12px 12px; }
+.dispo-root .vtl-scroll { flex: 1; overflow: auto; padding: 0 0 12px; }
 .dispo-root .vtl-inner { position: relative; }
 .dispo-root .vtl-header {
   position: sticky; top: 0;
@@ -1072,7 +1072,7 @@
 }
 .mobile-sheet .conflict-row svg { flex-shrink: 0; margin-top: 1px; }
 .dispo-root.dispo-root-mobile .mobile-vtl { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.dispo-root.dispo-root-mobile .mobile-vtl-scroll { flex: 1; overflow: auto; padding: 0 8px 12px; }
+.dispo-root.dispo-root-mobile .mobile-vtl-scroll { flex: 1; overflow: auto; padding: 0 0 12px; }
 .dispo-root.dispo-root-mobile .mobile-vtl-inner { position: relative; }
 .dispo-root.dispo-root-mobile .mobile-vtl-header { position: sticky; top: 0; z-index: 3; display: flex; background: var(--color-taupe-100); border-bottom: 1px solid var(--border-subtle); }
 .dispo-root.dispo-root-mobile .mobile-vtl-corner { position: sticky; left: 0; z-index: 2; background: var(--color-taupe-100); border-right: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--fg-muted); }
