@@ -847,3 +847,15 @@
   font-size: 12px; font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- Mobile shell ---------- */
+.dispo-root.dispo-root-mobile {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--color-taupe-100);
+  color: var(--fg-body);
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
