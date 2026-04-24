@@ -1,4 +1,5 @@
 import { replaceAssignmentsForDate, type MatchAssignmentInput } from '@/lib/assignments'
+import { publish as publishUpdate } from '@/lib/assignments-bus'
 import { getDb } from '@/lib/db'
 import { parseIsoDate } from '@/lib/format'
 import { replacePlansForDate, type MatchPlanInput } from '@/lib/match-plans'
@@ -53,6 +54,15 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     )
   }
+
+  const origin = request.headers.get('x-dispo-client-id')
+  publishUpdate({
+    date: parsed.data.date,
+    rows: inputs,
+    plans: planInputs,
+    origin: origin && origin.length > 0 ? origin : null,
+    savedAt: Date.now(),
+  })
 
   return NextResponse.json({ ok: true, date: parsed.data.date, count: inputs.length, plans: planInputs.length })
 }

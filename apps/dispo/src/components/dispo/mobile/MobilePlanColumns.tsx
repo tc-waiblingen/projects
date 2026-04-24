@@ -20,6 +20,7 @@ interface MobilePlanColumnsProps {
   selectedId: string | null
   nowMinutes: number | null
   bookings: Map<number, CourtBooking[]>
+  recentlyChangedCells: Set<string>
   onSelectMatch: (matchId: string) => void
 }
 
@@ -35,6 +36,7 @@ export function MobilePlanColumns({
   selectedId,
   nowMinutes,
   bookings,
+  recentlyChangedCells,
   onSelectMatch,
 }: MobilePlanColumnsProps) {
   const totalMin = DAY_END - DAY_START
@@ -133,11 +135,16 @@ export function MobilePlanColumns({
                     const height = (b.end - b.start) * PX_PER_MIN
                     const gc = groupColor(b.match.group || b.match.leagueShort || '')
                     const isSelected = selectedId === b.matchId
+                    const justChanged = recentlyChangedCells.has(`${b.matchId}:${c.id}`)
                     return (
                       <button
                         key={bi}
                         type="button"
-                        className={clsx('mobile-vtl-block', isSelected && 'is-selected')}
+                        className={clsx(
+                          'mobile-vtl-block',
+                          isSelected && 'is-selected',
+                          justChanged && 'dispo-cell--just-changed',
+                        )}
                         style={{ top, height, background: gc.bg, color: gc.fg }}
                         onClick={() => onSelectMatch(b.matchId)}
                       >

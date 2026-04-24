@@ -19,6 +19,7 @@ interface MobilePlanStripsProps {
   assignments: DispoAssignment[]
   conflicts: PlanConflict[]
   bookings: Map<number, CourtBooking[]>
+  recentlyChangedCells: Set<string>
   onSelectMatch: (matchId: string) => void
 }
 
@@ -28,6 +29,7 @@ export function MobilePlanStrips({
   assignments,
   conflicts,
   bookings,
+  recentlyChangedCells,
   onSelectMatch,
 }: MobilePlanStripsProps) {
   const matchById = new Map(matches.map((m) => [m.id, m]))
@@ -100,11 +102,16 @@ export function MobilePlanStrips({
                 const end = endMinutes(a.startTime, a.durationH)
                 const gc = groupColor(match.group || match.leagueShort || '')
                 const inConflict = courtConflictMatchIds?.has(a.matchId) ?? false
+                const justChanged = recentlyChangedCells.has(`${a.matchId}:${c.id}`)
                 return (
                   <button
                     key={a.matchId}
                     type="button"
-                    className={clsx('mobile-strip-blk', inConflict && 'is-conflict')}
+                    className={clsx(
+                      'mobile-strip-blk',
+                      inConflict && 'is-conflict',
+                      justChanged && 'dispo-cell--just-changed',
+                    )}
                     style={{
                       left: `${pct(start)}%`,
                       width: `${pct(end) - pct(start)}%`,

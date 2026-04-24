@@ -24,6 +24,7 @@ interface MapViewProps {
   selectedMatchAssignedCourtIds: number[]
   isDragging: boolean
   bookingsByCourt: Map<number, CourtBooking[]>
+  recentlyChangedCells: Set<string>
   onToggleCourt: (courtId: number) => void
   onSelectMatch: (matchId: string) => void
   onDropMatch: (matchId: string, courtId: number) => void
@@ -40,6 +41,7 @@ export function MapView({
   selectedMatchAssignedCourtIds,
   isDragging,
   bookingsByCourt,
+  recentlyChangedCells,
   onToggleCourt,
   onSelectMatch,
   onDropMatch,
@@ -173,6 +175,7 @@ export function MapView({
             background = `color-mix(in oklch, ${selectedGroupColor.bg} 55%, transparent)`
             color = selectedGroupColor.fg
           }
+          const justChanged = occ ? recentlyChangedCells.has(`${occ.matchId}:${court.id}`) : false
           return (
             <div
               key={court.id}
@@ -184,6 +187,7 @@ export function MapView({
                 effectiveHoverCourtId === court.id && 'is-drag-over',
                 showAddPreview && 'is-preview-add',
                 showRemovePreview && 'is-preview-remove',
+                justChanged && 'dispo-cell--just-changed',
               )}
               data-occupied={occ ? 'true' : 'false'}
               style={{

@@ -13,6 +13,8 @@ interface HeaderProps {
   saving: boolean
   saveError: string | null
   savedAt: number | null
+  hasPendingRemote: boolean
+  onApplyPendingRemote: () => void
 }
 
 const VIEW_OPTIONS: Array<{ id: DispoView; label: string; icon: React.ReactNode }> = [
@@ -38,12 +40,32 @@ const VIEW_OPTIONS: Array<{ id: DispoView; label: string; icon: React.ReactNode 
   },
 ]
 
-export function Header({ view, onViewChange, issues, onIssueSelect, saving, saveError, savedAt }: HeaderProps) {
+export function Header({
+  view,
+  onViewChange,
+  issues,
+  onIssueSelect,
+  saving,
+  saveError,
+  savedAt,
+  hasPendingRemote,
+  onApplyPendingRemote,
+}: HeaderProps) {
   return (
     <header className="app-header">
       <div className="app-header-status">
         <IssuesBadge issues={issues} onIssueSelect={onIssueSelect} />
         <SaveStatus saving={saving} saveError={saveError} savedAt={savedAt} />
+        {hasPendingRemote && (
+          <button
+            type="button"
+            className="pending-remote-pill"
+            onClick={onApplyPendingRemote}
+            title="Ein anderer Operator hat gespeichert — hier klicken, um die Änderungen zu übernehmen"
+          >
+            Aktualisierung übernehmen
+          </button>
+        )}
       </div>
       <div className="view-switch">
         {VIEW_OPTIONS.map((v) => (

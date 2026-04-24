@@ -20,6 +20,8 @@ interface MobileTopBarProps {
   saving: boolean
   saveError: string | null
   savedAt: number | null
+  hasPendingRemote: boolean
+  onApplyPendingRemote: () => void
 }
 
 export function MobileTopBar({
@@ -33,6 +35,8 @@ export function MobileTopBar({
   saving,
   saveError,
   savedAt,
+  hasPendingRemote,
+  onApplyPendingRemote,
 }: MobileTopBarProps) {
   const router = useRouter()
   const [issuesOpen, setIssuesOpen] = useState(false)
@@ -168,6 +172,17 @@ export function MobileTopBar({
       </div>
 
       <MobileSaveStatus saving={saving} saveError={saveError} savedAt={savedAt} />
+
+      {hasPendingRemote && (
+        <button
+          type="button"
+          className="pending-remote-pill"
+          onClick={onApplyPendingRemote}
+          title="Änderungen eines anderen Operators übernehmen"
+        >
+          Aktualisierung
+        </button>
+      )}
     </header>
   )
 }

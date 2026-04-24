@@ -1,8 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { MatchAssignmentInput } from '@/lib/assignments'
 import type { DispoCourt } from '@/lib/directus/courts'
 import { bookingsFromRecord, type BookingsByCourt, type CourtBooking } from '@/lib/ebusy/reservations'
+import type { MatchPlanInput } from '@/lib/match-plans'
 import {
   DAY_END,
   DAY_START,
@@ -14,6 +16,61 @@ import {
   type PlanConflict,
 } from '@/lib/plan-helpers'
 import type { DispoAssignment, DispoMatch, Issue } from './types'
+import { CLIENT_ID, useAssignmentsStream, type RemoteSnapshot } from './useAssignmentsStream'
+
+const CHANGED_CELL_CLEAR_MS = 1500
+const REMOTE_EDIT_GRACE_MS = 2000
+
+export interface PendingRemoteSnapshot {
+  assignments: DispoAssignment[]
+  savedAt: number
+  origin: string | null
+}
+
+function reconstructAssignments(
+  rows: MatchAssignmentInput[],
+  plans: MatchPlanInput[],
+  courts: DispoCourt[],
+): DispoAssignment[] {
+  const planById = new Map(plans.map((p) => [p.matchId, p]))
+  const courtTypeById = new Map(courts.map((c) => [c.id, c.type]))
+  return rows.map((r) => {
+    const plan = planById.get(r.matchId)
+    const fallbackType = courtTypeById.get(r.courtIds[0] ?? -1)
+    return {
+      matchId: r.matchId,
+      courtIds: [...r.courtIds],
+      startTime: plan?.startTime ?? r.matchTime,
+      durationH: plan?.durationH ?? (fallbackType ? defaultDurationForCourtType(fallbackType) : 5.5),
+    }
+  })
+}
+
+function equalAssignments(a: DispoAssignment[], b: DispoAssignment[]): boolean {
+  if (a.length !== b.length) return false
+  const aMap = new Map(a.map((x) => [x.matchId, x]))
+  for (const y of b) {
+    const x = aMap.get(y.matchId)
+    if (!x) return false
+    if (x.startTime !== y.startTime || x.durationH !== y.durationH) return false
+    if (x.courtIds.length !== y.courtIds.length) return false
+    const sx = [...x.courtIds].sort((p, q) => p - q).join(',')
+    const sy = [...y.courtIds].sort((p, q) => p - q).join(',')
+    if (sx !== sy) return false
+  }
+  return true
+}
+
+function computeChangedCells(prev: DispoAssignment[], next: DispoAssignment[]): Set<string> {
+  const changed = new Set<string>()
+  const prevKeys = new Set<string>()
+  for (const a of prev) for (const c of a.courtIds) prevKeys.add(`${a.matchId}:${c}`)
+  const nextKeys = new Set<string>()
+  for (const a of next) for (const c of a.courtIds) nextKeys.add(`${a.matchId}:${c}`)
+  for (const k of nextKeys) if (!prevKeys.has(k)) changed.add(k)
+  for (const k of prevKeys) if (!nextKeys.has(k)) changed.add(k)
+  return changed
+}
 
 export interface UseDispoStateInput {
   date: string
@@ -44,6 +101,10 @@ export interface DispoState {
   saving: boolean
   saveError: string | null
   savedAt: number | null
+
+  recentlyChangedCells: Set<string>
+  pendingRemoteSnapshot: PendingRemoteSnapshot | null
+  applyRemoteSnapshot: () => void
 
   selectMatch: (id: string) => void
   clearSelection: () => void
@@ -176,6 +237,22 @@ export function useDispoState(input: UseDispoStateInput): DispoState {
 
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const firstRunRef = useRef(true)
+  const skipNextSaveRef = useRef(false)
+  const savingRef = useRef(false)
+  const lastLocalEditAtRef = useRef<number>(0)
+  const changedClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [recentlyChangedCells, setRecentlyChangedCells] = useState<Set<string>>(() => new Set())
+  const [pendingRemoteSnapshot, setPendingRemoteSnapshot] = useState<PendingRemoteSnapshot | null>(
+    null,
+  )
+
+  useEffect(() => {
+    savingRef.current = saving
+  }, [saving])
+
+  const bumpLastEdit = useCallback(() => {
+    lastLocalEditAtRef.current = Date.now()
+  }, [])
 
   const saveNow = useCallback(
     async (next: DispoAssignment[]) => {
@@ -196,7 +273,10 @@ export function useDispoState(input: UseDispoStateInput): DispoState {
         }))
         const res = await fetch('/api/assignments', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-dispo-client-id': CLIENT_ID,
+          },
           body: JSON.stringify({ date, rows, plans }),
         })
         if (!res.ok) {
@@ -218,6 +298,10 @@ export function useDispoState(input: UseDispoStateInput): DispoState {
       firstRunRef.current = false
       return
     }
+    if (skipNextSaveRef.current) {
+      skipNextSaveRef.current = false
+      return
+    }
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = setTimeout(() => {
       void saveNow(assignments)
@@ -227,11 +311,64 @@ export function useDispoState(input: UseDispoStateInput): DispoState {
     }
   }, [assignments, saveNow])
 
+  useEffect(() => {
+    return () => {
+      if (changedClearTimerRef.current) clearTimeout(changedClearTimerRef.current)
+    }
+  }, [])
+
+  const applyRemoteAssignments = useCallback((remote: DispoAssignment[]) => {
+    setAssignments((prev) => {
+      if (equalAssignments(prev, remote)) return prev
+      const changed = computeChangedCells(prev, remote)
+      if (changed.size > 0) {
+        setRecentlyChangedCells(changed)
+        if (changedClearTimerRef.current) clearTimeout(changedClearTimerRef.current)
+        changedClearTimerRef.current = setTimeout(
+          () => setRecentlyChangedCells(new Set()),
+          CHANGED_CELL_CLEAR_MS,
+        )
+      }
+      skipNextSaveRef.current = true
+      return remote
+    })
+  }, [])
+
+  const handleRemoteSnapshot = useCallback(
+    (snapshot: RemoteSnapshot) => {
+      const remote = reconstructAssignments(snapshot.rows, snapshot.plans, courts)
+      const idle =
+        !savingRef.current && Date.now() - lastLocalEditAtRef.current > REMOTE_EDIT_GRACE_MS
+      if (idle) {
+        applyRemoteAssignments(remote)
+        setPendingRemoteSnapshot(null)
+        return
+      }
+      setPendingRemoteSnapshot({
+        assignments: remote,
+        savedAt: snapshot.savedAt,
+        origin: snapshot.origin,
+      })
+    },
+    [courts, applyRemoteAssignments],
+  )
+
+  useAssignmentsStream({ date, onRemote: handleRemoteSnapshot })
+
+  const applyRemoteSnapshot = useCallback(() => {
+    setPendingRemoteSnapshot((current) => {
+      if (!current) return null
+      applyRemoteAssignments(current.assignments)
+      return null
+    })
+  }, [applyRemoteAssignments])
+
   const dropMatchOnCourt = useCallback(
     (matchId: string, courtId: number) => {
       const match = matches.find((m) => m.id === matchId)
       if (!match) return
       const court = courts.find((c) => c.id === courtId)
+      bumpLastEdit()
       setAssignments((prev) => {
         const existing = prev.find((a) => a.matchId === matchId)
         if (existing) {
@@ -252,32 +389,41 @@ export function useDispoState(input: UseDispoStateInput): DispoState {
       })
       setSelectedId(matchId)
     },
-    [matches, courts],
+    [matches, courts, bumpLastEdit],
   )
 
-  const updateAssignment = useCallback((matchId: string, patch: Partial<DispoAssignment>) => {
-    setAssignments((prev) => prev.map((a) => (a.matchId === matchId ? { ...a, ...patch } : a)))
-  }, [])
+  const updateAssignment = useCallback(
+    (matchId: string, patch: Partial<DispoAssignment>) => {
+      bumpLastEdit()
+      setAssignments((prev) => prev.map((a) => (a.matchId === matchId ? { ...a, ...patch } : a)))
+    },
+    [bumpLastEdit],
+  )
 
-  const removeCourtFromAssignment = useCallback((matchId: string, courtId: number) => {
-    setAssignments((prev) => {
-      const list: DispoAssignment[] = []
-      for (const a of prev) {
-        if (a.matchId !== matchId) {
-          list.push(a)
-          continue
+  const removeCourtFromAssignment = useCallback(
+    (matchId: string, courtId: number) => {
+      bumpLastEdit()
+      setAssignments((prev) => {
+        const list: DispoAssignment[] = []
+        for (const a of prev) {
+          if (a.matchId !== matchId) {
+            list.push(a)
+            continue
+          }
+          const nextIds = a.courtIds.filter((c) => c !== courtId)
+          if (nextIds.length === 0) continue
+          list.push({ ...a, courtIds: nextIds })
         }
-        const nextIds = a.courtIds.filter((c) => c !== courtId)
-        if (nextIds.length === 0) continue
-        list.push({ ...a, courtIds: nextIds })
-      }
-      return list
-    })
-  }, [])
+        return list
+      })
+    },
+    [bumpLastEdit],
+  )
 
   const moveAssignmentCourt = useCallback(
     (matchId: string, fromCourtId: number, toCourtId: number) => {
       if (fromCourtId === toCourtId) return
+      bumpLastEdit()
       setAssignments((prev) =>
         prev.map((a) => {
           if (a.matchId !== matchId) return a
@@ -288,7 +434,7 @@ export function useDispoState(input: UseDispoStateInput): DispoState {
         }),
       )
     },
-    [],
+    [bumpLastEdit],
   )
 
   const toggleCourt = useCallback(
@@ -309,9 +455,10 @@ export function useDispoState(input: UseDispoStateInput): DispoState {
 
   const resetAssignments = useCallback(() => {
     if (typeof window !== 'undefined' && !window.confirm('Alle Zuordnungen zurücksetzen?')) return
+    bumpLastEdit()
     setAssignments([])
     setSelectedId(null)
-  }, [])
+  }, [bumpLastEdit])
 
   const nowMinutes = useNowMinutesForDate(date)
 
@@ -335,6 +482,10 @@ export function useDispoState(input: UseDispoStateInput): DispoState {
     saving,
     saveError,
     savedAt,
+
+    recentlyChangedCells,
+    pendingRemoteSnapshot,
+    applyRemoteSnapshot,
 
     selectMatch,
     clearSelection,

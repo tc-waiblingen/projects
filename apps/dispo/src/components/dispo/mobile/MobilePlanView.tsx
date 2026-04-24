@@ -45,6 +45,7 @@ export function MobilePlanView({ state }: MobilePlanViewProps) {
           selectedId={state.selectedId}
           nowMinutes={state.nowMinutes}
           bookings={state.bookings}
+          recentlyChangedCells={state.recentlyChangedCells}
           onSelectMatch={state.selectMatch}
         />
       )}
@@ -55,6 +56,7 @@ export function MobilePlanView({ state }: MobilePlanViewProps) {
           assignments={state.assignments}
           conflicts={state.conflicts}
           bookings={state.bookings}
+          recentlyChangedCells={state.recentlyChangedCells}
           onSelectMatch={state.selectMatch}
         />
       )}

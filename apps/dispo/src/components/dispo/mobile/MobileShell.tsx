@@ -58,6 +58,8 @@ export function MobileShell({ state, date, prevDateKey, nextDateKey, formattedDa
         saving={state.saving}
         saveError={state.saveError}
         savedAt={state.savedAt}
+        hasPendingRemote={state.pendingRemoteSnapshot !== null}
+        onApplyPendingRemote={state.applyRemoteSnapshot}
       />
       <MobileTabs value={tab} onChange={setTab} />
       <div className="mobile-scroll">

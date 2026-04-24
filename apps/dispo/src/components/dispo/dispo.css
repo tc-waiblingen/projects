@@ -1165,3 +1165,34 @@
   pointer-events: none;
 }
 .dispo-root.dispo-root-mobile .mobile-strip-label-text { font-size: 10px; }
+
+/* ---------- Remote-change pulse (shared across shells) ---------- */
+@keyframes dispo-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklch, var(--color-tcw-red-500) 70%, transparent); }
+  40%  { box-shadow: 0 0 0 6px color-mix(in oklch, var(--color-tcw-red-500) 35%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--color-tcw-red-500) 0%, transparent); }
+}
+.dispo-root .dispo-cell--just-changed {
+  animation: dispo-pulse 1.5s ease-out;
+  outline: 2px solid color-mix(in oklch, var(--color-tcw-red-500) 55%, transparent);
+  outline-offset: -1px;
+}
+
+/* ---------- Pending remote snapshot pill ---------- */
+.dispo-root .pending-remote-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--color-tcw-accent-900) 10%, transparent);
+  color: var(--color-tcw-accent-900);
+  border: 1px solid color-mix(in oklch, var(--color-tcw-accent-900) 25%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dispo-root .pending-remote-pill:hover {
+  background: color-mix(in oklch, var(--color-tcw-accent-900) 18%, transparent);
+}
+.dispo-root.dispo-root-mobile .pending-remote-pill { font-size: 11px; padding: 3px 8px; }

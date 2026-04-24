@@ -40,6 +40,7 @@ export function DesktopShell({ state, lageplanSvg }: DesktopShellProps) {
     onSelectMatch: state.selectMatch,
     onDropMatch: state.dropMatchOnCourt,
     bookingsByCourt: state.bookings,
+    recentlyChangedCells: state.recentlyChangedCells,
   }
 
   const vtlProps = {
@@ -58,6 +59,7 @@ export function DesktopShell({ state, lageplanSvg }: DesktopShellProps) {
     onMoveAssignmentCourt: state.moveAssignmentCourt,
     onRemoveCourt: state.removeCourtFromAssignment,
     bookingsByCourt: state.bookings,
+    recentlyChangedCells: state.recentlyChangedCells,
   }
 
   return (
@@ -70,6 +72,8 @@ export function DesktopShell({ state, lageplanSvg }: DesktopShellProps) {
         saving={state.saving}
         saveError={state.saveError}
         savedAt={state.savedAt}
+        hasPendingRemote={state.pendingRemoteSnapshot !== null}
+        onApplyPendingRemote={state.applyRemoteSnapshot}
       />
       <div className="app-body">
         <Sidebar

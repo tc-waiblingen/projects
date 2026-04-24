@@ -4,6 +4,47 @@ import type { DispoCourt } from '@/lib/directus/courts'
 import { useDispoState } from '../useDispoState'
 import type { DispoMatch } from '../types'
 
+type Listener = (ev: MessageEvent) => void
+
+class FakeEventSource {
+  static last: FakeEventSource | null = null
+  url: string
+  private listeners = new Map<string, Set<Listener>>()
+  closed = false
+  constructor(url: string) {
+    this.url = url
+    FakeEventSource.last = this
+  }
+  addEventListener(name: string, cb: Listener) {
+    let set = this.listeners.get(name)
+    if (!set) {
+      set = new Set()
+      this.listeners.set(name, set)
+    }
+    set.add(cb)
+  }
+  removeEventListener(name: string, cb: Listener) {
+    this.listeners.get(name)?.delete(cb)
+  }
+  close() {
+    this.closed = true
+  }
+  dispatch(name: string, data: unknown) {
+    const set = this.listeners.get(name)
+    if (!set) return
+    for (const cb of set) cb({ data: JSON.stringify(data) } as MessageEvent)
+  }
+}
+
+function installFakeEventSource() {
+  FakeEventSource.last = null
+  ;(globalThis as unknown as { EventSource: typeof FakeEventSource }).EventSource = FakeEventSource
+}
+
+function uninstallFakeEventSource() {
+  delete (globalThis as unknown as { EventSource?: unknown }).EventSource
+}
+
 const court = (id: number, type: 'tennis_indoor' | 'tennis_outdoor' = 'tennis_outdoor'): DispoCourt => ({
   id,
   name: type === 'tennis_indoor' ? `H${id}` : `P${id}`,
@@ -175,6 +216,97 @@ describe('useDispoState — derived data', () => {
     )
     expect(result.current.conflicts.length).toBeGreaterThan(0)
     expect(result.current.issues.some((i) => i.key.startsWith('conflict:'))).toBe(true)
+  })
+})
+
+describe('useDispoState — remote merge', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn().mockResolvedValue(new Response('{}', { status: 200 }))
+    installFakeEventSource()
+  })
+  afterEach(() => {
+    uninstallFakeEventSource()
+    vi.restoreAllMocks()
+  })
+
+  it('applies a remote update immediately when idle and populates recentlyChangedCells', async () => {
+    const { result } = renderHook(() => useDispoState(baseProps()))
+    await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
+
+    act(() => {
+      FakeEventSource.last!.dispatch('update', {
+        rows: [{ matchId: 'm1', matchTime: '09:00', courtIds: [3] }],
+        plans: [{ matchId: 'm1', startTime: '09:00', durationH: 5.5 }],
+        origin: 'other-tab',
+        savedAt: Date.now(),
+      })
+    })
+
+    expect(result.current.assignments).toEqual([
+      { matchId: 'm1', courtIds: [3], startTime: '09:00', durationH: 5.5 },
+    ])
+    expect(result.current.recentlyChangedCells.has('m1:3')).toBe(true)
+    expect(result.current.pendingRemoteSnapshot).toBeNull()
+  })
+
+  it('stashes a remote update as pending when the user has just edited', async () => {
+    const { result } = renderHook(() => useDispoState(baseProps()))
+    await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
+
+    act(() => result.current.dropMatchOnCourt('m1', 2))
+
+    act(() => {
+      FakeEventSource.last!.dispatch('update', {
+        rows: [{ matchId: 'm1', matchTime: '09:00', courtIds: [4] }],
+        plans: [{ matchId: 'm1', startTime: '09:00', durationH: 5.5 }],
+        origin: 'other-tab',
+        savedAt: Date.now(),
+      })
+    })
+
+    expect(result.current.assignments[0]!.courtIds).toEqual([2])
+    expect(result.current.pendingRemoteSnapshot).not.toBeNull()
+    expect(result.current.pendingRemoteSnapshot!.assignments[0]!.courtIds).toEqual([4])
+  })
+
+  it('applyRemoteSnapshot applies the pending snapshot and clears it', async () => {
+    const { result } = renderHook(() => useDispoState(baseProps()))
+    await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
+
+    act(() => result.current.dropMatchOnCourt('m1', 2))
+    act(() => {
+      FakeEventSource.last!.dispatch('update', {
+        rows: [{ matchId: 'm1', matchTime: '09:00', courtIds: [4] }],
+        plans: [{ matchId: 'm1', startTime: '09:00', durationH: 5.5 }],
+        origin: 'other-tab',
+        savedAt: Date.now(),
+      })
+    })
+    expect(result.current.pendingRemoteSnapshot).not.toBeNull()
+
+    act(() => result.current.applyRemoteSnapshot())
+
+    expect(result.current.assignments[0]!.courtIds).toEqual([4])
+    expect(result.current.pendingRemoteSnapshot).toBeNull()
+    expect(result.current.recentlyChangedCells.has('m1:4')).toBe(true)
+  })
+
+  it('ignores remote events that carry this tab’s own origin', async () => {
+    const { result } = renderHook(() => useDispoState(baseProps()))
+    await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
+
+    const mod = await import('../useAssignmentsStream')
+    act(() => {
+      FakeEventSource.last!.dispatch('update', {
+        rows: [{ matchId: 'm1', matchTime: '09:00', courtIds: [3] }],
+        plans: [{ matchId: 'm1', startTime: '09:00', durationH: 5.5 }],
+        origin: mod.CLIENT_ID,
+        savedAt: Date.now(),
+      })
+    })
+
+    expect(result.current.assignments).toEqual([])
+    expect(result.current.pendingRemoteSnapshot).toBeNull()
   })
 })
 

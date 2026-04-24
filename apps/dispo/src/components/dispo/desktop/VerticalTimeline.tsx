@@ -26,6 +26,7 @@ interface VerticalTimelineProps {
   nowMinutes: number | null
   isDragging: boolean
   bookingsByCourt: Map<number, CourtBooking[]>
+  recentlyChangedCells: Set<string>
   onToggleCourt: (courtId: number) => void
   onSelectMatch: (matchId: string) => void
   onDropMatch: (matchId: string, courtId: number) => void
@@ -49,6 +50,7 @@ export function VerticalTimeline({
   nowMinutes,
   isDragging,
   bookingsByCourt,
+  recentlyChangedCells,
   onToggleCourt,
   onSelectMatch,
   onDropMatch,
@@ -284,10 +286,15 @@ export function VerticalTimeline({
                     const height = (b.end - b.start) * PX_PER_MIN
                     const gc = groupColor(b.match.group || b.match.leagueShort || '')
                     const isBlockSelected = selectedId === b.matchId
+                    const justChanged = recentlyChangedCells.has(`${b.matchId}:${c.id}`)
                     return (
                       <div
                         key={bi}
-                        className={clsx('vtl-block', isBlockSelected && 'is-selected')}
+                        className={clsx(
+                          'vtl-block',
+                          isBlockSelected && 'is-selected',
+                          justChanged && 'dispo-cell--just-changed',
+                        )}
                         style={{ top, height, background: gc.bg, color: gc.fg }}
                         draggable
                         onDragStart={(ev) => {
