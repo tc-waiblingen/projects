@@ -3,7 +3,8 @@
 import clsx from 'clsx'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { DispoCourt } from '@/lib/directus/courts'
-import { abbreviateTeam, groupColor, type OccupancyEntry } from '@/lib/plan-helpers'
+import type { CourtBooking } from '@/lib/ebusy/reservations'
+import { abbreviateTeam, formatTime, groupColor, type OccupancyEntry } from '@/lib/plan-helpers'
 import type { DispoMatch } from './types'
 
 interface CourtRect {
@@ -22,6 +23,7 @@ interface MapViewProps {
   selectedMatchId: string | null
   selectedMatchAssignedCourtIds: number[]
   isDragging: boolean
+  bookingsByCourt: Map<number, CourtBooking[]>
   onToggleCourt: (courtId: number) => void
   onSelectMatch: (matchId: string) => void
   onDropMatch: (matchId: string, courtId: number) => void
@@ -37,6 +39,7 @@ export function MapView({
   selectedMatchId,
   selectedMatchAssignedCourtIds,
   isDragging,
+  bookingsByCourt,
   onToggleCourt,
   onSelectMatch,
   onDropMatch,
@@ -45,6 +48,7 @@ export function MapView({
   const hostRef = useRef<HTMLDivElement>(null)
   const [positions, setPositions] = useState<Map<number, CourtRect>>(new Map())
   const [hoverCourtId, setHoverCourtId] = useState<number | null>(null)
+  const [openBookingsCourtId, setOpenBookingsCourtId] = useState<number | null>(null)
   const matchById = new Map(matches.map((m) => [m.id, m]))
   const effectiveHoverCourtId = isDragging ? hoverCourtId : null
   const selectedMatch = selectedMatchId ? matchById.get(selectedMatchId) ?? null : null
@@ -115,6 +119,17 @@ export function MapView({
       ro.disconnect()
     }
   }, [measure, svg])
+
+  useEffect(() => {
+    if (openBookingsCourtId === null) return
+    function onDocClick(ev: MouseEvent) {
+      const target = ev.target as Element | null
+      if (target && target.closest('.court-booking-indicator')) return
+      setOpenBookingsCourtId(null)
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return () => document.removeEventListener('mousedown', onDocClick)
+  }, [openBookingsCourtId])
 
   if (!svg) {
     return (
@@ -243,6 +258,54 @@ export function MapView({
                   {!showAddPreview && occ && match && (
                     <span className="court-occupant">{abbreviateTeam(match.homeTeamShort, match.group || match.leagueShort || '')}</span>
                   )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+        {courts.map((court) => {
+          const rect = positions.get(court.id)
+          if (!rect) return null
+          const bookings = bookingsByCourt.get(court.id)
+          if (!bookings || bookings.length === 0) return null
+          const isOpen = openBookingsCourtId === court.id
+          const rangesText = bookings
+            .map((b) => `${formatTime(b.fromMinutes)}–${formatTime(b.toMinutes)}`)
+            .join(', ')
+          return (
+            <div
+              key={`bk-${court.id}`}
+              className="court-booking-indicator"
+              style={{ left: rect.x + rect.width - 14, top: rect.y + 4 }}
+            >
+              <button
+                type="button"
+                className={clsx('court-booking-dot', isOpen && 'is-open')}
+                aria-label={`Buchungen auf ${court.name}: ${rangesText}`}
+                title={rangesText}
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setOpenBookingsCourtId((prev) => (prev === court.id ? null : court.id))
+                }}
+              />
+              {isOpen && (
+                <div className="court-booking-popover" role="dialog">
+                  <div className="court-booking-popover-title">{court.name} — Buchungen</div>
+                  <ul>
+                    {bookings.map((b, i) => {
+                      const label = b.title ?? b.bookingType
+                      return (
+                        <li key={i}>
+                          <span className="court-booking-time">
+                            {formatTime(b.fromMinutes)}–{formatTime(b.toMinutes)}
+                          </span>
+                          {label && <span className="court-booking-label">{label}</span>}
+                          {b.blocking && <span className="court-booking-blocking">gesperrt</span>}
+                        </li>
+                      )
+                    })}
+                  </ul>
                 </div>
               )}
             </div>

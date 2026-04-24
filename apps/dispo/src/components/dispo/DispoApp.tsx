@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { DispoCourt } from '@/lib/directus/courts'
+import { bookingsFromRecord, type BookingsByCourt } from '@/lib/ebusy/reservations'
 import {
   computeOccupancy,
   defaultDurationForCourtType,
@@ -47,6 +48,7 @@ interface DispoAppProps {
   initialAssignments: DispoAssignment[]
   recentChangeMatchIds: string[]
   lageplanSvg: string | null
+  bookingsByCourt: BookingsByCourt
 }
 
 export function DispoApp({
@@ -56,6 +58,7 @@ export function DispoApp({
   initialAssignments,
   recentChangeMatchIds,
   lageplanSvg,
+  bookingsByCourt,
 }: DispoAppProps) {
   const [assignments, setAssignments] = useState<DispoAssignment[]>(initialAssignments)
   const [view, setView] = useState<DispoView>('vtimeline')
@@ -71,6 +74,7 @@ export function DispoApp({
   const [draggingMatchId, setDraggingMatchId] = useState<string | null>(null)
 
   const recentChangeIdSet = useMemo(() => new Set(recentChangeMatchIds), [recentChangeMatchIds])
+  const bookingsMap = useMemo(() => bookingsFromRecord(bookingsByCourt), [bookingsByCourt])
   const matchGroupById = useMemo(() => {
     const map = new Map<string, string>()
     for (const m of matches) map.set(m.id, m.group || m.leagueShort || '')
@@ -315,6 +319,7 @@ export function DispoApp({
     onToggleCourt: toggleCourt,
     onSelectMatch: selectMatch,
     onDropMatch: dropMatchOnCourt,
+    bookingsByCourt: bookingsMap,
   }
 
   const nowMinutes = useNowMinutesForDate(date)
@@ -334,6 +339,7 @@ export function DispoApp({
     onUpdateAssignment: updateAssignment,
     onMoveAssignmentCourt: moveAssignmentCourt,
     onRemoveCourt: removeCourtFromAssignment,
+    bookingsByCourt: bookingsMap,
   }
 
   return (

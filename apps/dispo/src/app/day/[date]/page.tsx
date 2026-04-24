@@ -10,6 +10,7 @@ import { getDb } from '@/lib/db'
 import { fetchCourts } from '@/lib/directus/courts'
 import { fetchAreaMapSvg } from '@/lib/directus/fetchAreaMapSvg'
 import { fetchGlobalAreaMapId } from '@/lib/directus/global'
+import { fetchEbusyReservationsForDate, type BookingsByCourt } from '@/lib/ebusy/reservations'
 import { settle } from '@/lib/fetch-result'
 import { formatCourtType, formatDateLong, parseIsoDate, dateKey } from '@/lib/format'
 import { fetchMatchChangeGroups } from '@/lib/match-changes'
@@ -68,6 +69,15 @@ export default async function DayPage({ params }: DayPageProps) {
   const seasonCourts = courts.filter((c) => c.type === courtType)
   const matches = matchesResult.ok ? matchesResult.data : []
   const tournament = tournamentResult.ok ? tournamentResult.data : null
+
+  let bookingsByCourt: BookingsByCourt = {}
+  if (courts.length > 0) {
+    try {
+      bookingsByCourt = await fetchEbusyReservationsForDate(date, courts)
+    } catch (error) {
+      console.error('day/[date]: eBuSy fetch failed:', error)
+    }
+  }
 
   const dayKey = dateKey(date)
   const storedRows = getAssignmentsForDate(db, dateParam)
@@ -176,6 +186,7 @@ export default async function DayPage({ params }: DayPageProps) {
           initialAssignments={initialAssignments}
           recentChangeMatchIds={recentChangeMatchIds}
           lageplanSvg={lageplanSvg}
+          bookingsByCourt={bookingsByCourt}
         />
       ) : null}
     </div>

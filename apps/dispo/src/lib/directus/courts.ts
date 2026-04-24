@@ -5,6 +5,7 @@ export interface DispoCourt {
   name: string
   type: 'tennis_indoor' | 'tennis_outdoor'
   sort: number
+  ebusyId: string | null
 }
 
 export async function fetchCourts(): Promise<DispoCourt[]> {
@@ -13,7 +14,7 @@ export async function fetchCourts(): Promise<DispoCourt[]> {
     readItems('courts', {
       filter: { status: { _eq: 'published' } },
       sort: ['sort'],
-      fields: ['id', 'name', 'type', 'sort'],
+      fields: ['id', 'name', 'type', 'sort', 'ebusy_id'],
     }),
   )
 
@@ -26,6 +27,7 @@ export async function fetchCourts(): Promise<DispoCourt[]> {
       name: item.name ?? `Platz ${item.id}`,
       type: item.type,
       sort: item.sort ?? item.id,
+      ebusyId: typeof item.ebusy_id === 'string' && item.ebusy_id.length > 0 ? item.ebusy_id : null,
     })
   }
   courts.sort((a, b) => a.sort - b.sort || a.id - b.id)

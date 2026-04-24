@@ -3,6 +3,7 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 import type { DispoCourt } from '@/lib/directus/courts'
+import type { CourtBooking } from '@/lib/ebusy/reservations'
 import {
   DAY_END,
   DAY_START,
@@ -24,6 +25,7 @@ interface VerticalTimelineProps {
   selectedMatchAssignedCourtIds: number[]
   nowMinutes: number | null
   isDragging: boolean
+  bookingsByCourt: Map<number, CourtBooking[]>
   onToggleCourt: (courtId: number) => void
   onSelectMatch: (matchId: string) => void
   onDropMatch: (matchId: string, courtId: number) => void
@@ -46,6 +48,7 @@ export function VerticalTimeline({
   selectedMatchAssignedCourtIds,
   nowMinutes,
   isDragging,
+  bookingsByCourt,
   onToggleCourt,
   onSelectMatch,
   onDropMatch,
@@ -223,6 +226,24 @@ export function VerticalTimeline({
                   {hours.map((h) => (
                     <div key={h} className="vtl-gridline" style={{ top: yForMinutes(h * 60) }} />
                   ))}
+                  {(bookingsByCourt.get(c.id) ?? []).map((bk, bi) => {
+                    const start = Math.max(bk.fromMinutes, DAY_START)
+                    const end = Math.min(bk.toMinutes, DAY_END)
+                    if (end <= start) return null
+                    const label = bk.title ?? bk.bookingType
+                    const range = `${formatTime(bk.fromMinutes)}–${formatTime(bk.toMinutes)}`
+                    const tooltipParts = [range]
+                    if (label) tooltipParts.push(label)
+                    if (bk.blocking) tooltipParts.push('gesperrt')
+                    return (
+                      <div
+                        key={`bk-${bi}`}
+                        className="vtl-booking"
+                        style={{ top: yForMinutes(start), height: (end - start) * PX_PER_MIN }}
+                        title={tooltipParts.join(' · ')}
+                      />
+                    )
+                  })}
                   {showAddPreview && selectedMatch && (() => {
                     const startTime = selectedAssignment?.startTime ?? selectedMatch.startTime
                     const durH = selectedAssignment?.durationH ?? defaultDurationForCourtType(c.type)

@@ -21,6 +21,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 # Copy package.json files for all workspace packages
 COPY packages/config/package.json ./packages/config/
 COPY packages/calendar/package.json ./packages/calendar/
+COPY packages/ebusy/package.json ./packages/ebusy/
 COPY packages/email/package.json ./packages/email/
 COPY apps/dispo/package.json ./apps/dispo/
 
@@ -40,7 +41,9 @@ COPY --from=deps /app ./
 # Copy shared package source and build it
 COPY packages/config ./packages/config
 COPY packages/calendar ./packages/calendar
+COPY packages/ebusy ./packages/ebusy
 RUN cd packages/calendar && pnpm run build
+RUN cd packages/ebusy && pnpm run build
 
 # Copy app source
 COPY apps/dispo ./apps/dispo

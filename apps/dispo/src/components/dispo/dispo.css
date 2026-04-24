@@ -351,6 +351,86 @@
 .dispo-root .court-occupant { font-size: 11px; font-weight: 600; pointer-events: none; white-space: nowrap; }
 .dispo-root .court-zone[data-occupied="true"] .court-label { color: #fff; }
 
+.dispo-root .court-booking-indicator {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: auto;
+  z-index: 4;
+}
+.dispo-root .court-booking-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in oklch, black 55%, transparent);
+  box-shadow: 0 0 0 1.5px color-mix(in oklch, white 75%, transparent);
+  cursor: pointer;
+  transition: background .15s, transform .15s;
+}
+.dispo-root .court-booking-dot:hover,
+.dispo-root .court-booking-dot.is-open {
+  background: color-mix(in oklch, black 70%, transparent);
+  transform: scale(1.15);
+}
+.dispo-root .court-booking-popover {
+  position: absolute;
+  top: 16px;
+  right: 0;
+  min-width: 150px;
+  background: #fff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  box-shadow: 0 4px 14px color-mix(in oklch, black 14%, transparent);
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--fg-body);
+  z-index: 10;
+}
+.dispo-root .court-booking-popover-title {
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-muted);
+  margin-bottom: 4px;
+}
+.dispo-root .court-booking-popover ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dispo-root .court-booking-popover li {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.25;
+}
+.dispo-root .court-booking-time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--fg-heading);
+}
+.dispo-root .court-booking-label {
+  color: var(--fg-muted);
+}
+.dispo-root .court-booking-blocking {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: color-mix(in oklch, var(--color-tcw-accent-900) 8%, transparent);
+  color: var(--fg-muted);
+}
+
 .dispo-root .map-cursor-ctrl {
   position: absolute;
   left: 50%; bottom: 16px;
@@ -522,6 +602,16 @@
   height: 1px;
   background: color-mix(in oklch, black 5%, transparent);
 }
+.dispo-root .vtl-booking {
+  position: absolute;
+  left: 0; right: 0;
+  z-index: 0;
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in oklch, black 18%, transparent) 0 2px,
+    transparent 2px 6px
+  );
+}
 
 .dispo-root .vtl-block {
   position: absolute;
@@ -535,6 +625,7 @@
   line-height: 1.2;
   cursor: grab;
   transition: filter .15s, box-shadow .15s;
+  z-index: 1;
 }
 .dispo-root .vtl-block:active { cursor: grabbing; }
 .dispo-root .vtl-block:hover { filter: brightness(1.08); }

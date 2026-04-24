@@ -26,6 +26,9 @@ importers:
       '@tcw/calendar':
         specifier: workspace:*
         version: link:../../packages/calendar
+      '@tcw/ebusy':
+        specifier: workspace:*
+        version: link:../../packages/ebusy
       better-sqlite3:
         specifier: ^11.10.0
         version: 11.10.0
