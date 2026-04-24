@@ -14,7 +14,7 @@ import {
   parseTime,
   snapTo30,
 } from '@/lib/plan-helpers'
-import type { DispoAssignment, DispoMatch } from './types'
+import type { DispoAssignment, DispoMatch } from '../types'
 
 interface VerticalTimelineProps {
   courts: DispoCourt[]

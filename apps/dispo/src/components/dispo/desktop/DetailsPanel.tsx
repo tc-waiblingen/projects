@@ -8,8 +8,8 @@ import {
   formatTime,
   type PlanConflict,
 } from '@/lib/plan-helpers'
-import { CourtPicker } from './CourtPicker'
-import type { DispoAssignment, DispoMatch } from './types'
+import { CourtPicker } from '../CourtPicker'
+import type { DispoAssignment, DispoMatch } from '../types'
 
 interface DetailsPanelProps {
   courts: DispoCourt[]

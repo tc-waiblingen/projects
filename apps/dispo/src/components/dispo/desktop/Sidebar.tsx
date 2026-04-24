@@ -2,7 +2,7 @@
 
 import clsx from 'clsx'
 import { groupColor } from '@/lib/plan-helpers'
-import type { DispoAssignment, DispoMatch } from './types'
+import type { DispoAssignment, DispoMatch } from '../types'
 
 interface SidebarProps {
   matches: DispoMatch[]

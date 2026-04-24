@@ -3,7 +3,7 @@
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 import { formatTime } from '@/lib/plan-helpers'
-import type { DispoView, Issue } from './types'
+import type { DispoView, Issue } from '../types'
 
 interface HeaderProps {
   view: DispoView

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { DispoCourt } from '@/lib/directus/courts'
 import type { CourtBooking } from '@/lib/ebusy/reservations'
 import { abbreviateTeam, formatTime, groupColor, type OccupancyEntry } from '@/lib/plan-helpers'
-import type { DispoMatch } from './types'
+import type { DispoMatch } from '../types'
 
 interface CourtRect {
   x: number
