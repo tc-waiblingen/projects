@@ -72,7 +72,7 @@ export function MobileMatchList({
       )}
       <button
         type="button"
-        className="btn btn-text mobile-reset"
+        className="btn btn-danger-ghost mobile-reset"
         onClick={onResetAssignments}
       >
         Alle Zuordnungen zurücksetzen
