@@ -34,7 +34,6 @@ export function DispoApp(props: DispoAppProps) {
           prevDateKey={props.prevDateKey}
           nextDateKey={props.nextDateKey}
           formattedDate={props.formattedDate}
-          date={props.date}
         />
       </div>
     </>

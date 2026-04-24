@@ -5,17 +5,15 @@ import { MobileTopBar } from './MobileTopBar'
 
 interface MobileShellProps {
   state: DispoState
-  date: string
   prevDateKey: string | null
   nextDateKey: string | null
   formattedDate: string
 }
 
-export function MobileShell({ state, date, prevDateKey, nextDateKey, formattedDate }: MobileShellProps) {
+export function MobileShell({ state, prevDateKey, nextDateKey, formattedDate }: MobileShellProps) {
   return (
     <div className="mobile-shell">
       <MobileTopBar
-        date={date}
         prevDateKey={prevDateKey}
         nextDateKey={nextDateKey}
         formattedDate={formattedDate}

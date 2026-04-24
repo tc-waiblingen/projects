@@ -7,7 +7,6 @@ import type { Issue } from '../types'
 import { formatTime } from '@/lib/plan-helpers'
 
 interface MobileTopBarProps {
-  date: string
   prevDateKey: string | null
   nextDateKey: string | null
   formattedDate: string
@@ -19,7 +18,6 @@ interface MobileTopBarProps {
 }
 
 export function MobileTopBar({
-  date,
   prevDateKey,
   nextDateKey,
   formattedDate,
