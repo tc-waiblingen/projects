@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { DispoState } from '../useDispoState'
 import { MobileTopBar } from './MobileTopBar'
 import { MobileTabs, type MobileTab } from './MobileTabs'
@@ -15,8 +15,21 @@ interface MobileShellProps {
   formattedDate: string
 }
 
+function useIsNarrowViewport(): boolean {
+  const [isNarrow, setIsNarrow] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767.98px)')
+    const update = () => setIsNarrow(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+  return isNarrow
+}
+
 export function MobileShell({ state, prevDateKey, nextDateKey, formattedDate }: MobileShellProps) {
   const [tab, setTab] = useState<MobileTab>('spiele')
+  const isNarrow = useIsNarrowViewport()
   const selectedMatch = useMemo(
     () => (state.selectedId ? state.matches.find((m) => m.id === state.selectedId) ?? null : null),
     [state.selectedId, state.matches],
@@ -55,7 +68,7 @@ export function MobileShell({ state, prevDateKey, nextDateKey, formattedDate }: 
         )}
         {tab === 'plan' && <MobilePlanView state={state} />}
       </div>
-      {selectedMatch && (
+      {isNarrow && selectedMatch && (
         <MobileEditorSheet
           match={selectedMatch}
           assignment={selectedAssignment}

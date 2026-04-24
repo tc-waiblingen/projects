@@ -35,7 +35,7 @@ The operator login password is stored as an argon2id hash in the SQLite `app_set
 ## Architecture
 
 - `src/app/page.tsx` — Admin home: full year calendar (court-usage heat-map). Click a day → `/day/[date]`.
-- `src/app/day/[date]/page.tsx` — Tabular assignment form (matches × courts, checkboxes).
+- `src/app/day/[date]/page.tsx` — Platzdisposition UI (desktop: sidebar + timeline/map; mobile: shell with top bar, tabs, editor sheet).
 - `src/app/today/page.tsx` — Public read-only view of today's assignment.
 - `src/app/api/today/route.ts` — Match-centric JSON for the TV.
 - `src/proxy.ts` — Next 16 proxy: cookie-session gate for `/`, `/day/*`, `POST /api/assignments`. Both `operator` and `admin` roles pass.

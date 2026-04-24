@@ -47,10 +47,15 @@ export function MobilePlanStrips({
     }
   }
 
-  const conflictMatchIds = new Set<string>()
+  const conflictMatchIdsByCourt = new Map<number, Set<string>>()
   for (const c of conflicts) {
-    conflictMatchIds.add(c.matchIds[0])
-    conflictMatchIds.add(c.matchIds[1])
+    let set = conflictMatchIdsByCourt.get(c.courtId)
+    if (!set) {
+      set = new Set<string>()
+      conflictMatchIdsByCourt.set(c.courtId, set)
+    }
+    set.add(c.matchIds[0])
+    set.add(c.matchIds[1])
   }
 
   const hourTicks: number[] = []
@@ -69,6 +74,7 @@ export function MobilePlanStrips({
       {orderedCourts.map((c) => {
         const list = assignmentsByCourt.get(c.id) ?? []
         const bks = bookings.get(c.id) ?? []
+        const courtConflictMatchIds = conflictMatchIdsByCourt.get(c.id)
         const isIndoor = c.type === 'tennis_indoor'
         return (
           <div key={c.id} className={clsx('mobile-strip', isIndoor && 'is-indoor')}>
@@ -93,7 +99,7 @@ export function MobilePlanStrips({
                 const start = parseTime(a.startTime)
                 const end = endMinutes(a.startTime, a.durationH)
                 const gc = groupColor(match.group || match.leagueShort || '')
-                const inConflict = conflictMatchIds.has(a.matchId)
+                const inConflict = courtConflictMatchIds?.has(a.matchId) ?? false
                 return (
                   <button
                     key={a.matchId}
