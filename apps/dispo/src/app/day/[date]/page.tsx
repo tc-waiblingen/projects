@@ -18,6 +18,7 @@ import { fetchAllEventsForYear, fetchMatchesForDate, fetchTournamentForDate } fr
 import { getPlansForDate } from '@/lib/match-plans'
 import { defaultDurationForCourtType } from '@/lib/plan-helpers'
 import { getCourtCount, getSeasonCourtType, type MatchEventMetadata } from '@tcw/calendar'
+import clsx from 'clsx'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
@@ -136,7 +137,12 @@ export default async function DayPage({ params }: DayPageProps) {
 
   return (
     <div className="flex h-screen flex-col">
-      <main className="mx-auto w-full max-w-7xl shrink-0 px-6 pt-6 pb-2">
+      <main
+        className={clsx(
+          'mx-auto w-full max-w-7xl shrink-0 px-6 pt-6 pb-2',
+          showDispo && 'hidden md:block',
+        )}
+      >
         <AdminHeader
           title={
             <DayNavigator
