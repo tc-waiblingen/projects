@@ -28,6 +28,7 @@ export async function fetchTodayCourtAssignments(): Promise<Map<string, string[]
       const names = (m.courts ?? []).map((c) => c.name).sort((a, b) => a.localeCompare(b, 'de'))
       map.set(m.matchId, names)
     }
+    console.log('Dispo API: fetched court assignments for', map.size, 'matches')
     return map
   } catch (error) {
     console.error('Failed to fetch dispo court assignments:', error)
