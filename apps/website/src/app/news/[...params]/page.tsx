@@ -9,6 +9,7 @@ import type { DirectusFile, PostBlock } from "@/types/directus-schema"
 import { BlockRenderer } from "@/components/blocks/BlockRenderer"
 import { TocProvider, TableOfContents } from '@/components/toc'
 import { sanitizeHtml } from "@/lib/sanitize"
+import { transformRichtextAssets } from "@/lib/transform-richtext-assets"
 import { calculatePostWeight } from "@/lib/pagefind-weight"
 import { checkVisibility } from '@/lib/visibility'
 import { PreviewBadge } from '@/components/elements/preview-badge'
@@ -170,7 +171,7 @@ export default async function PostPage({ params }: PageProps) {
     </span>
   ) : undefined
 
-  const sanitizedContent = content ? sanitizeHtml(content) : ''
+  const sanitizedContent = content ? sanitizeHtml(transformRichtextAssets(content)) : ''
 
   return (
     <VisualEditingWrapper itemId={String(post.id)} collection="posts">
