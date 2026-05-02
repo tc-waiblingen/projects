@@ -21,7 +21,6 @@ import { generateQrCodeForView } from './qr-code'
 import { transformScheduleForTv, type ScheduleData } from './schedule-transformer'
 import {
   transformWelcomeGuestsForTv,
-  WIDE_MATCH_WINDOW_MS,
   type TournamentGreeting,
   type WelcomeGuestsData,
 } from './welcome-guests-transformer'
@@ -284,8 +283,8 @@ export interface WelcomeGuestsDisplayData extends Omit<WelcomeGuestsData, 'tourn
 export const fetchWelcomeGuestsPresence = cache(async (): Promise<{ hasGuests: boolean }> => {
   const now = new Date()
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
-  const until = new Date(startOfDay.getTime() + WIDE_MATCH_WINDOW_MS)
-  const events = await fetchAllCalendarEvents({ from: startOfDay, to: until })
+  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0)
+  const events = await fetchAllCalendarEvents({ from: startOfDay, to: endOfDay })
   const data = transformWelcomeGuestsForTv(events, now)
   return { hasGuests: data.matches.length > 0 || data.tournament != null }
 })
@@ -298,10 +297,10 @@ export const fetchWelcomeGuestsPresence = cache(async (): Promise<{ hasGuests: b
 export const fetchWelcomeGuestsData = cache(async (): Promise<WelcomeGuestsDisplayData> => {
   const now = new Date()
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
-  const sevenDaysAhead = new Date(startOfDay.getTime() + WIDE_MATCH_WINDOW_MS)
+  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0)
 
   const [events, courtAssignments] = await Promise.all([
-    fetchAllCalendarEvents({ from: startOfDay, to: sevenDaysAhead }),
+    fetchAllCalendarEvents({ from: startOfDay, to: endOfDay }),
     fetchTodayCourtAssignments(),
   ])
   const data = transformWelcomeGuestsForTv(events, now)

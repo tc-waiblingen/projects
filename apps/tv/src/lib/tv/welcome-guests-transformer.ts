@@ -15,10 +15,6 @@ const ALL_DAY_MATCH_END_HOUR = 18
 
 const TOURNAMENT_CUTOFF_HOUR = 12
 
-// TEMP: widen match greeting window for visual testing. Revert by setting to false.
-export const WIDE_MATCH_WINDOW_FOR_TESTING = false
-export const WIDE_MATCH_WINDOW_MS = 0 // 7 * 24 * 60 * 60 * 1000
-
 export interface MatchGreeting {
   id: string
   artikel: 'der' | 'des'
@@ -85,12 +81,6 @@ export function isMatchGreetingEligible(event: CalendarEvent, now: Date): boolea
   const meta = event.metadata as MatchEventMetadata
   if (!meta.isHome) return false
   if (meta.result && meta.result.trim() !== '') return false
-
-  if (WIDE_MATCH_WINDOW_FOR_TESTING) {
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0).getTime()
-    const eventTime = event.startDate.getTime()
-    return eventTime >= startOfToday && eventTime <= startOfToday + WIDE_MATCH_WINDOW_MS
-  }
 
   if (!isSameLocalDate(event.startDate, now)) return false
 
