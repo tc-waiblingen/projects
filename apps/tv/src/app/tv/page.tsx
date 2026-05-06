@@ -151,35 +151,21 @@ export default async function TvHomePage() {
         )
       })}
 
-      {/* Transition overlays - one per screen */}
-      {screens.map((screen, index) => {
-        const { angle, rayLength } = screen.screenMeta
-        const extraDistance = 120
-        const angleRad = (angle * Math.PI) / 180
-        const centerX = 50
-        const centerY = 50
-        const scale = 0.1
-        const offsetX = (rayLength + extraDistance) * Math.cos(angleRad) * scale
-        const offsetY = (rayLength + extraDistance) * Math.sin(angleRad) * scale
-
-        return (
-          <div
-            key={`overlay-${index}`}
-            id={`transition-overlay-${index}`}
-            className="pointer-events-none fixed z-50"
-            style={{
-              left: `calc(${centerX}% + ${offsetX}vh)`,
-              top: `calc(${centerY}% + ${offsetY}vh)`,
-              width: '256px',
-              height: '256px',
-              borderRadius: '50%',
-              backgroundColor: '#DDD5C0',
-              transform: 'translate(-50%, -50%) scale(0)',
-              opacity: '1',
-            }}
-          />
-        )
-      })}
+      {/* Single centered transition overlay */}
+      <div
+        id="transition-overlay"
+        className="pointer-events-none fixed z-50"
+        style={{
+          left: '50%',
+          top: '50%',
+          width: '256px',
+          height: '256px',
+          borderRadius: '50%',
+          backgroundColor: '#DDD5C0',
+          transform: 'translate(-50%, -50%) scale(0)',
+          opacity: '1',
+        }}
+      />
 
       {/* Auto-transition script */}
       <HomeAutoTransition screens={screens} hasSeasonalMessage={isHatSeason || isChampagneSeason} />

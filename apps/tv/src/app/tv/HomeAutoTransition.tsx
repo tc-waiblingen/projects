@@ -28,8 +28,8 @@ export function HomeAutoTransition({ screens, hasSeasonalMessage }: HomeAutoTran
     const nextParam = params.get('next')
     const nextIndex = nextParam !== null ? parseInt(nextParam, 10) : 0
 
-    // Clamp to valid range
-    const screenIndex = Math.max(0, Math.min(nextIndex, screens.length - 1))
+    // Clamp to valid range, defaulting to 0 if invalid
+    const screenIndex = isNaN(nextIndex) || nextIndex < 0 ? 0 : Math.min(nextIndex, screens.length - 1)
     const targetScreen = screens[screenIndex]
 
     // Use longer duration when seasonal message is shown
@@ -38,7 +38,7 @@ export function HomeAutoTransition({ screens, hasSeasonalMessage }: HomeAutoTran
     console.log(`Home page will transition to screen ${screenIndex} after ${displayDuration / 1000} seconds`)
 
     const timer = setTimeout(() => {
-      const overlay = document.getElementById(`transition-overlay-${screenIndex}`)
+      const overlay = document.getElementById('transition-overlay')
       if (overlay) {
         overlay.style.animation = 'screen-transition 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards'
       }

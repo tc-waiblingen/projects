@@ -12,7 +12,7 @@ export default async function WelcomeGuestsPage() {
   const nextIndex = await getNextScreenIndex(SCREEN_URL)
 
   if (data.matches.length === 0 && data.tournament == null) {
-    redirect(`/tv?next=${nextIndex}`)
+    redirect('/tv')
   }
 
   const hasMatches = data.matches.length > 0
