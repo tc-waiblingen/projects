@@ -38,7 +38,11 @@ export function MobileMatchList({
           const assigned = a?.courtIds.length ?? 0
           const under = !!a && assigned < m.minCourts
           const changed = recentChangeIds.has(m.id)
-          const courtNames = a ? a.courtIds.map((id) => courtById.get(id)?.name ?? `#${id}`) : []
+          const courtNames = a
+            ? a.courtIds
+                .map((id) => courtById.get(id)?.name ?? `#${id}`)
+                .sort((a, b) => a.localeCompare(b, 'de'))
+            : []
           return (
             <button
               key={m.id}

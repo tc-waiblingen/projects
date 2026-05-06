@@ -81,7 +81,9 @@ function MatchCard({ match, assignment, courtById, selected, changed, onClick, o
   const under = assignment ? assignment.courtIds.length < match.minCourts : false
   const groupLabel = match.group || match.leagueShort || match.league || ''
   const assignedCourtNames = assignment
-    ? assignment.courtIds.map((id) => courtById.get(id)?.name ?? `#${id}`)
+    ? assignment.courtIds
+        .map((id) => courtById.get(id)?.name ?? `#${id}`)
+        .sort((a, b) => a.localeCompare(b, 'de'))
     : []
   return (
     <div
