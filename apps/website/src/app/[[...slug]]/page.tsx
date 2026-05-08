@@ -73,6 +73,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ])
     const visibility = await checkVisibility(page.status, page.published_at)
 
+    if (!visibility.visible) {
+      return { title: "Seite nicht gefunden", robots: { index: false } }
+    }
+
     const title = page.seo?.title || page.title
     const description = page.seo?.meta_description || undefined
     const baseUrl = getSiteBaseUrl(globals.website)
