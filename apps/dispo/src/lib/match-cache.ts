@@ -11,13 +11,16 @@ export async function withCache<T>(
   key: string,
   loader: () => Promise<T>,
   now: number = Date.now(),
+  shouldCache: (value: T) => boolean = () => true,
 ): Promise<T> {
   const cached = cache.get(key)
   if (cached && cached.expiresAt > now) {
     return cached.value as T
   }
   const value = await loader()
-  cache.set(key, { value, expiresAt: now + TTL_MS })
+  if (shouldCache(value)) {
+    cache.set(key, { value, expiresAt: now + TTL_MS })
+  }
   return value
 }
 

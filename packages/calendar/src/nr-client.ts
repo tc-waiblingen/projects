@@ -197,7 +197,7 @@ export async function fetchNrMatchesResponse(
   return nrGet<NrListMatchesResponse>(
     `/v1/clubs/${encodeURIComponent(config.clubId)}/matches`,
     { from: formatDate(from), to: formatDate(to) },
-    86400,
+    300,
   )
 }
 

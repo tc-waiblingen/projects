@@ -31,4 +31,17 @@ describe('match-cache', () => {
     expect(a).toHaveBeenCalledTimes(1)
     expect(b).toHaveBeenCalledTimes(1)
   })
+
+  it('does not cache values rejected by shouldCache', async () => {
+    const loader = vi
+      .fn()
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce(['match-1'])
+    const shouldCache = (v: string[]) => v.length > 0
+    const first = await withCache('k', loader, 1000, shouldCache)
+    const second = await withCache('k', loader, 1000 + 100, shouldCache)
+    expect(first).toEqual([])
+    expect(second).toEqual(['match-1'])
+    expect(loader).toHaveBeenCalledTimes(2)
+  })
 })
