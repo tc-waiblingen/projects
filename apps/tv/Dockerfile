@@ -3,7 +3,9 @@
 FROM node:25-alpine AS base
 
 RUN --mount=type=cache,target=/var/cache/apk \
-    apk add curl
+    apk add curl tzdata
+
+ENV TZ=Europe/Berlin
 
 # Install Corepack and download and install pnpm
 RUN npm install -g --force corepack && \
