@@ -20,7 +20,7 @@
     "@tcw/ebusy": "workspace:*",
     "clsx": "^2.1.1",
     "libphonenumber-js": "^1.12.42",
-    "next": "^16.2.4",
+    "next": "^16.2.6",
     "node-html-parser": "^7.1.0",
     "p-queue": "^9.2.0",
     "qrcode": "^1.5.4",
