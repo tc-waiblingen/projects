@@ -3,7 +3,7 @@ import type { Screen } from '@/lib/tv/screen-config'
 export const teamScreen: Screen = {
   url: '/tv/screens/team',
   title: 'Vorstands-Team',
-  visible: true,
+  visible: false,
   screenMeta: {
     sortKey: 40,
     duration: 10000,
