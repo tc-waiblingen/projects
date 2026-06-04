@@ -3,6 +3,7 @@ import { Section } from "@/components/elements/section"
 import { Document } from "@/components/elements/document"
 import { sanitizeHtml } from "@/lib/sanitize"
 import { transformRichtextAssets } from "@/lib/transform-richtext-assets"
+import { addPrintFootnotes } from "@/lib/add-print-footnotes"
 import { RichtextContent } from "@/components/elements/richtext-content"
 import { fetchFilesByIds } from "@/lib/directus/fetchers"
 import { getEditAttr } from "@/lib/visual-editing"
@@ -35,7 +36,7 @@ export async function BlockRichtext({ data }: BlockRichtextProps) {
   const isCentered = alignment === "center"
 
   const processedContent = content
-    ? sanitizeHtml(transformRichtextAssets(content))
+    ? addPrintFootnotes(sanitizeHtml(transformRichtextAssets(content)))
     : undefined
 
   return (
