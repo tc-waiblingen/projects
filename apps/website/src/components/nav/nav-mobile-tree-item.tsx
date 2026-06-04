@@ -4,6 +4,7 @@ import { PopoverButton } from '@headlessui/react'
 import { clsx } from 'clsx/lite'
 import Link from 'next/link'
 import { DirectusFile, NavigationItem, Page, Post } from '@/types/directus-schema'
+import { prioritizePrimary } from './nav-mobile-menu'
 
 function getHref(item: NavigationItem): string | null {
   switch (item.type) {
@@ -63,17 +64,24 @@ export function NavMobileTreeItem({ item, currentPath, depth = 0 }: NavMobileTre
     )
   }
 
+  const isPrimary = !!item.is_primary
+
   if (isGroup) {
     return (
       <div className={depth === 0 ? 'mt-4 first:mt-0' : 'mt-1'}>
         <span
-          className="block px-3 py-2 text-sm font-semibold text-tcw-accent-900 dark:text-white"
-          style={{ paddingLeft: `${indent + 0.75}rem` }}
+          className={clsx(
+            'block rounded-lg px-3 py-2 text-sm font-semibold',
+            isPrimary
+              ? 'bg-tcw-red-600 text-white dark:bg-tcw-red-200 dark:text-tcw-red-900'
+              : 'text-tcw-accent-900 dark:text-white',
+          )}
+          style={{ marginLeft: `${indent}rem` }}
         >
           {item.title}
         </span>
         <div className="flex flex-col">
-          {children.map((child) => (
+          {prioritizePrimary(children).map((child) => (
             <NavMobileTreeItem key={child.id} item={child} currentPath={currentPath} depth={depth + 1} />
           ))}
         </div>
@@ -92,8 +100,13 @@ export function NavMobileTreeItem({ item, currentPath, depth = 0 }: NavMobileTre
       href={href}
       aria-current={isActive ? 'page' : undefined}
       className={clsx(
-        'block w-full rounded-lg px-3 py-2 text-base text-tcw-accent-700 transition-colors hover:bg-tcw-accent-100 dark:text-tcw-accent-200 dark:hover:bg-tcw-accent-700',
-        isActive && 'bg-tcw-accent-100 font-medium text-tcw-accent-900 dark:bg-tcw-accent-700 dark:text-white',
+        'block w-full rounded-lg px-3 py-2 text-base transition-colors',
+        isPrimary
+          ? 'bg-tcw-red-600 text-white hover:bg-tcw-red-500 dark:bg-tcw-red-200 dark:text-tcw-red-900 dark:hover:bg-tcw-red-100'
+          : 'text-tcw-accent-700 hover:bg-tcw-accent-100 dark:text-tcw-accent-200 dark:hover:bg-tcw-accent-700',
+        !isPrimary &&
+          isActive &&
+          'bg-tcw-accent-100 font-medium text-tcw-accent-900 dark:bg-tcw-accent-700 dark:text-white',
       )}
       style={{ marginLeft: `${indent}rem` }}
     >
