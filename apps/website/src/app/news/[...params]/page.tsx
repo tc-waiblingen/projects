@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import { notFound, redirect } from "next/navigation"
-import { fetchAllPublishedPosts, fetchPostForPreview, getGlobals } from "@/lib/directus/fetchers"
+import { fetchAllPublishedPosts, fetchPostForPreview, fetchPostMetadataForPreview, getGlobals } from "@/lib/directus/fetchers"
 import { getSiteBaseUrl } from "@/lib/site-url"
 import { buildDynamicOgImage, resolveOgImageFromDirectusFile, resolveOgImageFromFileId } from "@/lib/og-image"
 import { DocumentLeftAligned } from "@/components/sections/document-left-aligned"
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const [post, globals] = await Promise.all([
-    fetchPostForPreview(parsed.slug, parsed.year),
+    fetchPostMetadataForPreview(parsed.slug, parsed.year),
     getGlobals(),
   ])
 

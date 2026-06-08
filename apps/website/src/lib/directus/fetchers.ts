@@ -28,8 +28,14 @@ const fetchPageDataUncached = async (permalink: string /*, postPage = 1 */) => {
         filter: { permalink: { _eq: permalink } },
         limit: 1,
         fields: [
-          "*",
-          "posts.post_id.*",
+          "id",
+          "title",
+          "status",
+          "published_at",
+          "permalink",
+          "show_title",
+          "show_toc",
+          "seo.*",
           "blocks.*",
           // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
           "blocks.item.*.*.*.*" as any,
@@ -54,6 +60,31 @@ const fetchPageDataUncached = async (permalink: string /*, postPage = 1 */) => {
 }
 
 export const fetchPageData = cache(fetchPageDataUncached)
+
+const fetchPageMetadataUncached = async (permalink: string) => {
+  const { directus, readItems } = getDirectus()
+
+  try {
+    const pageData = await directus.request(
+      readItems("pages", {
+        filter: { permalink: { _eq: permalink } },
+        limit: 1,
+        fields: ["id", "title", "status", "published_at", "permalink", "seo.*"],
+      }),
+    )
+
+    if (!pageData.length) {
+      throw new Error("Page not found")
+    }
+
+    return pageData[0] as Page
+  } catch (error) {
+    console.error("Error fetching page metadata for " + permalink + ":", error)
+    throw new Error("Failed to fetch page metadata")
+  }
+}
+
+export const fetchPageMetadata = cache(fetchPageMetadataUncached)
 
 /** Granular site data fetchers for routes that only need part of the chrome. */
 export const fetchGlobals = async () => {
@@ -347,7 +378,17 @@ const fetchPostForPreviewUncached = async (slug: string, year?: string) => {
         },
         limit: 1,
         fields: [
-          "*",
+          "id",
+          "title",
+          "slug",
+          "status",
+          "published_at",
+          "date_updated",
+          "description",
+          "content",
+          "show_toc",
+          "group",
+          "seo.*",
           "blocks.*",
           // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
           "blocks.item.*.*.*.*" as any,
@@ -381,6 +422,52 @@ const fetchPostForPreviewUncached = async (slug: string, year?: string) => {
 }
 
 export const fetchPostForPreview = cache(fetchPostForPreviewUncached)
+
+const fetchPostMetadataForPreviewUncached = async (slug: string, year?: string) => {
+  const { directus, readItems } = getDirectus()
+
+  try {
+    const posts = await directus.request(
+      readItems("posts", {
+        filter: {
+          slug: { _eq: slug },
+        },
+        limit: 1,
+        fields: [
+          "id",
+          "title",
+          "slug",
+          "status",
+          "published_at",
+          "date_updated",
+          "description",
+          "seo.*",
+          { image: [...DIRECTUS_FILE_FIELDS] },
+        ],
+      }),
+    )
+
+    if (!posts.length) {
+      return null
+    }
+
+    const post = posts[0] as unknown as Post
+
+    if (year && post.published_at) {
+      const postYear = new Date(post.published_at).getFullYear().toString()
+      if (postYear !== year) {
+        return null
+      }
+    }
+
+    return post
+  } catch (error) {
+    console.error("Error fetching post metadata for preview:", error)
+    throw new Error("Failed to fetch post metadata")
+  }
+}
+
+export const fetchPostMetadataForPreview = cache(fetchPostMetadataForPreviewUncached)
 
 export const fetchPostsForRSS = async (limit?: number) => {
   const { directus, readItems } = getDirectus()

@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { fetchAllPages, fetchPageData, getGlobals } from "@/lib/directus/fetchers"
+import { fetchAllPages, fetchPageData, fetchPageMetadata, getGlobals } from "@/lib/directus/fetchers"
 import { getSiteBaseUrl } from "@/lib/site-url"
 import { buildDynamicOgImage, resolveOgImageFromFileId } from "@/lib/og-image"
 import { BlockRenderer } from "@/components/blocks/BlockRenderer"
@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   try {
     const [page, globals] = await Promise.all([
-      fetchPageData(permalink),
+      fetchPageMetadata(permalink),
       getGlobals(),
     ])
     const visibility = await checkVisibility(page.status, page.published_at)
