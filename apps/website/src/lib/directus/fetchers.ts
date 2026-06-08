@@ -35,7 +35,7 @@ const fetchPageDataUncached = async (permalink: string /*, postPage = 1 */) => {
           "permalink",
           "show_title",
           "show_toc",
-          "seo.*",
+          "seo",
           "blocks.*",
           // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
           "blocks.item.*.*.*.*" as any,
@@ -69,7 +69,7 @@ const fetchPageMetadataUncached = async (permalink: string) => {
       readItems("pages", {
         filter: { permalink: { _eq: permalink } },
         limit: 1,
-        fields: ["id", "title", "status", "published_at", "permalink", "seo.*"],
+        fields: ["id", "title", "status", "published_at", "permalink", "seo"],
       }),
     )
 
@@ -388,7 +388,7 @@ const fetchPostForPreviewUncached = async (slug: string, year?: string) => {
           "content",
           "show_toc",
           "group",
-          "seo.*",
+          "seo",
           "blocks.*",
           // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
           "blocks.item.*.*.*.*" as any,
@@ -441,7 +441,7 @@ const fetchPostMetadataForPreviewUncached = async (slug: string, year?: string) 
           "published_at",
           "date_updated",
           "description",
-          "seo.*",
+          "seo",
           { image: [...DIRECTUS_FILE_FIELDS] },
         ],
       }),
