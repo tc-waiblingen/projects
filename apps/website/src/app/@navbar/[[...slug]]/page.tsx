@@ -5,7 +5,7 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
-import { getSiteData } from '@/lib/directus/fetchers'
+import { getHeaderNavigation } from '@/lib/directus/fetchers'
 
 interface NavbarSlotProps {
   params: Promise<{ slug?: string[] }>
@@ -21,7 +21,7 @@ function slugToPermalink(slug?: string[]): string {
 export default async function NavbarSlot({ params }: NavbarSlotProps) {
   const { slug } = await params
   const currentPath = slugToPermalink(slug)
-  const { navMain, navCTA } = await getSiteData()
+  const { navMain, navCTA } = await getHeaderNavigation()
 
   return (
     <NavbarWithLinksActionsAndCenteredLogo

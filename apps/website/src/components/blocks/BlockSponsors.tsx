@@ -6,7 +6,7 @@ import type {
 } from "@/types/directus-schema"
 import { ContactInfo } from "@/components/elements/contact-info"
 import { Section } from "@/components/elements/section"
-import { getSiteData } from "@/lib/directus/fetchers"
+import { getSponsors } from "@/lib/directus/fetchers"
 import { fetchCourtsWithSponsors } from "@/lib/directus/fetchers"
 import { getEditAttr } from "@/lib/visual-editing"
 import { SitePlanMap } from "./SitePlanMap"
@@ -65,7 +65,7 @@ async function CardsView({
   category?: BlockSponsorType["category"]
   editAttr: { collection: string; item: string }
 }) {
-  const { sponsors } = await getSiteData()
+  const sponsors = await getSponsors()
 
   // Filter by category if specified
   const filteredSponsors = category
@@ -94,7 +94,7 @@ async function TableView({
   category?: BlockSponsorType["category"]
   editAttr: { collection: string; item: string }
 }) {
-  const { sponsors } = await getSiteData()
+  const sponsors = await getSponsors()
 
   const filteredSponsors = category
     ? sponsors.filter((s) => s.category === category)

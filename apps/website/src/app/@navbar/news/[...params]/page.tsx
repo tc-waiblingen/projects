@@ -5,7 +5,7 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
-import { getSiteData } from '@/lib/directus/fetchers'
+import { getHeaderNavigation } from '@/lib/directus/fetchers'
 
 interface NavbarSlotProps {
   params: Promise<{ params: string[] }>
@@ -14,7 +14,7 @@ interface NavbarSlotProps {
 export default async function NavbarSlot({ params }: NavbarSlotProps) {
   const { params: pathParams } = await params
   const currentPath = '/news/' + pathParams.join('/')
-  const { navMain, navCTA } = await getSiteData()
+  const { navMain, navCTA } = await getHeaderNavigation()
 
   return (
     <NavbarWithLinksActionsAndCenteredLogo

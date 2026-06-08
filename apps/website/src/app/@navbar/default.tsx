@@ -5,11 +5,11 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
-import { getSiteData } from '@/lib/directus/fetchers'
+import { getHeaderNavigation } from '@/lib/directus/fetchers'
 import { getEditAttr } from '@/lib/visual-editing'
 
 export default async function NavbarDefault() {
-  const { navMain, navCTA } = await getSiteData()
+  const { navMain, navCTA } = await getHeaderNavigation()
 
   return (
     <NavbarWithLinksActionsAndCenteredLogo

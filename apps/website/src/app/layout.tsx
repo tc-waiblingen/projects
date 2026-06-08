@@ -10,13 +10,13 @@ import {
 } from '@/components/sections/footer-with-newsletter-form-categories-and-social-icons'
 import { SponsorsSection } from '@/components/sections/sponsors-section'
 import type { Metadata } from 'next'
-import { getSiteData } from '@/lib/directus/fetchers'
+import { getFooterNavigation, getGlobals, getSponsors } from '@/lib/directus/fetchers'
 import { getEditAttr } from '@/lib/visual-editing'
 import { getSiteBaseUrl } from '@/lib/site-url'
 import './globals.css'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { globals } = await getSiteData()
+  const globals = await getGlobals()
   const baseUrl = getSiteBaseUrl(globals.website)
   const siteName = globals.club_name ?? globals.title ?? ''
 
@@ -46,7 +46,11 @@ export default async function RootLayout({
   children: React.ReactNode
   navbar: React.ReactNode
 }>) {
-  const { globals, navFooter, sponsors } = await getSiteData()
+  const [globals, navFooter, sponsors] = await Promise.all([
+    getGlobals(),
+    getFooterNavigation(),
+    getSponsors(),
+  ])
 
   const baseUrl = getSiteBaseUrl(globals.website)
 

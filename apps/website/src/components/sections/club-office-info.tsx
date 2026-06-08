@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { ContactInfo } from '@/components/elements/contact-info'
-import { getSiteData } from '@/lib/directus/fetchers'
+import { getGlobals, getOfficeData } from '@/lib/directus/fetchers'
 import { getEditAttr } from '@/lib/visual-editing'
 import { OfficeClosingDay } from '@/types/directus-schema'
 
@@ -40,7 +40,10 @@ function formatClosingDays(closingDays: OfficeClosingDay[]) {
 }
 
 export async function ClubOfficeInfo() {
-  const { globals, officeHours, officeClosingDays } = await getSiteData()
+  const [globals, { officeHours, officeClosingDays }] = await Promise.all([
+    getGlobals(),
+    getOfficeData(),
+  ])
 
   return (
     <div>

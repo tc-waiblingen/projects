@@ -55,28 +55,57 @@ const fetchPageDataUncached = async (permalink: string /*, postPage = 1 */) => {
 
 export const fetchPageData = cache(fetchPageDataUncached)
 
-/**
- * Fetches global site data, header navigation, and footer navigation.
- */
-export const fetchSiteData = async () => {
-  const { directus, readSingleton, readItems, readItem } = getDirectus()
-  const today = new Date().toISOString().split('T')[0];
+/** Granular site data fetchers for routes that only need part of the chrome. */
+export const fetchGlobals = async () => {
+  const { directus, readSingleton } = getDirectus()
 
   try {
-    const [untypedGlobals, untypedOfficeHours, untypedOfficeClosingDays, untypedNavMain, untypedNavCTA, untypedNavFooter, untypedSponsors] = await Promise.all([
-      directus.request(readSingleton("global", {
-        fields: ["*"],
-      })),
+    return (await directus.request(readSingleton("global", {
+      fields: ["*"],
+    }))) as Global
+  } catch (error) {
+    console.error("Error fetching globals:", error)
+    throw new Error("Failed to fetch globals")
+  }
+}
+
+export const getGlobals = cache(fetchGlobals)
+
+export const fetchOfficeData = async () => {
+  const { directus, readItems } = getDirectus()
+  const today = new Date().toISOString().split('T')[0]
+
+  try {
+    const [untypedOfficeHours, untypedOfficeClosingDays] = await Promise.all([
       directus.request(readItems("office_hours", {
         sort: ["sort", "starts_at"],
-        fields: ["day", "starts_at", "ends_at"],
+        fields: ["id", "day", "starts_at", "ends_at"],
       })),
       directus.request(readItems("office_closing_days", {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't type _gte operator on date fields
         filter: { date: { _gte: today } } as any,
         sort: ['date'],
-        fields: ['date'],
+        fields: ['id', 'date'],
       })),
+    ])
+
+    return {
+      officeHours: untypedOfficeHours as OfficeHour[],
+      officeClosingDays: untypedOfficeClosingDays as OfficeClosingDay[],
+    }
+  } catch (error) {
+    console.error("Error fetching office data:", error)
+    throw new Error("Failed to fetch office data")
+  }
+}
+
+export const getOfficeData = cache(fetchOfficeData)
+
+export const fetchHeaderNavigation = async () => {
+  const { directus, readItem } = getDirectus()
+
+  try {
+    const [untypedNavMain, untypedNavCTA] = await Promise.all([
       directus.request(
         readItem("navigation", "main", {
           filter: {
@@ -131,52 +160,93 @@ export const fetchSiteData = async () => {
           deep: { items: { _sort: ["sort"] } },
         })
       ),
-      directus.request(
-        readItem("navigation", "footer", {
-          filter: {
-            is_active: { _eq: true },
-          },
-          fields: [
-            "id",
-            "title",
-            {
-              items: [
-                "id",
-                "title",
-                "url",
-                "type",
-                {
-                  page: ["permalink"],
-                  post: ["slug", "published_at"],
-                  children: ["id", "title", "url", "type", { page: ["permalink"], post: ["slug", "published_at"] }],
-                },
-              ],
-            },
-          ],
-          deep: {
-            items: {
-              _sort: ["sort"],
-              children: { _sort: ["sort"] },
-            },
-          },
-        })
-      ),
-      directus.request(
-        readItems("sponsors", {
-          filter: { status: { _eq: "active" } },
-          sort: ["category", "sort"],
-          fields: ["id", "name", "category", "description", "address_line1", "address_line2", "address_zip_code", "address_city", "phone", "email", "website", "instagram", "facebook", { logo_web: [...DIRECTUS_FILE_FIELDS] }],
-        })
-      ),
     ])
 
-    const globals = untypedGlobals as Global
-    const officeHours = untypedOfficeHours as OfficeHour[]
-    const officeClosingDays = untypedOfficeClosingDays as OfficeClosingDay[]
-    const navMain = untypedNavMain as Navigation
-    const navCTA = untypedNavCTA as Navigation
-    const navFooter = untypedNavFooter as Navigation
-    const sponsors = untypedSponsors as unknown as Sponsor[]
+    return {
+      navMain: untypedNavMain as Navigation,
+      navCTA: untypedNavCTA as Navigation,
+    }
+  } catch (error) {
+    console.error("Error fetching header navigation:", error)
+    throw new Error("Failed to fetch header navigation")
+  }
+}
+
+export const getHeaderNavigation = cache(fetchHeaderNavigation)
+
+export const fetchFooterNavigation = async () => {
+  const { directus, readItem } = getDirectus()
+
+  try {
+    return (await directus.request(
+      readItem("navigation", "footer", {
+        filter: {
+          is_active: { _eq: true },
+        },
+        fields: [
+          "id",
+          "title",
+          {
+            items: [
+              "id",
+              "title",
+              "url",
+              "type",
+              {
+                page: ["permalink"],
+                post: ["slug", "published_at"],
+                children: ["id", "title", "url", "type", { page: ["permalink"], post: ["slug", "published_at"] }],
+              },
+            ],
+          },
+        ],
+        deep: {
+          items: {
+            _sort: ["sort"],
+            children: { _sort: ["sort"] },
+          },
+        },
+      })
+    )) as Navigation
+  } catch (error) {
+    console.error("Error fetching footer navigation:", error)
+    throw new Error("Failed to fetch footer navigation")
+  }
+}
+
+export const getFooterNavigation = cache(fetchFooterNavigation)
+
+export const fetchSponsorsData = async () => {
+  const { directus, readItems } = getDirectus()
+
+  try {
+    return (await directus.request(
+      readItems("sponsors", {
+        filter: { status: { _eq: "active" } },
+        sort: ["category", "sort"],
+        fields: ["id", "name", "category", "description", "address_line1", "address_line2", "address_zip_code", "address_city", "phone", "email", "website", "instagram", "facebook", { logo_web: [...DIRECTUS_FILE_FIELDS] }],
+      })
+    )) as unknown as Sponsor[]
+  } catch (error) {
+    console.error("Error fetching sponsors:", error)
+    throw new Error("Failed to fetch sponsors")
+  }
+}
+
+export const getSponsors = cache(fetchSponsorsData)
+
+export const fetchSiteData = async () => {
+  try {
+    const [globals, officeData, headerNavigation, navFooter, sponsors] = await Promise.all([
+      getGlobals(),
+      getOfficeData(),
+      getHeaderNavigation(),
+      getFooterNavigation(),
+      getSponsors(),
+    ])
+
+    const { officeHours, officeClosingDays } = officeData
+    const { navMain, navCTA } = headerNavigation
 
     return { globals, officeHours, officeClosingDays, navMain, navCTA, navFooter, sponsors }
   } catch (error) {
