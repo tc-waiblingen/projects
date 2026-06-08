@@ -29,12 +29,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch media' }, { status: response.status })
     }
 
-    const contentType = response.headers.get('content-type') || 'application/octet-stream'
-    const buffer = await response.arrayBuffer()
-
-    return new NextResponse(buffer, {
+    return new NextResponse(response.body, {
       headers: {
-        'Content-Type': contentType,
+        'Content-Type': response.headers.get('content-type') || 'application/octet-stream',
         'Cache-Control': 'public, max-age=1800, stale-while-revalidate=3600',
       },
     })

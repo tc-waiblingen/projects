@@ -27,9 +27,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
     const contentType = response.headers.get('content-type') || 'application/octet-stream'
     const contentDisposition = response.headers.get('content-disposition')
-    const buffer = await response.arrayBuffer()
 
-    return new NextResponse(buffer, {
+    return new NextResponse(response.body, {
       headers: {
         'Content-Type': contentType,
         ...(contentDisposition && { 'Content-Disposition': contentDisposition }),

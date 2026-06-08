@@ -25,12 +25,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Image not found' }, { status: response.status })
     }
 
-    const contentType = response.headers.get('content-type') || 'image/jpeg'
-    const buffer = await response.arrayBuffer()
-
-    return new NextResponse(buffer, {
+    return new NextResponse(response.body, {
       headers: {
-        'Content-Type': contentType,
+        'Content-Type': response.headers.get('content-type') || 'image/jpeg',
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
     })
