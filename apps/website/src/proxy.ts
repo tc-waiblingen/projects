@@ -3,6 +3,82 @@ import type { NextRequest } from "next/server"
 import { fetchRedirectByPath } from "@/lib/directus/fetchers"
 import { publicUrl } from "@/lib/public-url"
 
+const PROXY_LOOKUP_TTL_MS = 5 * 60 * 1000
+
+interface CacheEntry<T> {
+  value: T
+  expiresAt: number
+}
+
+interface LegacyPostLookup {
+  slug: string
+  published_at: string | null
+}
+
+const redirectCache = new Map<string, CacheEntry<Awaited<ReturnType<typeof fetchRedirectByPath>> | null>>()
+const legacyPostCache = new Map<string, CacheEntry<LegacyPostLookup | null>>()
+
+function getCached<T>(cache: Map<string, CacheEntry<T>>, key: string): T | undefined {
+  const entry = cache.get(key)
+  if (!entry) return undefined
+
+  if (entry.expiresAt <= Date.now()) {
+    cache.delete(key)
+    return undefined
+  }
+
+  return entry.value
+}
+
+function setCached<T>(cache: Map<string, CacheEntry<T>>, key: string, value: T) {
+  cache.set(key, {
+    value,
+    expiresAt: Date.now() + PROXY_LOOKUP_TTL_MS,
+  })
+}
+
+async function getRedirect(pathname: string) {
+  const cached = getCached(redirectCache, pathname)
+  if (cached !== undefined) return cached
+
+  const redirect = await fetchRedirectByPath(pathname)
+  setCached(redirectCache, pathname, redirect ?? null)
+  return redirect ?? null
+}
+
+async function getLegacyPost(slug: string): Promise<LegacyPostLookup | null> {
+  const cached = getCached(legacyPostCache, slug)
+  if (cached !== undefined) return cached
+
+  const directusUrl = process.env.NEXT_PUBLIC_DIRECTUS_URL
+  const directusToken = process.env.DIRECTUS_TOKEN
+
+  if (!directusUrl || !directusToken) {
+    return null
+  }
+
+  const response = await fetch(
+    `${directusUrl}/items/posts?filter[slug][_eq]=${encodeURIComponent(slug)}&filter[status][_eq]=published&fields=slug,published_at&limit=1`,
+    {
+      headers: {
+        Authorization: `Bearer ${directusToken}`,
+      },
+      next: { revalidate: 1800 },
+    }
+  )
+
+  if (!response.ok) {
+    return null
+  }
+
+  const data = await response.json()
+  const posts = data.data
+  const post = posts?.[0] ?? null
+
+  setCached(legacyPostCache, slug, post)
+  return post
+}
+
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
@@ -17,7 +93,7 @@ export async function proxy(request: NextRequest) {
 
   // Check for Directus redirects first
   try {
-    const redirect = await fetchRedirectByPath(pathname)
+    const redirect = await getRedirect(pathname)
     if (redirect?.url_to) {
       const status = redirect.response_code === "302" ? 302 : 301
       return NextResponse.redirect(publicUrl(redirect.url_to, request), status)
@@ -39,38 +115,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check if this slug is a post by calling the API
-  // We need to fetch post data to determine the redirect URL
-  const directusUrl = process.env.NEXT_PUBLIC_DIRECTUS_URL
-  const directusToken = process.env.DIRECTUS_TOKEN
-
-  if (!directusUrl || !directusToken) {
-    return NextResponse.next()
-  }
-
   try {
-    const response = await fetch(
-      `${directusUrl}/items/posts?filter[slug][_eq]=${encodeURIComponent(slug)}&filter[status][_eq]=published&fields=slug,published_at&limit=1`,
-      {
-        headers: {
-          Authorization: `Bearer ${directusToken}`,
-        },
-      }
-    )
-
-    if (!response.ok) {
-      return NextResponse.next()
-    }
-
-    const data = await response.json()
-    const posts = data.data
-
-    if (!posts || posts.length === 0) {
+    const post = await getLegacyPost(slug)
+    if (!post) {
       // Not a post, let it pass through to the page router
       return NextResponse.next()
     }
-
-    const post = posts[0]
 
     // Build the redirect URL
     let redirectUrl: string
