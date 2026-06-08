@@ -70,7 +70,7 @@ function ArchiveWithSearchParams({ data, initialData }: BlockPostsArchiveProps) 
 
   // Fetch new page data when URL changes
   useEffect(() => {
-    if (requestedPage !== currentPage || requestedPage === 1) {
+    if (requestedPage !== currentPage) {
       startTransition(async () => {
         const result = await fetchPostsPage(pageSize, requestedPage)
         setPostsData(result)
