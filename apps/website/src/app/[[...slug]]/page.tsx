@@ -141,21 +141,29 @@ export default async function Page({ params }: PageProps) {
   const showTitle = page.show_title ?? true
   const showToc = page.show_toc ?? true
 
+  const content = (
+    <>
+      {showTitle &&
+        <Container className="mt-8">
+          <Heading data-directus={getEditAttr({ collection: 'pages', item: page.id, fields: 'title' })}>
+            {title}
+          </Heading>
+        </Container>
+      }
+      <BlockRenderer blocks={blocks} currentPath={permalink} />
+    </>
+  )
+
   return (
     <VisualEditingWrapper itemId={page.id} collection="pages">
       <div data-pagefind-weight="2">
         {visibility.previewReason && <PreviewBadge reason={visibility.previewReason} />}
-        <TocProvider>
-          {showTitle &&
-            <Container className="mt-8">
-              <Heading data-directus={getEditAttr({ collection: 'pages', item: page.id, fields: 'title' })}>
-                {title}
-              </Heading>
-            </Container>
-          }
-          <BlockRenderer blocks={blocks} currentPath={permalink} />
-          {showToc && <TableOfContents />}
-        </TocProvider>
+        {showToc ? (
+          <TocProvider>
+            {content}
+            <TableOfContents />
+          </TocProvider>
+        ) : content}
       </div>
     </VisualEditingWrapper>
   )

@@ -177,27 +177,35 @@ export default async function PostPage({ params }: PageProps) {
 
   const sanitizedContent = content ? sanitizeHtml(transformRichtextAssets(content)) : ''
 
+  const postContent = (
+    <>
+      {image && typeof image !== "string" && (
+        <div data-directus={getEditAttr({ collection: 'posts', item: String(post.id), fields: 'image' })}>
+          <PostHeroImage file={image} />
+        </div>
+      )}
+      <DocumentLeftAligned headline={headlineEl} subheadline={subheadline}>
+        {sanitizedContent && (
+          <div
+            data-directus={getEditAttr({ collection: 'posts', item: String(post.id), fields: 'content' })}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+          />
+        )}
+      </DocumentLeftAligned>
+      {blocks.length > 0 && <BlockRenderer blocks={blocks} />}
+    </>
+  )
+
   return (
     <VisualEditingWrapper itemId={String(post.id)} collection="posts">
       <div data-pagefind-weight={postWeight}>
         {visibility.previewReason && <PreviewBadge reason={visibility.previewReason} />}
-        <TocProvider>
-          {image && typeof image !== "string" && (
-            <div data-directus={getEditAttr({ collection: 'posts', item: String(post.id), fields: 'image' })}>
-              <PostHeroImage file={image} />
-            </div>
-          )}
-          <DocumentLeftAligned headline={headlineEl} subheadline={subheadline}>
-            {sanitizedContent && (
-              <div
-                data-directus={getEditAttr({ collection: 'posts', item: String(post.id), fields: 'content' })}
-                dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-              />
-            )}
-          </DocumentLeftAligned>
-          {blocks.length > 0 && <BlockRenderer blocks={blocks} />}
-          {showToc && <TableOfContents />}
-        </TocProvider>
+        {showToc ? (
+          <TocProvider>
+            {postContent}
+            <TableOfContents />
+          </TocProvider>
+        ) : postContent}
         {post.group && typeof post.group === 'number' && (
           <RelatedGroupPosts groupId={post.group} currentPostId={post.id} />
         )}
