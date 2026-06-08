@@ -1,14 +1,7 @@
 "use client"
 
-import { apply as applyVisualEditing, setAttr } from "@directus/visual-editing"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState, useCallback, useSyncExternalStore } from "react"
-
-interface ApplyOptions {
-  elements?: HTMLElement[] | HTMLElement
-  onSaved?: () => void
-  mode?: "modal" | "popover" | "drawer"
-}
 
 // Use useSyncExternalStore to sync with localStorage
 function getSnapshot(): boolean {
@@ -32,8 +25,6 @@ export function useVisualEditing() {
   const router = useRouter()
 
   const enableVisualEditingEnv = process.env.NEXT_PUBLIC_ENABLE_VISUAL_EDITING === "true"
-  const directusUrl = process.env.NEXT_PUBLIC_DIRECTUS_URL || ""
-
   // Sync internal state with external store
   useEffect(() => {
     setIsVisualEditingEnabled(storedValue)
@@ -68,15 +59,6 @@ export function useVisualEditing() {
 
   }, [searchParams, pathname, enableVisualEditingEnv])
 
-  const apply = useCallback((options: Pick<ApplyOptions, "elements" | "onSaved" | "mode">) => {
-    if (!isVisualEditingEnabled) return
-
-    applyVisualEditing({
-      ...options,
-      directusUrl,
-    })
-  }, [isVisualEditingEnabled, directusUrl])
-
   const refresh = useCallback(() => {
     router.refresh()
   }, [router])
@@ -94,8 +76,6 @@ export function useVisualEditing() {
 
   return {
     isVisualEditingEnabled,
-    apply,
-    setAttr,
     refresh,
     disable,
   }

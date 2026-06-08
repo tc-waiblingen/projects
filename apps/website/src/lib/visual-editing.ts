@@ -1,5 +1,3 @@
-import { setAttr } from "@directus/visual-editing"
-
 export interface EditAttrOptions {
   collection: string
   item: string
@@ -21,11 +19,19 @@ export interface EditAttrOptions {
  *   {headline}
  * </Heading>
  */
-export function getEditAttr(options: EditAttrOptions): string {
-  return setAttr({
-    collection: options.collection,
-    item: options.item,
-    fields: options.fields,
-    mode: options.mode ?? "popover",
-  })
+export function getEditAttr(options: EditAttrOptions): string | undefined {
+  if (process.env.NEXT_PUBLIC_ENABLE_VISUAL_EDITING !== "true") {
+    return undefined
+  }
+
+  const fields = Array.isArray(options.fields)
+    ? options.fields.join(",")
+    : options.fields
+
+  return [
+    `collection:${options.collection}`,
+    `item:${options.item}`,
+    `fields:${fields}`,
+    `mode:${options.mode ?? "popover"}`,
+  ].join(";")
 }
