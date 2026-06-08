@@ -20,6 +20,18 @@ interface BlockClubCalendarProps {
   data: BlockClubCalendarType
 }
 
+function startOfDay(date: Date): Date {
+  const result = new Date(date)
+  result.setHours(0, 0, 0, 0)
+  return result
+}
+
+function endOfDay(date: Date): Date {
+  const result = new Date(date)
+  result.setHours(23, 59, 59, 999)
+  return result
+}
+
 function getCalendarDateRange(): { from: Date; to: Date; now: Date } {
   const now = new Date()
   const currentYear = now.getFullYear()
@@ -27,7 +39,8 @@ function getCalendarDateRange(): { from: Date; to: Date; now: Date } {
   const endOfYear = new Date(currentYear, 11, 31, 23, 59, 59)
   const twelveMonthsFromNow = new Date(now)
   twelveMonthsFromNow.setFullYear(twelveMonthsFromNow.getFullYear() + 1)
-  const to = endOfYear > twelveMonthsFromNow ? endOfYear : twelveMonthsFromNow
+  const normalizedTwelveMonthsFromNow = endOfDay(twelveMonthsFromNow)
+  const to = endOfYear > normalizedTwelveMonthsFromNow ? endOfYear : normalizedTwelveMonthsFromNow
   return { from, to, now }
 }
 
@@ -36,7 +49,7 @@ async function fetchMatchChangeGroups(dateRange: {
   to: Date
   now: Date
 }): Promise<{ groups: MatchChangeSummaryGroup[]; matchesLastRefreshedAt: string | null }> {
-  const thirtyDaysAgo = new Date(dateRange.now.getTime() - 30 * 24 * 60 * 60 * 1000)
+  const thirtyDaysAgo = startOfDay(new Date(dateRange.now.getTime() - 30 * 24 * 60 * 60 * 1000))
   try {
     const [changes, matchesResponse, teams] = await Promise.all([
       fetchNrMatchChanges({
