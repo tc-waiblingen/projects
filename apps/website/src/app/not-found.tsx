@@ -1,5 +1,5 @@
 import { ButtonLink } from '@/components/elements/button'
-import { SearchSuggestions } from '@/components/search'
+import { SearchSuggestions } from '@/components/search/search-suggestions'
 
 export default function NotFound() {
   return (

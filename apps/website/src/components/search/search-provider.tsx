@@ -1,7 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { SearchModal } from './search-modal'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
+
+const SearchModal = lazy(() =>
+  import('./search-modal').then((mod) => ({ default: mod.SearchModal }))
+)
 
 export function SearchProvider() {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,5 +25,9 @@ export function SearchProvider() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [openSearch])
 
-  return <SearchModal isOpen={isOpen} onClose={closeSearch} />
+  return (
+    <Suspense fallback={null}>
+      {isOpen && <SearchModal isOpen={isOpen} onClose={closeSearch} />}
+    </Suspense>
+  )
 }
