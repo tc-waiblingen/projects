@@ -70,8 +70,9 @@ export function SponsorDetailCard({ sponsor }: { sponsor: Sponsor }) {
       alt={sponsor.name}
       width={logo.width ?? 180}
       height={logo.height ?? 72}
+      sizes="180px"
       className="h-[72px] w-auto max-w-[180px] rounded object-contain"
-      unoptimized
+      unoptimized={logo.type === "image/svg+xml"}
     />
   ) : null
 

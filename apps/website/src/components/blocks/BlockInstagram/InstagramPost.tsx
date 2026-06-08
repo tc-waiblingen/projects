@@ -51,7 +51,7 @@ export function InstagramPost({ item, showCaption, variant }: InstagramPostProps
             src={item.mediaUrl}
             alt={item.type === 'post' && item.caption ? item.caption : 'Instagram Beitrag'}
             fill
-            unoptimized
+            sizes={isCompact ? '(min-width: 640px) 176px, 160px' : '(min-width: 640px) 288px, 256px'}
             className={clsx(
               'object-cover',
               isStory ? 'rounded-md' : 'rounded-lg'

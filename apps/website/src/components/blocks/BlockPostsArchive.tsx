@@ -198,6 +198,7 @@ function PostListImage({ file }: { file: DirectusFile }) {
         alt={alt}
         width={144}
         height={96}
+        sizes="(min-width: 640px) 144px, 112px"
         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 group-active:scale-105 group-focus-visible:scale-105"
       />
     </div>

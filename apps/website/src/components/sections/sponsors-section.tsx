@@ -23,8 +23,9 @@ function SponsorCard({ sponsor, size = 'lg' }: { sponsor: Sponsor; size?: 'lg' |
       title={title}
       width={logo.width ?? 390}
       height={logo.height ?? 174}
+      sizes={size === 'lg' ? '(min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw' : '(min-width: 768px) 16vw, (min-width: 640px) 25vw, 33vw'}
       className={`h-auto w-auto max-w-full object-contain ${sizeClasses}`}
-      unoptimized
+      unoptimized={logo.type === 'image/svg+xml'}
     />
   ) : (
     <span

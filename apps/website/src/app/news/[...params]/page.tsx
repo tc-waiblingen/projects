@@ -255,6 +255,7 @@ function PostHeroImage({ file }: { file: DirectusFile }) {
           fill
           className="object-cover"
           style={objectPosition ? { objectPosition } : undefined}
+          sizes="100vw"
           priority
         />
       </div>
@@ -270,6 +271,7 @@ function PostHeroImage({ file }: { file: DirectusFile }) {
         fill
         className="scale-[1.2] object-cover brightness-150 blur-[30px] saturate-50 dark:brightness-[.7]"
         aria-hidden
+        sizes="100vw"
       />
       {/* Sharp foreground */}
       <Image
@@ -279,6 +281,7 @@ function PostHeroImage({ file }: { file: DirectusFile }) {
         fill
         className="object-contain drop-shadow-xl"
         style={objectPosition ? { objectPosition } : undefined}
+        sizes="100vw"
         priority
       />
     </div>

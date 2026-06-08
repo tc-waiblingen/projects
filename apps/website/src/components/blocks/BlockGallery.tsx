@@ -143,6 +143,7 @@ function GalleryImage({ file, onClick }: GalleryImageProps) {
         alt={alt}
         width={file.width ?? 800}
         height={file.height ?? 600}
+        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
         className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
       />
     </button>

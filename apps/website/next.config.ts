@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
       {
         pathname: '/api/team-images/**',
       },
+      {
+        pathname: '/api/instagram/media',
+      },
     ],
     remotePatterns: [
       {

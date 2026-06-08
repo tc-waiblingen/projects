@@ -175,8 +175,9 @@ export function SitePlanMap({ areaMapId, courtSponsorsMap }: SitePlanMapProps) {
                 alt={sponsor.name}
                 width={logo.width ?? 200}
                 height={logo.height ?? 100}
+                sizes="200px"
                 className="h-full w-full object-contain"
-                unoptimized
+                unoptimized={logo.type === "image/svg+xml"}
               />
             ) : (
               <span className="text-xs font-medium text-tcw-accent-700">
