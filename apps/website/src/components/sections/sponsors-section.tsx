@@ -1,9 +1,7 @@
-"use client"
-
 import Image from 'next/image'
 import type { DirectusFile, Sponsor } from '@/types/directus-schema'
-import { SponsorDialogTrigger } from '@/components/elements/sponsor-dialog'
 import { getEditAttr } from '@/lib/visual-editing'
+import { SponsorsDialogProvider } from './sponsors-dialog-provider'
 
 interface SponsorsSectionProps {
   sponsors: Sponsor[]
@@ -37,14 +35,19 @@ function SponsorCard({ sponsor, size = 'lg' }: { sponsor: Sponsor; size?: 'lg' |
   )
 
   return (
-    <SponsorDialogTrigger sponsor={sponsor}>
+    <button
+      type="button"
+      data-sponsor-id={sponsor.id}
+      className="w-full cursor-pointer"
+      aria-label={sponsor.name}
+    >
       <div
         className={`flex items-center justify-center rounded-lg bg-white ${size === 'lg' ? 'min-h-[5rem] px-2 py-3' : 'min-h-[3rem] px-1.5 py-2'}`}
         data-directus={getEditAttr({ collection: 'sponsors', item: String(sponsor.id), fields: ['name', 'logo_web', 'description'] })}
       >
         {content}
       </div>
-    </SponsorDialogTrigger>
+    </button>
   )
 }
 
@@ -75,30 +78,32 @@ export function SponsorsSection({ sponsors }: SponsorsSectionProps) {
         Diese Partner unterstützen uns und im Gegenzug bitten wir Sie, auch diese zu unterstützen:
       </p>
 
-      <div className="flex flex-col gap-8">
-        {categoryOrder.map((category) => {
-          const categorySponsors = sponsorsByCategory[category]
-          if (!categorySponsors || categorySponsors.length === 0) {
-            return null
-          }
+      <SponsorsDialogProvider sponsors={sponsors}>
+        <div className="flex flex-col gap-8">
+          {categoryOrder.map((category) => {
+            const categorySponsors = sponsorsByCategory[category]
+            if (!categorySponsors || categorySponsors.length === 0) {
+              return null
+            }
 
-          const isPremium = category === 'premium_partner'
-          const size = isPremium ? 'lg' : 'sm'
-          const gridClasses = isPremium
-            ? 'grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4'
-            : 'grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6'
+            const isPremium = category === 'premium_partner'
+            const size = isPremium ? 'lg' : 'sm'
+            const gridClasses = isPremium
+              ? 'grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4'
+              : 'grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6'
 
-          return (
-            <div key={category}>
-              <div className={`grid ${gridClasses}`}>
-                {categorySponsors.map((sponsor) => (
-                  <SponsorCard key={sponsor.id} sponsor={sponsor} size={size} />
-                ))}
+            return (
+              <div key={category}>
+                <div className={`grid ${gridClasses}`}>
+                  {categorySponsors.map((sponsor) => (
+                    <SponsorCard key={sponsor.id} sponsor={sponsor} size={size} />
+                  ))}
+                </div>
               </div>
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      </SponsorsDialogProvider>
     </div>
   )
 }
