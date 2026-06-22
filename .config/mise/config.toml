@@ -8,7 +8,7 @@ pnpm = "10.33.0"
 _.file = ".env"
 
 [shell_alias]
-dev = "mise run dev:tv ::: dev:website ::: dev:dispo"
+dev = "mise run dev:tv ::: dev:website ::: dev:dispo ::: dev:present"
 
 [tasks."dev:website"]
 description = "Run the website in development mode"
@@ -24,6 +24,17 @@ alias = "dev-tv"
 description = "Run the dispo dev server (port 3002)"
 run = "pnpm run dev:dispo"
 alias = "dev-dispo"
+
+[tasks."dev:present"]
+description = "Run the present dev server (port 3003)"
+run = "pnpm run dev:present"
+alias = "dev-present"
+
+[tasks."dev:present:all"]
+description = "Start local LiveKit and the present dev server"
+depends = ["livekit:up"]
+run = "pnpm run dev:present"
+alias = "dev-present-all"
 
 [tasks.lint]
 description = "Run the linter"
@@ -50,6 +61,11 @@ description = "Build the dispo project"
 run = "pnpm run build:dispo"
 alias = "build-dispo"
 
+[tasks."build:present"]
+description = "Build the present project"
+run = "pnpm run build:present"
+alias = "build-present"
+
 [tasks."lint:dispo"]
 description = "Lint the dispo project"
 run = "pnpm run lint:dispo"
@@ -60,10 +76,108 @@ description = "Run dispo tests (vitest)"
 run = "pnpm run test:dispo"
 alias = "test-dispo"
 
+[tasks."lint:present"]
+description = "Lint the present project"
+run = "pnpm run lint:present"
+alias = "lint-present"
+
+[tasks."test:present"]
+description = "Run present tests (vitest)"
+run = "pnpm run test:present"
+alias = "test-present"
+
+[tasks."preflight:present:entra"]
+description = "Run present Entra discovery and auth URL preflight"
+run = "pnpm run preflight:present:entra"
+alias = "preflight-present-entra"
+
+[tasks."verify:present:production-evidence"]
+description = "Validate present production smoke evidence reports"
+run = "pnpm run verify:present:production-evidence"
+alias = "verify-present-production-evidence"
+
+[tasks."smoke:present:local"]
+description = "Run present local browser smoke test"
+run = "pnpm run smoke:present:local"
+alias = "smoke-present-local"
+
+[tasks."smoke:present:local:five-viewers"]
+description = "Run present local browser smoke test with five fake-screen viewers"
+run = "pnpm run smoke:present:local:five-viewers"
+alias = "smoke-present-local-five-viewers"
+
+[tasks."smoke:present:local:fake-screen"]
+description = "Run present local browser smoke test with fake screen media"
+run = "pnpm run smoke:present:local:fake-screen"
+alias = "smoke-present-local-fake-screen"
+
+[tasks."smoke:present:local:handout"]
+description = "Run present local handout PDF smoke test"
+run = "pnpm run smoke:present:local:handout"
+alias = "smoke-present-local-handout"
+
+[tasks."smoke:present:local:headed"]
+description = "Run present local browser smoke test in headed Chromium"
+run = "pnpm run smoke:present:local:headed"
+alias = "smoke-present-local-headed"
+
+[tasks."smoke:present:local:native-picker"]
+description = "Run present local browser smoke test with the native screen picker"
+run = "pnpm run smoke:present:local:native-picker"
+alias = "smoke-present-local-native-picker"
+
+[tasks."smoke:present:local:refresh"]
+description = "Run present local browser smoke test with moderator and viewer refresh"
+run = "pnpm run smoke:present:local:refresh"
+alias = "smoke-present-local-refresh"
+
+[tasks."smoke:present:local:secret-check"]
+description = "Run present local browser smoke test with LiveKit secret leak checks"
+run = "pnpm run smoke:present:local:secret-check"
+alias = "smoke-present-local-secret-check"
+
+[tasks."smoke:present:production:interactive"]
+description = "Run present production browser smoke with interactive Entra login"
+run = "pnpm run smoke:present:production:interactive"
+alias = "smoke-present-production-interactive"
+
+[tasks."smoke:present:production:native-picker"]
+description = "Run present production browser smoke with the native screen picker"
+run = "pnpm run smoke:present:production:native-picker"
+alias = "smoke-present-production-native-picker"
+
+[tasks."smoke:present:livekit:endpoint"]
+description = "Run present LiveKit endpoint and credential preflight"
+run = "pnpm run smoke:present:livekit:endpoint"
+alias = "smoke-present-livekit-endpoint"
+
+[tasks."check:present"]
+description = "Lint, test and build present (full local check)"
+depends = ["lint:present", "test:present", "build:present"]
+alias = "check-present"
+
 [tasks."check:dispo"]
 description = "Lint, test and build dispo (full local check)"
 depends = ["lint:dispo", "test:dispo", "build:dispo"]
 alias = "check-dispo"
+
+[tasks."livekit:up"]
+description = "Start local LiveKit"
+dir = "infra/livekit/local"
+run = "docker compose up -d"
+alias = "livekit-up"
+
+[tasks."livekit:down"]
+description = "Stop local LiveKit"
+dir = "infra/livekit/local"
+run = "docker compose down"
+alias = "livekit-down"
+
+[tasks."livekit:logs"]
+description = "Tail local LiveKit logs"
+dir = "infra/livekit/local"
+run = "docker compose logs -f livekit"
+alias = "livekit-logs"
 
 [tasks."docker-up:dispo"]
 description = "Build & run dispo via docker compose"

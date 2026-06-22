@@ -42,3 +42,5 @@
 apps/website/public/downloads
 apps/website/public/_pagefind
 apps/tv/public/_pagefind
+apps/present/.tmp
+apps/present/data/*.db*

@@ -1,0 +1,1558 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TCW Present design directions</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --red: #bf2f22;
+        --red-dark: #7f1d17;
+        --ink: #1e1b17;
+        --muted: #68615a;
+        --paper: #f7f4ed;
+        --paper-2: #ede6dc;
+        --line: rgba(30, 27, 23, 0.13);
+        --line-strong: rgba(30, 27, 23, 0.22);
+        --green: #247a56;
+        --green-soft: #dff1e8;
+        --amber: #be7b21;
+        --amber-soft: #faecd6;
+        --cyan: #126b79;
+        --cyan-soft: #d8f0f3;
+        --dark: #18191b;
+        --dark-2: #24262a;
+        --white: #ffffff;
+        --shadow: 0 24px 60px rgba(36, 33, 29, 0.13);
+        --radius: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Open Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.45;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .page-shell {
+        width: min(1440px, 100%);
+        margin: 0 auto;
+      }
+
+      .overview {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 32px;
+        align-items: end;
+        padding: 48px 32px 28px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--red-dark);
+        font-size: 0.8rem;
+        font-weight: 750;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 780px;
+        margin-bottom: 14px;
+        font-size: 3.2rem;
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      .lede {
+        max-width: 820px;
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 1.08rem;
+      }
+
+      .summary-panel {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.56);
+        padding: 18px;
+      }
+
+      .summary-panel h2 {
+        margin-bottom: 10px;
+        font-size: 1rem;
+      }
+
+      .summary-panel ul {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .concept-nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        gap: 8px;
+        padding: 12px 32px;
+        overflow-x: auto;
+        border-bottom: 1px solid var(--line);
+        background: rgba(247, 244, 237, 0.94);
+        backdrop-filter: blur(14px);
+      }
+
+      .concept-nav a {
+        flex: 0 0 auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: white;
+        padding: 9px 13px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .concept-nav a:hover {
+        border-color: var(--red);
+        color: var(--red-dark);
+      }
+
+      .concept {
+        padding: 42px 32px 56px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .concept-heading {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 20px;
+        align-items: end;
+        margin-bottom: 22px;
+      }
+
+      .concept-heading h2 {
+        margin-bottom: 8px;
+        font-size: 1.9rem;
+        letter-spacing: 0;
+      }
+
+      .concept-heading p {
+        max-width: 780px;
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .fit-tag {
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius);
+        background: white;
+        padding: 9px 12px;
+        color: var(--muted);
+        font-size: 0.86rem;
+        font-weight: 750;
+        white-space: nowrap;
+      }
+
+      .mockup-frame {
+        overflow: hidden;
+        border: 1px solid rgba(30, 27, 23, 0.18);
+        border-radius: var(--radius);
+        background: white;
+        box-shadow: var(--shadow);
+      }
+
+      .chrome {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 38px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        background: #fbfaf7;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--line-strong);
+      }
+
+      .dot.red {
+        background: #de5a4d;
+      }
+
+      .dot.amber {
+        background: #d8a149;
+      }
+
+      .dot.green {
+        background: #53a66f;
+      }
+
+      .chrome-title {
+        min-width: 0;
+        margin-left: 8px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 700;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 38px;
+        border: 1px solid transparent;
+        border-radius: var(--radius);
+        padding: 0 13px;
+        background: var(--ink);
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 760;
+        white-space: nowrap;
+      }
+
+      .btn.secondary {
+        border-color: var(--line-strong);
+        background: white;
+        color: var(--ink);
+      }
+
+      .btn.red {
+        background: var(--red);
+      }
+
+      .icon-btn {
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: white;
+        color: var(--ink);
+      }
+
+      .icon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border-radius: 999px;
+        padding: 5px 10px;
+        color: var(--green);
+        background: var(--green-soft);
+        font-size: 0.82rem;
+        font-weight: 780;
+      }
+
+      .status-pill::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: currentColor;
+      }
+
+      .qr {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 3px;
+        aspect-ratio: 1;
+        border: 8px solid white;
+        background: white;
+        box-shadow: inset 0 0 0 1px var(--line);
+      }
+
+      .qr span {
+        background: transparent;
+      }
+
+      .qr span:nth-child(2n),
+      .qr span:nth-child(5n),
+      .qr span:nth-child(11n),
+      .qr span:nth-child(17n),
+      .qr span:nth-child(23n),
+      .qr span:nth-child(31n),
+      .qr span:nth-child(43n) {
+        background: var(--ink);
+      }
+
+      .screen-art {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: var(--radius);
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px) 0 0 / 72px 72px,
+          linear-gradient(0deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px) 0 0 / 72px 72px,
+          #1d1f22;
+      }
+
+      .screen-art::before {
+        content: "";
+        position: absolute;
+        inset: 10% 9%;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: var(--radius);
+        background:
+          linear-gradient(90deg, #c7dfd4 0 24%, transparent 24% 27%, #ffffff 27% 100%),
+          linear-gradient(#dfe8e4 0 0);
+      }
+
+      .screen-art::after {
+        content: "";
+        position: absolute;
+        right: 14%;
+        bottom: 16%;
+        width: 30%;
+        height: 16%;
+        border-radius: 6px;
+        background: var(--red);
+        box-shadow: -180px -112px 0 -48px #247a56, -76px -82px 0 -42px #be7b21;
+      }
+
+      .viewer-phone {
+        width: 270px;
+        border: 9px solid #161616;
+        border-radius: 28px;
+        background: #faf8f3;
+        box-shadow: 0 22px 44px rgba(0, 0, 0, 0.22);
+      }
+
+      .phone-top {
+        height: 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .phone-body {
+        padding: 18px;
+      }
+
+      .field {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius);
+        padding: 0 12px;
+        background: white;
+        color: var(--ink);
+      }
+
+      .small {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .metric-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .metric {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 10px;
+        background: white;
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 1.12rem;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .console-app {
+        display: grid;
+        grid-template-columns: 78px minmax(0, 1fr) 320px;
+        min-height: 720px;
+        background: #f3f0e8;
+      }
+
+      .console-rail {
+        display: grid;
+        align-content: start;
+        gap: 12px;
+        padding: 16px 14px;
+        border-right: 1px solid var(--line);
+        background: #ffffff;
+      }
+
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius);
+        background: var(--red);
+        color: white;
+        font-weight: 850;
+      }
+
+      .rail-item {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: white;
+        color: var(--muted);
+      }
+
+      .rail-item.active {
+        background: var(--ink);
+        color: white;
+      }
+
+      .console-main {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        min-width: 0;
+      }
+
+      .console-topbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.76);
+      }
+
+      .title-stack h3 {
+        margin: 0 0 2px;
+        font-size: 1.16rem;
+      }
+
+      .title-stack span {
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .console-workspace {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        gap: 16px;
+        min-width: 0;
+        padding: 18px;
+      }
+
+      .live-preview {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        overflow: hidden;
+        border-radius: var(--radius);
+        background: var(--dark);
+        color: white;
+      }
+
+      .preview-stage {
+        display: grid;
+        min-height: 420px;
+        padding: 18px;
+      }
+
+      .preview-stage .screen-art {
+        min-height: 100%;
+      }
+
+      .preview-toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        background: #101113;
+      }
+
+      .toolbar-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        min-width: 0;
+      }
+
+      .preview-toolbar .icon-btn,
+      .preview-toolbar .btn.secondary {
+        border-color: rgba(255, 255, 255, 0.16);
+        background: #232528;
+        color: white;
+      }
+
+      .preview-toolbar .status-pill {
+        background: rgba(36, 122, 86, 0.22);
+        color: #92e2bf;
+      }
+
+      .screen-picker {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .picker-card {
+        min-height: 108px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: white;
+        padding: 10px;
+      }
+
+      .picker-thumb {
+        height: 62px;
+        border-radius: 6px;
+        background:
+          linear-gradient(90deg, #d9e8df 0 28%, #f6f4ee 28% 100%);
+        border: 1px solid var(--line);
+      }
+
+      .picker-card:nth-child(2) .picker-thumb {
+        background:
+          linear-gradient(90deg, #d9edf0 0 34%, #ffffff 34% 100%);
+      }
+
+      .picker-card:nth-child(3) .picker-thumb {
+        background:
+          linear-gradient(90deg, #f5d9d3 0 22%, #fff7ed 22% 100%);
+      }
+
+      .picker-card strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 0.86rem;
+      }
+
+      .console-side {
+        display: grid;
+        align-content: start;
+        gap: 14px;
+        padding: 18px;
+        border-left: 1px solid var(--line);
+        background: white;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fffefa;
+        padding: 14px;
+      }
+
+      .panel h3 {
+        margin-bottom: 10px;
+        font-size: 1rem;
+      }
+
+      .code-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius);
+        padding: 10px;
+        background: white;
+      }
+
+      .code-box strong {
+        font-size: 1.3rem;
+      }
+
+      .viewer-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .viewer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 9px;
+        background: white;
+        font-size: 0.88rem;
+      }
+
+      .signal {
+        width: 38px;
+        height: 8px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--green) 0 72%, #ded7ce 72% 100%);
+      }
+
+      .stage-app {
+        position: relative;
+        min-height: 780px;
+        background: #1b1714;
+        color: white;
+      }
+
+      .stage-hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 310px;
+        min-height: 680px;
+      }
+
+      .stage-stream {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        min-width: 0;
+        padding: 20px;
+      }
+
+      .stage-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+
+      .stage-title h3 {
+        margin: 0;
+        color: white;
+        font-size: 1.12rem;
+      }
+
+      .stage-title span {
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 0.86rem;
+      }
+
+      .stage-screen {
+        position: relative;
+        display: grid;
+        min-height: 470px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius);
+        background: #101113;
+        padding: 14px;
+      }
+
+      .stage-screen .screen-art {
+        min-height: 100%;
+      }
+
+      .floating-controls {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .floating-controls .icon-btn {
+        border-color: rgba(255, 255, 255, 0.15);
+        background: #2b2a28;
+        color: white;
+      }
+
+      .floating-controls .btn {
+        min-width: 142px;
+      }
+
+      .stage-drawer {
+        display: grid;
+        align-content: start;
+        gap: 14px;
+        padding: 20px;
+        border-left: 1px solid rgba(255, 255, 255, 0.12);
+        background: #25211d;
+      }
+
+      .dark-panel {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.06);
+        padding: 14px;
+      }
+
+      .dark-panel h3 {
+        margin-bottom: 10px;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .dark-panel p,
+      .dark-panel .small {
+        color: rgba(255, 255, 255, 0.68);
+      }
+
+      .dark-panel .code-box {
+        border-color: rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .dark-panel .qr {
+        margin-top: 12px;
+      }
+
+      .viewer-strip {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .viewer-tile {
+        min-height: 74px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+        padding: 10px;
+      }
+
+      .viewer-tile strong {
+        display: block;
+        color: white;
+      }
+
+      .viewer-tile span {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.8rem;
+      }
+
+      .stage-footer {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 18px;
+        align-items: center;
+        min-height: 100px;
+        padding: 0 20px 20px;
+      }
+
+      .codec-bar {
+        display: grid;
+        grid-template-columns: 88px minmax(0, 1fr) 70px;
+        gap: 10px;
+        align-items: center;
+        max-width: 560px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.86rem;
+      }
+
+      .bar {
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.13);
+        overflow: hidden;
+      }
+
+      .bar span {
+        display: block;
+        width: 68%;
+        height: 100%;
+        background: #78c7a5;
+      }
+
+      .access-app {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 380px;
+        min-height: 760px;
+        background: #faf8f3;
+      }
+
+      .access-main {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        min-width: 0;
+      }
+
+      .access-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .access-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+        gap: 22px;
+        padding: 22px;
+      }
+
+      .creator-panel {
+        display: grid;
+        align-content: start;
+        gap: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: white;
+        padding: 18px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .form-field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .form-field label {
+        color: var(--muted);
+        font-size: 0.84rem;
+        font-weight: 750;
+      }
+
+      .handout-preview {
+        display: grid;
+        grid-template-columns: 168px minmax(0, 1fr);
+        gap: 18px;
+        align-items: center;
+        border: 1px dashed var(--line-strong);
+        border-radius: var(--radius);
+        background: #fffefa;
+        padding: 16px;
+      }
+
+      .handout-preview h3 {
+        margin-bottom: 8px;
+      }
+
+      .handoff-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .handoff-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fffefa;
+        padding: 12px;
+      }
+
+      .handoff-card strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .viewer-preview-zone {
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background:
+          linear-gradient(90deg, rgba(18, 107, 121, 0.07) 1px, transparent 1px) 0 0 / 46px 46px,
+          linear-gradient(0deg, rgba(18, 107, 121, 0.07) 1px, transparent 1px) 0 0 / 46px 46px,
+          #edf5f1;
+        padding: 28px;
+      }
+
+      .viewer-preview-zone .viewer-phone {
+        transform: rotate(-2deg);
+      }
+
+      .viewer-live {
+        margin-top: 14px;
+        overflow: hidden;
+        border-radius: var(--radius);
+        background: #151617;
+        color: white;
+      }
+
+      .viewer-live .screen-art {
+        min-height: 130px;
+        border: 0;
+        border-radius: 0;
+      }
+
+      .viewer-live-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+        padding: 10px;
+        background: #202226;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.78rem;
+      }
+
+      .access-side {
+        display: grid;
+        align-content: start;
+        gap: 14px;
+        padding: 18px;
+        border-left: 1px solid var(--line);
+        background: #fffefa;
+      }
+
+      .timeline {
+        display: grid;
+        gap: 10px;
+      }
+
+      .timeline-step {
+        display: grid;
+        grid-template-columns: 30px minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+      }
+
+      .step-index {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        background: var(--cyan-soft);
+        color: var(--cyan);
+        font-weight: 800;
+      }
+
+      .palette-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 14px;
+      }
+
+      .swatch {
+        width: 42px;
+        height: 26px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 6px;
+      }
+
+      .notes {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .note {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.72);
+        padding: 14px;
+      }
+
+      .note strong {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .note p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 1100px) {
+        .overview,
+        .concept-heading,
+        .access-app,
+        .stage-hero {
+          grid-template-columns: 1fr;
+        }
+
+        .console-app {
+          grid-template-columns: 64px minmax(0, 1fr);
+        }
+
+        .console-side {
+          grid-column: 1 / -1;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+
+        .access-side,
+        .stage-drawer {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+      }
+
+      @media (max-width: 760px) {
+        .overview,
+        .concept,
+        .concept-nav {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+        h1 {
+          font-size: 2.2rem;
+        }
+
+        .console-app,
+        .access-grid,
+        .console-side,
+        .screen-picker,
+        .notes,
+        .form-grid,
+        .handoff-row,
+        .handout-preview,
+        .stage-footer {
+          grid-template-columns: 1fr;
+        }
+
+        .console-app {
+          min-height: 0;
+        }
+
+        .console-rail {
+          display: none;
+        }
+
+        .console-topbar,
+        .preview-toolbar,
+        .access-top,
+        .stage-top {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .top-actions,
+        .toolbar-group,
+        .floating-controls {
+          flex-wrap: wrap;
+        }
+
+        .preview-stage,
+        .stage-screen {
+          min-height: 290px;
+        }
+
+        .access-side,
+        .stage-drawer,
+        .console-side {
+          padding: 14px;
+        }
+
+        .viewer-preview-zone .viewer-phone {
+          transform: none;
+        }
+
+        .viewer-phone {
+          width: min(270px, 100%);
+        }
+
+        .metric-row,
+        .viewer-strip {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="overview">
+        <div>
+          <p class="eyebrow">TCW Present</p>
+          <h1>Three design directions for authenticated live screen sharing.</h1>
+          <p class="lede">These are static product concepts for a LiveKit-backed web app: Entra-authenticated moderators, pre-created presentation codes, password-only viewer access, QR handouts, and browser-native screen selection.</p>
+        </div>
+        <aside class="summary-panel" aria-label="Design coverage">
+          <h2>Covered states</h2>
+          <ul>
+            <li>Moderator room control and screen switching</li>
+            <li>Presentation code and QR handout workflow</li>
+            <li>Password-only viewer entry and live stream view</li>
+            <li>Codec/bitrate visibility without exposing complexity</li>
+          </ul>
+        </aside>
+      </section>
+
+      <nav class="concept-nav" aria-label="Concept navigation">
+        <a href="#control-room">01 Control Room</a>
+        <a href="#stage">02 Presentation Stage</a>
+        <a href="#access">03 Access Flow</a>
+      </nav>
+
+      <section class="concept" id="control-room">
+        <div class="concept-heading">
+          <div>
+            <p class="eyebrow">Concept 01</p>
+            <h2>Control Room</h2>
+            <p>A moderator-heavy interface for reliable operation. It gives the presenter fast access to room state, current stream health, viewer count, handout data, and screen switching.</p>
+          </div>
+          <div class="fit-tag">Best for club staff and planned events</div>
+        </div>
+
+        <div class="mockup-frame">
+          <div class="chrome">
+            <span class="dot red"></span>
+            <span class="dot amber"></span>
+            <span class="dot green"></span>
+            <span class="chrome-title">present.tc-waiblingen.de/moderator/abendinfo-2026</span>
+          </div>
+          <div class="console-app">
+            <aside class="console-rail">
+              <div class="brand-mark">TCW</div>
+              <button class="rail-item active" aria-label="Presentations">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="14" rx="2"></rect>
+                  <path d="M8 21h8"></path>
+                  <path d="M12 18v3"></path>
+                </svg>
+              </button>
+              <button class="rail-item" aria-label="Handouts">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <path d="M14 2v6h6"></path>
+                </svg>
+              </button>
+              <button class="rail-item" aria-label="Settings">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.8 1.8 0 0 0 .4 2l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.8 1.8 0 0 0-2-.4 1.8 1.8 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.8 1.8 0 0 0-1-1.6 1.8 1.8 0 0 0-2 .4l-.1.1A2 2 0 1 1 4.1 17l.1-.1a1.8 1.8 0 0 0 .4-2 1.8 1.8 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.8 1.8 0 0 0 1.6-1 1.8 1.8 0 0 0-.4-2l-.1-.1A2 2 0 1 1 7 4.1l.1.1a1.8 1.8 0 0 0 2 .4 1.8 1.8 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1a1.8 1.8 0 0 0 1 1.6 1.8 1.8 0 0 0 2-.4l.1-.1A2 2 0 1 1 19.9 7l-.1.1a1.8 1.8 0 0 0-.4 2 1.8 1.8 0 0 0 1.6 1h.1a2 2 0 1 1 0 4H21a1.8 1.8 0 0 0-1.6 1z"></path>
+                </svg>
+              </button>
+            </aside>
+
+            <section class="console-main">
+              <header class="console-topbar">
+                <div class="title-stack">
+                  <h3>Jahreshauptversammlung</h3>
+                  <span>Presentation code WAI-0426</span>
+                </div>
+                <div class="top-actions">
+                  <span class="status-pill">Live</span>
+                  <button class="btn secondary">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <path d="M7 10l5 5 5-5"></path>
+                      <path d="M12 15V3"></path>
+                    </svg>
+                    Handout
+                  </button>
+                  <button class="btn red">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="14" rx="2"></rect>
+                      <path d="M8 21h8"></path>
+                      <path d="M12 18v3"></path>
+                    </svg>
+                    Change screen
+                  </button>
+                </div>
+              </header>
+
+              <div class="console-workspace">
+                <div class="live-preview">
+                  <div class="preview-stage">
+                    <div class="screen-art" aria-label="Shared screen preview"></div>
+                  </div>
+                  <div class="preview-toolbar">
+                    <div class="toolbar-group">
+                      <button class="icon-btn" aria-label="Mute stream audio">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                          <path d="M12 19v3"></path>
+                        </svg>
+                      </button>
+                      <button class="icon-btn" aria-label="Pause stream">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M8 5h3v14H8zM13 5h3v14h-3z"></path>
+                        </svg>
+                      </button>
+                      <button class="btn secondary">AV1 auto</button>
+                      <span class="status-pill">3.8 Mbps</span>
+                    </div>
+                    <button class="btn red">End presentation</button>
+                  </div>
+                </div>
+
+                <div class="screen-picker" aria-label="Recent share targets">
+                  <div class="picker-card">
+                    <div class="picker-thumb"></div>
+                    <strong>Display 1</strong>
+                    <span class="small">Current</span>
+                  </div>
+                  <div class="picker-card">
+                    <div class="picker-thumb"></div>
+                    <strong>Browser tab</strong>
+                    <span class="small">Ready</span>
+                  </div>
+                  <div class="picker-card">
+                    <div class="picker-thumb"></div>
+                    <strong>Keynote</strong>
+                    <span class="small">Last shared</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <aside class="console-side">
+              <div class="panel">
+                <h3>Viewer access</h3>
+                <div class="code-box">
+                  <div>
+                    <span class="small">Code</span>
+                    <strong>WAI-0426</strong>
+                  </div>
+                  <div class="qr" aria-label="QR code">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <h3>Room health</h3>
+                <div class="metric-row">
+                  <div class="metric"><strong>46</strong><span>viewers</span></div>
+                  <div class="metric"><strong>18 ms</strong><span>SFU</span></div>
+                  <div class="metric"><strong>1080p</strong><span>send</span></div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <h3>Recent viewers</h3>
+                <div class="viewer-list">
+                  <div class="viewer-row"><span>Hall iPad</span><span class="signal"></span></div>
+                  <div class="viewer-row"><span>Mobile 28</span><span class="signal"></span></div>
+                  <div class="viewer-row"><span>Browser 14</span><span class="signal"></span></div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <div class="notes">
+          <div class="note"><strong>Strength</strong><p>Clear operational confidence for moderators running important meetings.</p></div>
+          <div class="note"><strong>Tradeoff</strong><p>More interface than casual presenters need.</p></div>
+          <div class="note"><strong>Implementation fit</strong><p>Maps cleanly to LiveKit room state, participant counts, and stream quality telemetry.</p></div>
+        </div>
+      </section>
+
+      <section class="concept" id="stage">
+        <div class="concept-heading">
+          <div>
+            <p class="eyebrow">Concept 02</p>
+            <h2>Presentation Stage</h2>
+            <p>A calmer live-room design where the shared screen dominates. Controls stay available, but the room feels less like admin software and more like a presentation surface.</p>
+          </div>
+          <div class="fit-tag">Best for live club meetings</div>
+        </div>
+
+        <div class="mockup-frame">
+          <div class="chrome">
+            <span class="dot red"></span>
+            <span class="dot amber"></span>
+            <span class="dot green"></span>
+            <span class="chrome-title">present.tc-waiblingen.de/live/WAI-0426</span>
+          </div>
+
+          <div class="stage-app">
+            <div class="stage-hero">
+              <section class="stage-stream">
+                <header class="stage-top">
+                  <div class="stage-title">
+                    <h3>Clubabend 2026</h3>
+                    <span>Moderator: Thomas Siebers</span>
+                  </div>
+                  <div class="top-actions">
+                    <span class="status-pill">Live</span>
+                    <button class="btn secondary">Share link</button>
+                  </div>
+                </header>
+
+                <div class="stage-screen">
+                  <div class="screen-art" aria-label="Shared screen preview"></div>
+                </div>
+
+                <div class="floating-controls">
+                  <button class="icon-btn" aria-label="Microphone">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    </svg>
+                  </button>
+                  <button class="btn red">Change screen</button>
+                  <button class="icon-btn" aria-label="View settings">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 21v-7"></path>
+                      <path d="M4 10V3"></path>
+                      <path d="M12 21v-9"></path>
+                      <path d="M12 8V3"></path>
+                      <path d="M20 21v-5"></path>
+                      <path d="M20 12V3"></path>
+                      <path d="M1 14h6"></path>
+                      <path d="M9 8h6"></path>
+                      <path d="M17 16h6"></path>
+                    </svg>
+                  </button>
+                </div>
+              </section>
+
+              <aside class="stage-drawer">
+                <div class="dark-panel">
+                  <h3>Access</h3>
+                  <div class="code-box">
+                    <div>
+                      <span class="small">Presentation code</span>
+                      <strong>WAI-0426</strong>
+                    </div>
+                  </div>
+                  <div class="qr" aria-label="QR code">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                  </div>
+                </div>
+
+                <div class="dark-panel">
+                  <h3>Audience</h3>
+                  <div class="viewer-strip">
+                    <div class="viewer-tile"><strong>46</strong><span>connected</span></div>
+                    <div class="viewer-tile"><strong>41</strong><span>HD</span></div>
+                    <div class="viewer-tile"><strong>5</strong><span>low data</span></div>
+                  </div>
+                </div>
+
+                <div class="dark-panel">
+                  <h3>Quality</h3>
+                  <p class="small">Codec and bitrate stay automatic unless a moderator needs to override them.</p>
+                  <div class="codec-bar">
+                    <span>Codec</span>
+                    <div class="bar"><span></span></div>
+                    <strong>AV1</strong>
+                  </div>
+                </div>
+              </aside>
+            </div>
+
+            <footer class="stage-footer">
+              <div class="codec-bar">
+                <span>Bitrate</span>
+                <div class="bar"><span></span></div>
+                <strong>3.8M</strong>
+              </div>
+              <button class="btn red">End presentation</button>
+            </footer>
+          </div>
+        </div>
+
+        <div class="notes">
+          <div class="note"><strong>Strength</strong><p>Feels focused and polished during the actual presentation.</p></div>
+          <div class="note"><strong>Tradeoff</strong><p>Operational details are one layer less visible.</p></div>
+          <div class="note"><strong>Implementation fit</strong><p>Good if most sessions are run by one moderator who wants minimal visual noise.</p></div>
+        </div>
+      </section>
+
+      <section class="concept" id="access">
+        <div class="concept-heading">
+          <div>
+            <p class="eyebrow">Concept 03</p>
+            <h2>Access Flow</h2>
+            <p>A viewer-first direction that emphasizes pre-created codes, handouts, and frictionless QR entry. Moderator controls are still present, but room creation and audience entry are the stars.</p>
+          </div>
+          <div class="fit-tag">Best for repeatable handout workflows</div>
+        </div>
+
+        <div class="mockup-frame">
+          <div class="chrome">
+            <span class="dot red"></span>
+            <span class="dot amber"></span>
+            <span class="dot green"></span>
+            <span class="chrome-title">present.tc-waiblingen.de/presentations/new</span>
+          </div>
+
+          <div class="access-app">
+            <section class="access-main">
+              <header class="access-top">
+                <div class="title-stack">
+                  <h3>Create presentation</h3>
+                  <span>Signed in with Microsoft Entra</span>
+                </div>
+                <div class="top-actions">
+                  <button class="btn secondary">Save draft</button>
+                  <button class="btn red">Create code</button>
+                </div>
+              </header>
+
+              <div class="access-grid">
+                <div class="creator-panel">
+                  <div class="form-grid">
+                    <div class="form-field">
+                      <label for="title">Title</label>
+                      <input class="field" id="title" value="Jahreshauptversammlung">
+                    </div>
+                    <div class="form-field">
+                      <label for="code">Presentation code</label>
+                      <input class="field" id="code" value="WAI-0426">
+                    </div>
+                    <div class="form-field">
+                      <label for="password">Viewer password</label>
+                      <input class="field" id="password" value="Sommer2026">
+                    </div>
+                    <div class="form-field">
+                      <label for="date">Date</label>
+                      <input class="field" id="date" value="2026-07-17">
+                    </div>
+                  </div>
+
+                  <div class="handout-preview">
+                    <div class="qr" aria-label="QR code">
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <div>
+                      <h3>Handout preview</h3>
+                      <p class="small">present.tc-waiblingen.de/p/WAI-0426</p>
+                      <div class="code-box">
+                        <span class="small">Password</span>
+                        <strong>Sommer2026</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="handoff-row">
+                    <div class="handoff-card"><strong>Draft</strong><span class="small">Code reserved</span></div>
+                    <div class="handoff-card"><strong>Ready</strong><span class="small">Handout printed</span></div>
+                    <div class="handoff-card"><strong>Live</strong><span class="small">Stream active</span></div>
+                  </div>
+                </div>
+
+                <div class="viewer-preview-zone">
+                  <div class="viewer-phone">
+                    <div class="phone-top"></div>
+                    <div class="phone-body">
+                      <p class="eyebrow">TCW Present</p>
+                      <h3>Jahreshauptversammlung</h3>
+                      <p class="small">Presentation code WAI-0426</p>
+                      <input class="field" value="Sommer2026" aria-label="Viewer password">
+                      <button class="btn red" style="width: 100%; margin-top: 10px;">Join presentation</button>
+                      <div class="viewer-live">
+                        <div class="screen-art" aria-label="Live stream preview"></div>
+                        <div class="viewer-live-footer">
+                          <span>Live</span>
+                          <span>Auto quality</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <aside class="access-side">
+              <div class="panel">
+                <h3>Run sheet</h3>
+                <div class="timeline">
+                  <div class="timeline-step">
+                    <div class="step-index">1</div>
+                    <div><strong>Create code</strong><br><span class="small">Reserve URL before printing.</span></div>
+                  </div>
+                  <div class="timeline-step">
+                    <div class="step-index">2</div>
+                    <div><strong>Print handout</strong><br><span class="small">QR and password on one page.</span></div>
+                  </div>
+                  <div class="timeline-step">
+                    <div class="step-index">3</div>
+                    <div><strong>Start room</strong><br><span class="small">Moderator chooses a screen.</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <h3>Visual palette</h3>
+                <p class="small">Warmer public screens, quieter moderator surfaces, red only for primary actions.</p>
+                <div class="palette-row">
+                  <span class="swatch" style="background: #bf2f22;"></span>
+                  <span class="swatch" style="background: #247a56;"></span>
+                  <span class="swatch" style="background: #126b79;"></span>
+                  <span class="swatch" style="background: #f7f4ed;"></span>
+                  <span class="swatch" style="background: #1e1b17;"></span>
+                </div>
+              </div>
+
+              <div class="panel">
+                <h3>Security posture</h3>
+                <p class="small">Moderator identity is tied to Entra. Viewer sessions are anonymous and scoped to one presentation code.</p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <div class="notes">
+          <div class="note"><strong>Strength</strong><p>Makes the QR handout and password flow obvious before the event.</p></div>
+          <div class="note"><strong>Tradeoff</strong><p>Live moderation feels less central than in the first two concepts.</p></div>
+          <div class="note"><strong>Implementation fit</strong><p>Good foundation for admin CRUD, QR export, and repeatable presentation setup.</p></div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

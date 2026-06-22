@@ -1,0 +1,87 @@
+{
+  "result": "passed",
+  "baseUrl": "https://present.tc-waiblingen.de",
+  "testedAt": "2026-06-22T09:30:00.000Z",
+  "testedBy": "TCW QA",
+  "physicalQrScan": {
+    "presentationCode": "WAI-0426",
+    "expectedUrl": "https://present.tc-waiblingen.de/p/WAI-0426",
+    "scannedUrl": "https://present.tc-waiblingen.de/p/WAI-0426",
+    "handoutPrinted": true,
+    "scannedFromPaper": true,
+    "urlMatched": true,
+    "openedViewerPage": true,
+    "passwordWorked": true,
+    "passwordOnlyLogin": true
+  },
+  "browserMatrix": [
+    {
+      "name": "Chromium",
+      "version": "126.0.6478.127",
+      "role": "viewer",
+      "passed": true,
+      "openedQrUrl": true,
+      "passwordOnlyLogin": true,
+      "waitingState": true,
+      "screenReceived": true,
+      "changeScreenReceived": true,
+      "endedState": true
+    },
+    {
+      "name": "Safari",
+      "version": "17.5",
+      "role": "viewer",
+      "passed": true,
+      "openedQrUrl": true,
+      "passwordOnlyLogin": true,
+      "waitingState": true,
+      "screenReceived": true,
+      "changeScreenReceived": true,
+      "endedState": true
+    },
+    {
+      "name": "Firefox",
+      "version": "127.0.2",
+      "role": "viewer",
+      "passed": true,
+      "openedQrUrl": true,
+      "passwordOnlyLogin": true,
+      "waitingState": true,
+      "screenReceived": true,
+      "changeScreenReceived": true,
+      "endedState": true
+    }
+  ],
+  "networkChecks": [
+    {
+      "name": "same-lan",
+      "status": "passed",
+      "observedProtocol": "UDP",
+      "moderatorMediaObserved": true,
+      "viewerMediaObserved": true
+    },
+    {
+      "name": "non-lan-udp",
+      "status": "passed",
+      "observedProtocol": "UDP",
+      "moderatorMediaObserved": true,
+      "viewerMediaObserved": true
+    },
+    {
+      "name": "tcp-fallback",
+      "status": "passed",
+      "observedProtocol": "TCP",
+      "moderatorMediaObserved": true,
+      "viewerMediaObserved": true
+    },
+    {
+      "name": "restrictive-network",
+      "status": "unsupported",
+      "reason": "Network blocks direct UDP and LiveKit TCP fallback.",
+      "turnLimitationDocumented": true
+    }
+  ],
+  "notes": [
+    "Fixture for validator self-checks only. Do not use as production evidence."
+  ]
+}

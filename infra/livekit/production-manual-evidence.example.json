@@ -1,0 +1,88 @@
+{
+  "result": "pending",
+  "baseUrl": "https://present.tc-waiblingen.de",
+  "testedAt": "replace with ISO timestamp",
+  "testedBy": "replace with tester name",
+  "physicalQrScan": {
+    "presentationCode": "replace with tested presentation code",
+    "expectedUrl": "replace with handout viewer URL",
+    "scannedUrl": "replace with URL decoded from printed QR scan",
+    "handoutPrinted": false,
+    "scannedFromPaper": false,
+    "urlMatched": false,
+    "openedViewerPage": false,
+    "passwordWorked": false,
+    "passwordOnlyLogin": false
+  },
+  "browserMatrix": [
+    {
+      "name": "Chromium",
+      "version": "replace with tested version",
+      "role": "viewer",
+      "passed": false,
+      "openedQrUrl": false,
+      "passwordOnlyLogin": false,
+      "waitingState": false,
+      "screenReceived": false,
+      "changeScreenReceived": false,
+      "endedState": false
+    },
+    {
+      "name": "Safari",
+      "version": "replace with tested version",
+      "role": "viewer",
+      "passed": false,
+      "openedQrUrl": false,
+      "passwordOnlyLogin": false,
+      "waitingState": false,
+      "screenReceived": false,
+      "changeScreenReceived": false,
+      "endedState": false
+    },
+    {
+      "name": "Firefox",
+      "version": "replace with tested version",
+      "role": "viewer",
+      "passed": false,
+      "openedQrUrl": false,
+      "passwordOnlyLogin": false,
+      "waitingState": false,
+      "screenReceived": false,
+      "changeScreenReceived": false,
+      "endedState": false
+    }
+  ],
+  "networkChecks": [
+    {
+      "name": "same-lan",
+      "status": "pending",
+      "observedProtocol": "",
+      "moderatorMediaObserved": false,
+      "viewerMediaObserved": false
+    },
+    {
+      "name": "non-lan-udp",
+      "status": "pending",
+      "observedProtocol": "",
+      "moderatorMediaObserved": false,
+      "viewerMediaObserved": false
+    },
+    {
+      "name": "tcp-fallback",
+      "status": "not_available",
+      "observedProtocol": "",
+      "moderatorMediaObserved": false,
+      "viewerMediaObserved": false,
+      "reason": "replace if no UDP-blocked TCP-allowed network is available"
+    },
+    {
+      "name": "restrictive-network",
+      "status": "unsupported",
+      "reason": "Network blocks direct UDP and LiveKit TCP fallback.",
+      "turnLimitationDocumented": true
+    }
+  ],
+  "notes": [
+    "Do not include passwords, LiveKit secrets, session cookies, or Entra tokens in this file."
+  ]
+}

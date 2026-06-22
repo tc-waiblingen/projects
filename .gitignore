@@ -30,6 +30,8 @@ Thumbs.db
 
 # Testing
 coverage/
+apps/present/.tmp/
+apps/present/.vitest-cache/
 
 # Logs
 *.log
@@ -37,6 +39,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# App-local databases
+apps/present/data/*.db*
 
 # Screenshots
 screenshots/
