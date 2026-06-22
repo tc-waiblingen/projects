@@ -22,6 +22,7 @@ function runProductionEvidence(args: string[]) {
 
 describe('production evidence CLI', () => {
   it('accepts a complete production evidence bundle', () => {
+    const healthPath = writeReport(healthEvidence())
     const entraPath = writeReport(entraEvidence({ tenant: 'abcd1234-tenant' }))
     const endpointPath = writeReport(endpointEvidence())
     const browserPath = writeReport(
@@ -40,6 +41,8 @@ describe('production evidence CLI', () => {
     )
 
     const result = runProductionEvidence([
+      '--health',
+      healthPath,
       '--entra',
       entraPath,
       '--endpoint',
@@ -55,11 +58,101 @@ describe('production evidence CLI', () => {
     ])
 
     expect(result.status).toBe(0)
+    expect(result.stdout).toContain('health:passed')
     expect(result.stdout).toContain('entra:passed')
     expect(result.stdout).toContain('endpoint:passed')
     expect(result.stdout).toContain('browser:passed')
     expect(result.stdout).toContain('native:passed')
     expect(result.stdout).toContain('manual:passed')
+  })
+
+  it('accepts production health evidence', () => {
+    const filePath = writeReport(healthEvidence())
+
+    const result = runProductionEvidence([
+      '--allow-partial',
+      '--health',
+      filePath,
+    ])
+
+    expect(result.status).toBe(0)
+    expect(result.stdout).toContain('health:passed')
+  })
+
+  it('rejects production health evidence that is not externally HTTPS/WSS ready', () => {
+    const filePath = writeReport(
+      healthEvidence({
+        body: {
+          livekit: {
+            urlUsesWss: false,
+          },
+          auth: {
+            publicUrlUsesHttps: false,
+            entraTenantSpecific: false,
+          },
+        },
+      }),
+    )
+
+    const result = runProductionEvidence([
+      '--allow-partial',
+      '--health',
+      filePath,
+    ])
+
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('Health LiveKit URL uses WSS must be true')
+    expect(result.stderr).toContain('Health public URL uses HTTPS must be true')
+    expect(result.stderr).toContain('Health Entra tenant-specific must be true')
+  })
+
+  it('accepts local health evidence without production HTTPS/WSS requirements', () => {
+    const filePath = writeReport(
+      healthEvidence({
+        baseUrl: 'http://localhost:3003',
+        healthUrl: 'http://localhost:3003/api/health',
+        body: {
+          livekit: {
+            required: false,
+            urlUsesWss: false,
+          },
+          auth: {
+            required: false,
+            publicUrlUsesHttps: false,
+            entraTenantSpecific: false,
+          },
+        },
+      }),
+    )
+
+    const result = runProductionEvidence([
+      '--allow-partial',
+      '--base-url',
+      'http://localhost:3003',
+      '--health',
+      filePath,
+    ])
+
+    expect(result.status).toBe(0)
+    expect(result.stdout).toContain('health:passed')
+  })
+
+  it('rejects health evidence with secret-like values', () => {
+    const filePath = writeReport({
+      ...healthEvidence(),
+      error: 'LIVEKIT_API_SECRET=super-secret must not be recorded',
+    })
+
+    const result = runProductionEvidence([
+      '--allow-partial',
+      '--health',
+      filePath,
+    ])
+
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain(
+      'Health evidence must not contain secrets, session cookies, or tokens',
+    )
   })
 
   it('accepts completed manual evidence', () => {
@@ -696,6 +789,70 @@ function writeReport(report: unknown): string {
   )
   writeFileSync(filePath, JSON.stringify(report))
   return filePath
+}
+
+function healthEvidence({
+  baseUrl = 'https://present.tc-waiblingen.de',
+  healthUrl = 'https://present.tc-waiblingen.de/api/health',
+  body = {},
+}: {
+  baseUrl?: string
+  healthUrl?: string
+  body?: {
+    livekit?: Record<string, boolean>
+    auth?: Record<string, boolean>
+  }
+} = {}): Record<string, unknown> {
+  return {
+    baseUrl,
+    body: {
+      ok: true,
+      database: {
+        ok: true,
+      },
+      livekit: {
+        apiKeyConfigured: true,
+        apiSecretConfigured: true,
+        apiUrlValid: true,
+        configured: true,
+        required: true,
+        urlConfigured: true,
+        urlUsesWss: true,
+        ...body.livekit,
+      },
+      auth: {
+        entraClientConfigured: true,
+        entraClientSecretConfigured: true,
+        entraTenantConfigured: true,
+        entraTenantSpecific: true,
+        publicUrlConfigured: true,
+        publicUrlUsesHttps: true,
+        publicUrlValid: true,
+        ready: true,
+        required: true,
+        sessionSecretConfigured: true,
+        sessionSecretStrong: true,
+        ...body.auth,
+      },
+    },
+    checks: {
+      authReady: true,
+      bodyOk: true,
+      databaseOk: true,
+      liveKitConfigured: true,
+      statusOk: true,
+    },
+    completedAt: '2026-06-22T12:00:01.000Z',
+    elapsedMs: 1_000,
+    healthReport: {
+      path: '.tmp/health-preflight-present-tc-waiblingen-de-test.json',
+    },
+    healthUrl,
+    ok: true,
+    result: 'passed',
+    startedAt: '2026-06-22T12:00:00.000Z',
+    status: 200,
+  }
 }
 
 function nativePickerEvidence({

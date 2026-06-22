@@ -97,7 +97,7 @@ Coolify or the reverse proxy may handle TLS for `live.tc-waiblingen.de`, but UDP
 
 After deployment:
 
-1. Open `https://present.tc-waiblingen.de/api/health`; it must return `ok: true`.
+1. Run `pnpm --filter @tcw/present preflight:health` against `https://present.tc-waiblingen.de`; it must write a passing health report.
 2. Run `pnpm --filter @tcw/present preflight:entra` with production Entra values.
 3. Run `pnpm --filter @tcw/present smoke:livekit:endpoint` with production LiveKit credentials.
 4. Run `pnpm --filter @tcw/present smoke:production:interactive` from the target non-LAN network with `PRESENT_SMOKE_EXPECT_MEDIA_PROTOCOL=udp`.
@@ -248,6 +248,7 @@ Validate the production evidence bundle:
 cp infra/livekit/production-manual-evidence.example.json .tmp/production-manual-evidence.json
 
 pnpm --filter @tcw/present verify:production-evidence -- \
+  --health .tmp/health-preflight-<host>-<timestamp>.json \
   --entra .tmp/entra-preflight-<tenant>-<client>.json \
   --endpoint .tmp/livekit-endpoint-preflight-<room>.json \
   --browser .tmp/present-smoke-<five-viewer-code>.json \
@@ -256,7 +257,16 @@ pnpm --filter @tcw/present verify:production-evidence -- \
   --protocol udp
 ```
 
-Fill `.tmp/production-manual-evidence.json` before validating it. The template starts as `pending` and must fail until real tester, timestamp, browser-version, physical QR expected/scanned URL, and network evidence values are entered. Browser report validation fails unless `--protocol udp` or `--protocol tcp` is provided; use `--protocol tcp` for the TCP fallback run. The validator checks that every automated report includes ordered ISO start/end timestamps, positive elapsed time, and its durable report path, with endpoint paths tied to the preflight room name and smoke paths tied to the presentation code. It also checks that the Entra report passed with tenant-specific production Entra values, the LiveKit endpoint used `wss://live.tc-waiblingen.de`, the endpoint API URL and TCP fallback host/port matched, the endpoint API key stayed masked, no endpoint token/secret fields were recorded, TCP fallback was reachable, the five-viewer browser smoke used the production app URL, used fake-screen auto picker mode, ran headed when using interactive Entra auth, proved viewers waited before live, proved pre-live viewer token rejection, both browser token routes returned the configured LiveKit URL, secret scanning passed with at least one secret-value marker scanned, refresh recovery passed, all media paths matched the requested protocol, and the real-picker report used headed native picker mode with a real screen capture, matching token-route LiveKit URLs, pre-live viewer proof, and its own secret scan. It also checks the manual evidence file for the physical printed QR scan, exact expected/scanned QR URL match, Chromium/Safari/Firefox viewer matrix, same-LAN media, non-LAN UDP media, TCP fallback if available, and the documented no-TURN limitation for restrictive networks. It requires interactive Entra auth in browser reports by default; pass `--allow-cookie-auth` only when the smoke used a moderator cookie copied from a real Entra session. Pass `--tcp-fallback-port <port>` to `verify:production-evidence` only if production does not use the default `7881`.
+Fill `.tmp/production-manual-evidence.json` before validating it. The template starts as `pending` and must fail until real tester, timestamp, browser-version, physical QR expected/scanned URL, and network evidence values are entered. Browser report validation fails unless `--protocol udp` or `--protocol tcp` is provided; use `--protocol tcp` for the TCP fallback run. The validator checks that every automated report includes ordered ISO start/end timestamps, positive elapsed time, and its durable report path, with endpoint paths tied to the preflight room name and smoke paths tied to the presentation code. It also checks that the health report matches the public base URL, returned `200`, proved database, LiveKit, and production auth readiness, proved the browser-facing HTTPS public URL, browser-facing WSS LiveKit URL, and tenant-specific Entra tenant checks, and stored no secret-looking values. It checks that the Entra report passed with tenant-specific production Entra values, the LiveKit endpoint used `wss://live.tc-waiblingen.de`, the endpoint API URL and TCP fallback host/port matched, the endpoint API key stayed masked, no endpoint token/secret fields were recorded, TCP fallback was reachable, the five-viewer browser smoke used the production app URL, used fake-screen auto picker mode, ran headed when using interactive Entra auth, proved viewers waited before live, proved pre-live viewer token rejection, both browser token routes returned the configured LiveKit URL, secret scanning passed with at least one secret-value marker scanned, refresh recovery passed, all media paths matched the requested protocol, and the real-picker report used headed native picker mode with a real screen capture, matching token-route LiveKit URLs, pre-live viewer proof, and its own secret scan. It also checks the manual evidence file for the physical printed QR scan, exact expected/scanned QR URL match, Chromium/Safari/Firefox viewer matrix, same-LAN media, non-LAN UDP media, TCP fallback if available, and the documented no-TURN limitation for restrictive networks. It requires interactive Entra auth in browser reports by default; pass `--allow-cookie-auth` only when the smoke used a moderator cookie copied from a real Entra session. Pass `--tcp-fallback-port <port>` to `verify:production-evidence` only if production does not use the default `7881`.
+
+App health preflight:
+
+```bash
+PRESENT_PUBLIC_URL=https://present.tc-waiblingen.de \
+pnpm --filter @tcw/present preflight:health
+```
+
+This fetches `https://present.tc-waiblingen.de/api/health`, verifies `200 OK`, database readiness, LiveKit configuration readiness, and production auth readiness, then writes a sanitized JSON evidence report to `.tmp/health-preflight-*.json` by default, or to `PRESENT_HEALTH_OUTPUT_DIR` when set. The report stores the public URL, response status, and readiness booleans only; it does not persist configured secrets.
 
 If you already have a moderator session cookie, skip the interactive login:
 
