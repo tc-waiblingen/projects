@@ -119,6 +119,19 @@ describe('Entra auth routes', () => {
     expect(setCookie).toContain(`${NEXT_COOKIE}=;`)
   })
 
+  it('uses the configured public callback URL for proxied callback exchanges', async () => {
+    vi.stubEnv('PRESENT_PUBLIC_URL', 'https://tcw-projects-u2m.sprites.app')
+
+    await callbackGET(nextRequest('/api/auth/entra/callback?code=abc&state=state-value&session_state=session-value', entraCookies()))
+
+    expect(entraMock.exchangeCallback).toHaveBeenCalledWith({
+      callbackUrl: new URL('https://tcw-projects-u2m.sprites.app/api/auth/entra/callback?code=abc&state=state-value&session_state=session-value'),
+      codeVerifier: 'pkce-verifier',
+      expectedState: 'state-value',
+      expectedNonce: 'nonce-value',
+    })
+  })
+
   it('marks moderator session cookies secure in production', async () => {
     vi.stubEnv('NODE_ENV', 'production')
 

@@ -15,6 +15,17 @@ function failure(request: NextRequest, error: string) {
   return NextResponse.redirect(url, { status: 303 })
 }
 
+function callbackUrl(request: NextRequest): URL {
+  const url = publicUrl('/api/auth/entra/callback', request)
+  const requestUrl = new URL(request.url)
+
+  requestUrl.searchParams.forEach((value, key) => {
+    url.searchParams.append(key, value)
+  })
+
+  return url
+}
+
 export async function GET(request: NextRequest) {
   const codeVerifier = request.cookies.get(PKCE_COOKIE)?.value
   const expectedState = request.cookies.get(STATE_COOKIE)?.value
@@ -28,7 +39,7 @@ export async function GET(request: NextRequest) {
   let token: string
   try {
     const identity = await exchangeCallback({
-      callbackUrl: new URL(request.url),
+      callbackUrl: callbackUrl(request),
       codeVerifier,
       expectedState,
       expectedNonce,
