@@ -1,5 +1,5 @@
 import { getPresentationByCode } from '@/lib/presentations'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,6 +12,9 @@ export default async function ViewerLoginPage({ params, searchParams }: ViewerLo
   const [{ code }, { error }] = await Promise.all([params, searchParams])
   const presentation = getPresentationByCode(code)
   if (!presentation) notFound()
+  if (presentation.status !== 'ended' && presentation.viewerPasswordHash === '') {
+    redirect(`/api/viewer-login?code=${encodeURIComponent(presentation.code)}`)
+  }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-taupe-100 p-5">

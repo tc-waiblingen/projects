@@ -5,6 +5,24 @@ import { signViewerToken, VIEWER_MAX_AGE_SECONDS, viewerCookieName } from '@/lib
 import { randomUUID } from 'crypto'
 import { NextResponse, type NextRequest } from 'next/server'
 
+export async function GET(request: NextRequest) {
+  const code = request.nextUrl.searchParams.get('code')
+  if (typeof code !== 'string') {
+    return NextResponse.redirect(publicUrl('/p/invalid?error=1', request), { status: 303 })
+  }
+
+  const presentation = getPresentationByCode(code)
+  if (!presentation || presentation.status === 'ended') {
+    return NextResponse.redirect(publicUrl(`/p/${encodeURIComponent(code)}?error=1`, request), { status: 303 })
+  }
+
+  if (presentation.viewerPasswordHash !== '') {
+    return NextResponse.redirect(publicUrl(`/p/${presentation.code}`, request), { status: 303 })
+  }
+
+  return createViewerSessionResponse(presentation, request)
+}
+
 export async function POST(request: NextRequest) {
   const form = await request.formData()
   const code = form.get('code')
@@ -22,6 +40,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(publicUrl(`/p/${presentation.code}?error=1`, request), { status: 303 })
   }
 
+  return createViewerSessionResponse(presentation, request)
+}
+
+async function createViewerSessionResponse(
+  presentation: { id: number; code: string },
+  request: NextRequest,
+): Promise<NextResponse> {
   const viewerId = `viewer:${presentation.id}:${randomUUID()}`
   const token = await signViewerToken({ presentationId: presentation.id, code: presentation.code, viewerId })
 

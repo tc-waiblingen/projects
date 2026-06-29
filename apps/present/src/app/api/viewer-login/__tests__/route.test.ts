@@ -4,7 +4,7 @@ import { signViewerToken, VIEWER_MAX_AGE_SECONDS, viewerCookieName } from '@/lib
 import { verifyViewerPassword } from '@/lib/viewer-password'
 import { NextRequest } from 'next/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { POST } from '../route'
+import { GET, POST } from '../route'
 
 vi.mock('@/lib/presentations', () => ({
   getPresentationByCode: vi.fn(),
@@ -105,6 +105,31 @@ describe('viewer login route', () => {
     })
   })
 
+  it('automatically issues a viewer session when no password is configured', async () => {
+    vi.mocked(getPresentationByCode).mockReturnValue({ ...presentation, viewerPasswordHash: '' })
+
+    const response = await GET(getRequest('http://localhost:3003/api/viewer-login?code=WAI-0626'))
+    const setCookie = response.headers.get('set-cookie') ?? ''
+
+    expect(response.status).toBe(303)
+    expect(response.headers.get('location')).toBe('http://localhost:3003/p/WAI-0626/watch')
+    expect(verifyViewerPassword).not.toHaveBeenCalled()
+    expect(signViewerToken).toHaveBeenCalledWith({
+      presentationId: 8,
+      code: 'WAI-0626',
+      viewerId: expect.stringMatching(/^viewer:8:[0-9a-f-]+$/),
+    })
+    expect(setCookie).toContain(`${viewerCookieName('WAI-0626')}=viewer-session-token`)
+  })
+
+  it('sends automatic viewer entry back to the login page when a password is configured', async () => {
+    const response = await GET(getRequest('http://localhost:3003/api/viewer-login?code=WAI-0626'))
+
+    expect(response.status).toBe(303)
+    expect(response.headers.get('location')).toBe('http://localhost:3003/p/WAI-0626')
+    expect(signViewerToken).not.toHaveBeenCalled()
+  })
+
   it('marks viewer session cookies secure in production', async () => {
     vi.stubEnv('NODE_ENV', 'production')
 
@@ -115,6 +140,10 @@ describe('viewer login route', () => {
     expect(setCookie).toContain('Secure')
   })
 })
+
+function getRequest(url: string): NextRequest {
+  return new NextRequest(url)
+}
 
 function formRequest(fields: Record<string, string>): NextRequest {
   const form = new FormData()

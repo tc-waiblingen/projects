@@ -9,6 +9,9 @@ vi.mock('next/navigation', () => ({
   notFound: vi.fn(() => {
     throw new Error('NEXT_NOT_FOUND')
   }),
+  redirect: vi.fn((url: string) => {
+    throw new Error(`NEXT_REDIRECT:${url}`)
+  }),
 }))
 
 const presentation: Presentation = {
@@ -61,6 +64,15 @@ describe('viewer login page', () => {
     expect(markup).toContain('Wrong password.')
     expect(markup).not.toContain('name="username"')
     expect(markup).not.toContain('name="email"')
+  })
+
+  it('automatically enters active presentations without a viewer password', async () => {
+    vi.mocked(getPresentationByCode).mockReturnValue({ ...presentation, viewerPasswordHash: '' })
+
+    await expect(ViewerLoginPage({
+      params: Promise.resolve({ code: 'WAI-0626' }),
+      searchParams: Promise.resolve({}),
+    })).rejects.toThrow('NEXT_REDIRECT:/api/viewer-login?code=WAI-0626')
   })
 
   it('does not render a login form after the presentation ended', async () => {
