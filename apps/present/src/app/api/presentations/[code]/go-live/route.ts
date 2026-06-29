@@ -14,9 +14,6 @@ export async function POST(_request: NextRequest, { params }: GoLiveRouteProps) 
   if (!presentation || !canManagePresentation(presentation, session)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
-  if (presentation.status === 'ended') {
-    return NextResponse.json({ error: 'Presentation has ended' }, { status: 409 })
-  }
   await ensureLiveKitRoom(presentation)
   const updated = markPresentationLive(code)
   return NextResponse.json({ presentation: updated })

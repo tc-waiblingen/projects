@@ -147,17 +147,36 @@ describe('ViewerRoom', () => {
 
   it('stays in waiting state without connecting while the presentation is not live', async () => {
     const fetchMock = vi.fn(async () => ({
-      ok: false,
-      status: 409,
-      json: async () => ({ error: 'Presentation is not live' }),
+      ok: true,
+      json: async () => ({ status: 'waiting' }),
     }))
     vi.stubGlobal('fetch', fetchMock)
 
     const { unmount } = render(<ViewerRoom code="SMK-TEST" initialStatus="ready" title="Local smoke" />)
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/livekit/viewer-token', expect.any(Object)))
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/livekit/viewer-token',
+        expect.objectContaining({
+          body: JSON.stringify({ code: 'SMK-TEST', wait: true }),
+        }),
+      ),
+    )
     expect(livekitMock.connect).not.toHaveBeenCalled()
     expect(screen.getByText(/Waiting for the moderator to share a screen/i)).toBeInTheDocument()
+
+    unmount()
+  })
+
+  it('bounds the viewer surface to the viewport without page overflow', async () => {
+    const { container, unmount } = render(<ViewerRoom code="SMK-TEST" initialStatus="ended" title="Local smoke" />)
+
+    const main = container.querySelector('main')
+    const videoArea = container.querySelector('section')
+
+    expect(main).toHaveClass('h-dvh', 'max-h-dvh', 'overflow-hidden')
+    expect(main).toHaveClass('grid-rows-[auto_minmax(0,1fr)]')
+    expect(videoArea).toHaveClass('min-h-0', 'overflow-hidden')
 
     unmount()
   })

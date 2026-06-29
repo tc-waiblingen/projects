@@ -1,10 +1,15 @@
 import type { Presentation } from '@/lib/presentations'
 
-export function PresentationForm({ presentation }: { presentation?: Presentation }) {
+export function PresentationForm({ presentation, suggestedCode }: { presentation?: Presentation; suggestedCode?: string }) {
   const action = presentation ? `/api/presentations/${presentation.code}` : '/api/presentations'
 
   return (
-    <form method="post" action={action} className="grid gap-5 rounded-lg border border-tcw-accent-200 bg-white p-5 shadow-sm">
+    <form
+      method="post"
+      action={action}
+      autoComplete="off"
+      className="grid gap-5 rounded-lg border border-tcw-accent-200 bg-white p-5 shadow-sm"
+    >
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-1 text-sm font-semibold text-body">
           Title
@@ -23,7 +28,7 @@ export function PresentationForm({ presentation }: { presentation?: Presentation
             required={!presentation}
             disabled={Boolean(presentation)}
             placeholder="WAI-0626"
-            defaultValue={presentation?.code}
+            defaultValue={presentation?.code ?? suggestedCode}
             className="rounded-md border border-tcw-accent-200 px-3 py-2 font-normal uppercase focus:border-tcw-red-500 focus:outline-none disabled:bg-tcw-accent-50"
           />
         </label>
@@ -42,11 +47,22 @@ export function PresentationForm({ presentation }: { presentation?: Presentation
             name="viewerPassword"
             type="password"
             minLength={4}
-            required={!presentation}
-            placeholder={presentation ? 'Leave empty to keep current password' : undefined}
+            autoComplete="off"
+            placeholder={presentation ? 'Leave empty to keep current password' : 'Optional'}
             className="rounded-md border border-tcw-accent-200 px-3 py-2 font-normal focus:border-tcw-red-500 focus:outline-none"
           />
         </label>
+        {presentation && (
+          <label className="flex items-center gap-2 self-end text-sm font-semibold text-body">
+            <input
+              name="clearViewerPassword"
+              type="checkbox"
+              value="1"
+              className="h-4 w-4 cursor-pointer rounded border-tcw-accent-200 text-tcw-red-700"
+            />
+            No viewer password
+          </label>
+        )}
       </div>
       <label className="grid gap-1 text-sm font-semibold text-body">
         Status

@@ -71,6 +71,8 @@ interface TokenResponse {
 export function ModeratorRoom({ code, title, initialStatus, viewerUrl, viewerQrDataUrl }: ModeratorRoomProps) {
   const [room, setRoom] = useState<Room | null>(null)
   const [status, setStatus] = useState(initialStatus)
+  const [shouldConnect, setShouldConnect] = useState(initialStatus !== 'ended')
+  const [connectAttempt, setConnectAttempt] = useState(0)
   const [connection, setConnection] = useState<ConnectionState>(ConnectionState.Disconnected)
   const [viewerCount, setViewerCount] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -87,6 +89,7 @@ export function ModeratorRoom({ code, title, initialStatus, viewerUrl, viewerQrD
   const liveWithoutScreen = status === 'live' && !sharing && !sharingPending
 
   useEffect(() => {
+    if (!shouldConnect) return undefined
     let cancelled = false
     const nextRoom = new Room({ adaptiveStream: true, dynacast: true })
 
@@ -145,7 +148,7 @@ export function ModeratorRoom({ code, title, initialStatus, viewerUrl, viewerQrD
       cancelled = true
       nextRoom.disconnect()
     }
-  }, [code])
+  }, [code, connectAttempt, shouldConnect])
 
   useEffect(() => {
     if (!sharing) {
@@ -243,6 +246,7 @@ export function ModeratorRoom({ code, title, initialStatus, viewerUrl, viewerQrD
   }
 
   async function goLive() {
+    setError(null)
     const response = await fetch(`/api/presentations/${code}/go-live`, {
       method: 'POST',
     })
@@ -251,6 +255,10 @@ export function ModeratorRoom({ code, title, initialStatus, viewerUrl, viewerQrD
       return
     }
     setStatus('live')
+    if (!room) {
+      setShouldConnect(true)
+      setConnectAttempt((attempt) => attempt + 1)
+    }
   }
 
   async function endPresentation() {
@@ -263,6 +271,14 @@ export function ModeratorRoom({ code, title, initialStatus, viewerUrl, viewerQrD
       return
     }
     setStatus('ended')
+    setShouldConnect(false)
+    setRoom(null)
+    setConnection(ConnectionState.Disconnected)
+    setViewerCount(0)
+    setConnectionQuality(ConnectionQuality.Unknown)
+    setDiagnostics('Presentation ended')
+    setRoomName('Pending')
+    setRoomSid('Pending')
     room?.disconnect()
   }
 
@@ -277,10 +293,10 @@ export function ModeratorRoom({ code, title, initialStatus, viewerUrl, viewerQrD
         <div className="flex flex-wrap gap-2">
           <button
             onClick={goLive}
-            disabled={status === 'live' || status === 'ended'}
+            disabled={status === 'live'}
             className="cursor-pointer rounded-md bg-white px-4 py-2 font-semibold text-[#18191b] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Go live
+            {status === 'ended' ? 'Restart' : 'Go live'}
           </button>
           <button
             onClick={endPresentation}

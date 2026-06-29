@@ -33,6 +33,24 @@ describe('presentations', () => {
     d.close()
   })
 
+  it('creates a presentation with no viewer password', async () => {
+    const d = openDb(':memory:')
+    const presentation = await createPresentation(
+      {
+        code: 'WAI-0626',
+        title: 'Jahreshauptversammlung',
+        viewerPassword: '',
+        moderator: { sub: 'entra:1', name: 'Tom' },
+      },
+      d,
+    )
+
+    expect(presentation.viewerPasswordHash).toBe('')
+    await expect(verifyViewerPassword(presentation.viewerPasswordHash, '')).resolves.toBe(true)
+    await expect(verifyViewerPassword(presentation.viewerPasswordHash, 'Sommer2026')).resolves.toBe(false)
+    d.close()
+  })
+
   it('lists by moderator unless the session is admin', async () => {
     const d = openDb(':memory:')
     await createPresentation({ code: 'WAI-0626', title: 'First', viewerPassword: 'pass1', moderator: { sub: 'entra:1' } }, d)
@@ -50,6 +68,10 @@ describe('presentations', () => {
     const updated = await updatePresentation('WAI-0626', { title: 'Updated', startsAt: '2026-07-17', status: 'ready' }, d)
     expect(updated?.title).toBe('Updated')
     expect(updated?.status).toBe('ready')
+    await expect(verifyViewerPassword(updated?.viewerPasswordHash, 'pass1')).resolves.toBe(true)
+
+    const cleared = await updatePresentation('WAI-0626', { title: 'Updated', viewerPassword: '' }, d)
+    expect(cleared?.viewerPasswordHash).toBe('')
 
     const live = markPresentationLive('WAI-0626', d)
     expect(live?.status).toBe('live')
@@ -57,6 +79,10 @@ describe('presentations', () => {
     const ended = endPresentation('WAI-0626', d)
     expect(ended?.status).toBe('ended')
     expect(ended?.endedAt).toEqual(expect.any(Number))
+
+    const restarted = markPresentationLive('WAI-0626', d)
+    expect(restarted?.status).toBe('live')
+    expect(restarted?.endedAt).toBeNull()
     d.close()
   })
 

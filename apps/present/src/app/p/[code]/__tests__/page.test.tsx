@@ -45,6 +45,8 @@ describe('viewer login page', () => {
     expect(markup).toContain('name="password"')
     expect(markup).toContain('type="password"')
     expect(markup).toContain('name="code"')
+    expect(markup.toLowerCase()).toContain('autocomplete="off"')
+    expect(markup).not.toContain('required=""')
     expect(markup).not.toContain('name="username"')
     expect(markup).not.toContain('name="email"')
   })

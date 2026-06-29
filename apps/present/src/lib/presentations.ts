@@ -102,7 +102,7 @@ export async function updatePresentation(
   const slug = slugify(title)
   const status = input.status ?? existing.status
 
-  if (input.viewerPassword?.trim()) {
+  if (input.viewerPassword !== undefined) {
     const passwordHash = await hashViewerPassword(input.viewerPassword)
     d.prepare(
       `UPDATE presentations
@@ -155,9 +155,9 @@ export function canManagePresentation(presentation: Presentation, session: { sub
 
 export function markPresentationLive(code: string, d: Database.Database = getDb()): Presentation | null {
   const presentation = getPresentationByCode(code, d)
-  if (!presentation || presentation.status === 'ended') return presentation
+  if (!presentation) return null
   const now = Date.now()
-  d.prepare("UPDATE presentations SET status = 'live', updated_at = ? WHERE id = ?").run(now, presentation.id)
+  d.prepare("UPDATE presentations SET status = 'live', ended_at = NULL, updated_at = ? WHERE id = ?").run(now, presentation.id)
   logPresentationEvent(presentation.id, 'went_live', null, d)
   return getPresentationById(presentation.id, d)
 }

@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     code: readFormString(form, 'code'),
     title: readRequiredFormString(form, 'title'),
     startsAt: readFormString(form, 'startsAt'),
-    viewerPassword: readRequiredFormString(form, 'viewerPassword'),
+    viewerPassword: readFormString(form, 'viewerPassword') ?? '',
     moderator: { sub: session.sub, name: session.name },
   })
 

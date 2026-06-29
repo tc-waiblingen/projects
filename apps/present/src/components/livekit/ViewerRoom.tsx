@@ -17,6 +17,10 @@ interface TokenResponse {
   room: string
 }
 
+interface WaitResponse {
+  status: 'waiting' | 'ended'
+}
+
 const SCREEN_TRACK_NAME = 'screen'
 
 export function ViewerRoom({ code, title, initialStatus }: ViewerRoomProps) {
@@ -64,7 +68,7 @@ export function ViewerRoom({ code, title, initialStatus }: ViewerRoomProps) {
         const response = await fetch('/api/livekit/viewer-token', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ code }),
+          body: JSON.stringify({ code, wait: true }),
         })
         if (!response.ok) {
           const data = (await response.json().catch(() => null)) as { error?: string } | null
@@ -79,7 +83,16 @@ export function ViewerRoom({ code, title, initialStatus }: ViewerRoomProps) {
           }
           throw new Error(data?.error || `Token request failed (${response.status})`)
         }
-        const data = (await response.json()) as TokenResponse
+        const data = (await response.json()) as TokenResponse | WaitResponse
+        if ('status' in data) {
+          if (data.status === 'waiting') {
+            waitForLive()
+            return
+          }
+          setState('ended')
+          setMessage('Presentation has ended.')
+          return
+        }
         if (cancelled) return
 
         room.on(RoomEvent.ConnectionStateChanged, (next) => {
@@ -149,26 +162,26 @@ export function ViewerRoom({ code, title, initialStatus }: ViewerRoomProps) {
 
   return (
     <main
-      className="grid min-h-screen grid-rows-[auto_minmax(0,1fr)] bg-[#101113] text-white"
+      className="grid h-dvh max-h-dvh grid-rows-[auto_minmax(0,1fr)] overflow-hidden bg-[#101113] text-white"
       data-media-path={mediaPath}
     >
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
-        <div>
-          <p className="text-xs font-bold text-white/55 uppercase">TCW Present</p>
-          <h1 className="text-lg font-bold">{title}</h1>
+      <header className="grid h-14 shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-white/10 px-3 sm:h-16 sm:px-4">
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold text-white/55 uppercase sm:text-xs">TCW Present</p>
+          <h1 className="truncate text-base font-bold sm:text-lg">{title}</h1>
         </div>
-        <div className="text-right text-sm">
+        <div className="shrink-0 text-right text-xs sm:text-sm">
           <p className="font-mono text-white/70">{code}</p>
           <p className="text-white/50">{connection}</p>
         </div>
       </header>
-      <section className="relative grid min-h-0 place-items-center">
-        <video ref={videoRef} playsInline className="h-full w-full object-contain" />
+      <section className="relative grid min-h-0 overflow-hidden">
+        <video ref={videoRef} playsInline className="block h-full w-full max-h-full max-w-full object-contain" />
         {state !== 'live' && (
-          <div className="absolute inset-0 grid place-items-center bg-[#101113] p-6 text-center">
-            <div>
+          <div className="absolute inset-0 grid min-h-0 place-items-center overflow-hidden bg-[#101113] p-4 text-center sm:p-6">
+            <div className="max-h-full max-w-full overflow-hidden">
               <p className="mb-2 text-xs font-bold text-white/45 uppercase">{state}</p>
-              <p className="text-xl font-semibold">{message}</p>
+              <p className="max-w-[32rem] text-base font-semibold break-words sm:text-xl">{message}</p>
             </div>
           </div>
         )}

@@ -4,7 +4,7 @@ import { getViewerSession } from '@/lib/viewer-auth'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function POST(request: NextRequest) {
-  const body = (await request.json().catch(() => null)) as { code?: string } | null
+  const body = (await request.json().catch(() => null)) as { code?: string; wait?: boolean } | null
   if (!body?.code) return NextResponse.json({ error: 'code is required' }, { status: 400 })
   const viewer = await getViewerSession(body.code)
   if (!viewer || viewer.code !== body.code) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -13,9 +13,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   if (presentation.status === 'ended') {
+    if (body.wait === true) return NextResponse.json({ status: 'ended' })
     return NextResponse.json({ error: 'Presentation has ended' }, { status: 409 })
   }
   if (presentation.status !== 'live') {
+    if (body.wait === true) return NextResponse.json({ status: 'waiting' })
     return NextResponse.json({ error: 'Presentation is not live' }, { status: 409 })
   }
   const token = await createViewerToken(presentation, viewer.viewerId)

@@ -19,7 +19,7 @@ export async function POST(request: NextRequest, { params }: PresentationRoutePr
   await updatePresentation(code, {
     title: readRequiredFormString(form, 'title'),
     startsAt: readFormString(form, 'startsAt'),
-    viewerPassword: readFormString(form, 'viewerPassword'),
+    viewerPassword: shouldClearViewerPassword(form) ? '' : readFormString(form, 'viewerPassword'),
     status: readStatus(form),
   })
 
@@ -41,4 +41,8 @@ function readStatus(form: FormData): PresentationStatus | undefined {
   const value = readFormString(form, 'status')
   if (value === 'draft' || value === 'ready') return value
   return undefined
+}
+
+function shouldClearViewerPassword(form: FormData): boolean {
+  return form.get('clearViewerPassword') === '1'
 }

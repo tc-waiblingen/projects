@@ -89,6 +89,22 @@ describe('presentation update route', () => {
       status: undefined,
     })
   })
+
+  it('forwards an empty password when the clear password checkbox is checked', async () => {
+    const response = await POST(formRequest({
+      title: 'Updated title',
+      clearViewerPassword: '1',
+      status: 'ready',
+    }), params())
+
+    expect(response.status).toBe(303)
+    expect(updatePresentation).toHaveBeenCalledWith('WAI-0626', {
+      title: 'Updated title',
+      startsAt: undefined,
+      viewerPassword: '',
+      status: 'ready',
+    })
+  })
 })
 
 function formRequest(fields: Record<string, string>): NextRequest {

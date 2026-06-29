@@ -59,14 +59,19 @@ describe('go-live route', () => {
     expect(markPresentationLive).not.toHaveBeenCalled()
   })
 
-  it('does not create LiveKit rooms for ended presentations', async () => {
-    vi.mocked(getPresentationByCode).mockReturnValue({ ...presentation, status: 'ended' })
+  it('restarts ended presentations by creating a new LiveKit room and marking them live', async () => {
+    const ended = { ...presentation, status: 'ended' as const, endedAt: 1_800_000_000_000 }
+    vi.mocked(getPresentationByCode).mockReturnValue(ended)
+    vi.mocked(markPresentationLive).mockReturnValue({ ...ended, status: 'live', endedAt: null })
 
     const response = await POST(request(), params())
+    const body = await response.json()
 
-    expect(response.status).toBe(409)
-    expect(ensureLiveKitRoom).not.toHaveBeenCalled()
-    expect(markPresentationLive).not.toHaveBeenCalled()
+    expect(response.status).toBe(200)
+    expect(ensureLiveKitRoom).toHaveBeenCalledWith(ended)
+    expect(markPresentationLive).toHaveBeenCalledWith('WAI-0626')
+    expect(body.presentation.status).toBe('live')
+    expect(body.presentation.endedAt).toBeNull()
   })
 
   it('ensures the LiveKit room before marking the presentation live', async () => {

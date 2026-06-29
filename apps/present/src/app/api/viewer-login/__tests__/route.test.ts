@@ -94,6 +94,19 @@ describe('viewer login route', () => {
     expect(setCookie).toContain('HttpOnly')
   })
 
+  it('allows an empty submitted password when the verifier accepts it', async () => {
+    const response = await POST(formRequest({ code: 'WAI-0626', password: '' }))
+
+    expect(response.status).toBe(303)
+    expect(response.headers.get('location')).toBe('http://localhost:3003/p/WAI-0626/watch')
+    expect(verifyViewerPassword).toHaveBeenCalledWith('$argon2id$hash', '')
+    expect(signViewerToken).toHaveBeenCalledWith({
+      presentationId: 8,
+      code: 'WAI-0626',
+      viewerId: expect.stringMatching(/^viewer:8:[0-9a-f-]+$/),
+    })
+  })
+
   it('marks viewer session cookies secure in production', async () => {
     vi.stubEnv('NODE_ENV', 'production')
 

@@ -22,13 +22,16 @@ const presentation: Presentation = {
 
 describe('PresentationForm', () => {
   it('renders the create form for reserving a presentation code', () => {
-    const markup = renderToStaticMarkup(<PresentationForm />)
+    const markup = renderToStaticMarkup(<PresentationForm suggestedCode="WAI-0626" />)
 
     expect(markup).toContain('action="/api/presentations"')
+    expect(markup.toLowerCase()).toContain('autocomplete="off"')
     expect(markup).toContain('name="title"')
     expect(markup).toContain('name="code"')
+    expect(markup).toContain('value="WAI-0626"')
     expect(markup).toContain('placeholder="WAI-0626"')
     expect(markup).toContain('name="viewerPassword"')
+    expect(markup).toContain('placeholder="Optional"')
     expect(markup).toContain('Create presentation')
     expect(markup).not.toContain('Open control room')
     expect(markup).not.toContain('Handout')
@@ -42,6 +45,8 @@ describe('PresentationForm', () => {
     expect(markup).toContain('value="WAI-0626"')
     expect(markup).toContain('disabled=""')
     expect(markup).toContain('Leave empty to keep current password')
+    expect(markup).toContain('name="clearViewerPassword"')
+    expect(markup).toContain('No viewer password')
     expect(markup).toContain('Open control room')
     expect(markup).toContain('href="/moderator/WAI-0626"')
     expect(markup).toContain('Handout')

@@ -59,6 +59,23 @@ describe('presentation create route', () => {
       moderator: { sub: 'entra:moderator', name: 'Moderator' },
     })
   })
+
+  it('allows creating a presentation with no viewer password', async () => {
+    const response = await POST(formRequest({
+      title: 'Jahreshauptversammlung',
+      code: 'wai-0626',
+      viewerPassword: '',
+    }))
+
+    expect(response.status).toBe(303)
+    expect(createPresentation).toHaveBeenCalledWith({
+      title: 'Jahreshauptversammlung',
+      code: 'wai-0626',
+      startsAt: undefined,
+      viewerPassword: '',
+      moderator: { sub: 'entra:moderator', name: 'Moderator' },
+    })
+  })
 })
 
 function formRequest(fields: Record<string, string>): NextRequest {

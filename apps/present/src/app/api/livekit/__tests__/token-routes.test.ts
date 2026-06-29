@@ -137,6 +137,30 @@ describe('LiveKit token routes', () => {
     expect(createViewerToken).not.toHaveBeenCalled()
   })
 
+  it('returns a waiting response for viewer polling before the presentation is live', async () => {
+    vi.mocked(getViewerSession).mockResolvedValue({ presentationId: 7, code: 'WAI-0626', viewerId: 'viewer:7:abc' })
+    vi.mocked(getPresentationByCode).mockReturnValue({ ...presentation, status: 'ready' })
+
+    const response = await viewerTokenPost(jsonRequest({ code: 'WAI-0626', wait: true }))
+    const body = (await response.json()) as { status: string }
+
+    expect(response.status).toBe(200)
+    expect(body).toEqual({ status: 'waiting' })
+    expect(createViewerToken).not.toHaveBeenCalled()
+  })
+
+  it('returns ended for viewer polling after the presentation ended', async () => {
+    vi.mocked(getViewerSession).mockResolvedValue({ presentationId: 7, code: 'WAI-0626', viewerId: 'viewer:7:abc' })
+    vi.mocked(getPresentationByCode).mockReturnValue({ ...presentation, status: 'ended' })
+
+    const response = await viewerTokenPost(jsonRequest({ code: 'WAI-0626', wait: true }))
+    const body = (await response.json()) as { status: string }
+
+    expect(response.status).toBe(200)
+    expect(body).toEqual({ status: 'ended' })
+    expect(createViewerToken).not.toHaveBeenCalled()
+  })
+
   it('returns subscribe-only viewer tokens after password login', async () => {
     vi.mocked(getViewerSession).mockResolvedValue({ presentationId: 7, code: 'WAI-0626', viewerId: 'viewer:7:abc' })
     vi.mocked(getPresentationByCode).mockReturnValue(presentation)

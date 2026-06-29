@@ -23,7 +23,7 @@ export default async function ViewerLoginPage({ params, searchParams }: ViewerLo
         {presentation.status === 'ended' ? (
           <p className="mt-6 rounded-md bg-tcw-accent-50 px-3 py-2 text-sm text-muted">This presentation has ended.</p>
         ) : (
-          <form method="post" action="/api/viewer-login" className="mt-6 grid gap-4">
+          <form method="post" action="/api/viewer-login" autoComplete="off" className="mt-6 grid gap-4">
             {error && <p className="rounded-md bg-tcw-red-50 px-3 py-2 text-sm text-tcw-red-700">Wrong password.</p>}
             <input type="hidden" name="code" value={presentation.code} />
             <label className="grid gap-1 text-sm font-semibold text-body">
@@ -31,8 +31,7 @@ export default async function ViewerLoginPage({ params, searchParams }: ViewerLo
               <input
                 type="password"
                 name="password"
-                autoComplete="current-password"
-                required
+                autoComplete="off"
                 className="rounded-md border border-tcw-accent-200 px-3 py-2 font-normal focus:border-tcw-red-500 focus:outline-none"
               />
             </label>
