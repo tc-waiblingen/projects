@@ -1,7 +1,9 @@
+import { presentationFormErrorMessage } from '@/lib/presentation-form-errors'
 import type { Presentation } from '@/lib/presentations'
 
-export function PresentationForm({ presentation, suggestedCode }: { presentation?: Presentation; suggestedCode?: string }) {
+export function PresentationForm({ presentation, suggestedCode, error }: { presentation?: Presentation; suggestedCode?: string; error?: string }) {
   const action = presentation ? `/api/presentations/${presentation.code}` : '/api/presentations'
+  const errorMessage = presentationFormErrorMessage(error)
 
   return (
     <form
@@ -10,6 +12,11 @@ export function PresentationForm({ presentation, suggestedCode }: { presentation
       autoComplete="off"
       className="grid gap-5 rounded-lg border border-tcw-accent-200 bg-white p-5 shadow-sm"
     >
+      {errorMessage && (
+        <p role="alert" className="rounded-md bg-tcw-red-50 px-3 py-2 text-sm font-semibold text-tcw-red-700">
+          {errorMessage}
+        </p>
+      )}
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-1 text-sm font-semibold text-body">
           Title

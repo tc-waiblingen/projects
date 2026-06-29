@@ -170,7 +170,7 @@ export function ModeratorRoom({ code, title, initialStatus, viewerUrl, viewerQrD
     return () => window.clearInterval(interval)
   }, [sharing])
 
-  async function startShare(eventType: 'screen_started' | 'screen_changed' = 'screen_started') {
+  async function startShare() {
     if (!room || sharingPending) return
     setError(null)
     setSharingPending(true)
@@ -187,7 +187,6 @@ export function ModeratorRoom({ code, title, initialStatus, viewerUrl, viewerQrD
       }
       setSharing(Boolean(publication))
       setDiagnostics('Screen share published')
-      if (publication) recordScreenEvent(eventType)
     } catch (err) {
       setError(formatScreenShareError(err))
     } finally {
@@ -228,21 +227,12 @@ export function ModeratorRoom({ code, title, initialStatus, viewerUrl, viewerQrD
       }
       setSharing(true)
       setDiagnostics('Screen share published')
-      recordScreenEvent('screen_changed')
     } catch (err) {
       if (!replacementPublished) nextTracks.forEach((track) => track.stop())
       setError(formatScreenShareError(err))
     } finally {
       setSharingPending(false)
     }
-  }
-
-  function recordScreenEvent(type: 'screen_started' | 'screen_changed') {
-    fetch(`/api/presentations/${code}/screen-event`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ type }),
-    }).catch(() => undefined)
   }
 
   async function goLive() {

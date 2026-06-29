@@ -4,14 +4,6 @@ import { assertValidPresentationCode, generatePresentationCode, reservePresentat
 import { hashViewerPassword } from './viewer-password'
 
 export type PresentationStatus = 'draft' | 'ready' | 'live' | 'ended'
-export type PresentationEventType =
-  | 'created'
-  | 'updated'
-  | 'went_live'
-  | 'ended'
-  | 'screen_started'
-  | 'screen_changed'
-  | 'viewer_joined'
 
 export interface Presentation {
   id: number
@@ -85,7 +77,6 @@ export async function createPresentation(input: CreatePresentationInput, d: Data
 
   const presentation = getPresentationById(Number(result.lastInsertRowid), d)
   if (!presentation) throw new Error('Created presentation could not be loaded')
-  logPresentationEvent(presentation.id, 'created', { code }, d)
   return presentation
 }
 
@@ -117,7 +108,6 @@ export async function updatePresentation(
     ).run(title, slug, input.startsAt || null, status, now, existing.id)
   }
 
-  logPresentationEvent(existing.id, 'updated', { status }, d)
   return getPresentationById(existing.id, d)
 }
 
@@ -158,7 +148,6 @@ export function markPresentationLive(code: string, d: Database.Database = getDb(
   if (!presentation) return null
   const now = Date.now()
   d.prepare("UPDATE presentations SET status = 'live', ended_at = NULL, updated_at = ? WHERE id = ?").run(now, presentation.id)
-  logPresentationEvent(presentation.id, 'went_live', null, d)
   return getPresentationById(presentation.id, d)
 }
 
@@ -167,22 +156,7 @@ export function endPresentation(code: string, d: Database.Database = getDb()): P
   if (!presentation) return null
   const now = Date.now()
   d.prepare("UPDATE presentations SET status = 'ended', ended_at = ?, updated_at = ? WHERE id = ?").run(now, now, presentation.id)
-  logPresentationEvent(presentation.id, 'ended', null, d)
   return getPresentationById(presentation.id, d)
-}
-
-export function logPresentationEvent(
-  presentationId: number,
-  type: PresentationEventType,
-  payload: Record<string, unknown> | null,
-  d: Database.Database = getDb(),
-): void {
-  d.prepare('INSERT INTO presentation_events (presentation_id, type, payload_json, created_at) VALUES (?, ?, ?, ?)').run(
-    presentationId,
-    type,
-    payload ? JSON.stringify(payload) : null,
-    Date.now(),
-  )
 }
 
 function rowToPresentation(row: PresentationRow): Presentation {

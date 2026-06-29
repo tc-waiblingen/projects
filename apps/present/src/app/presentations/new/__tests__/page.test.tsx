@@ -22,11 +22,18 @@ describe('new presentation page', () => {
     vi.mocked(reservePresentationCode).mockReturnValue('WAI-06262')
   })
 
-  it('pre-fills the create form with a unique suggested presentation code', () => {
-    const element = <NewPresentationPage />
+  it('pre-fills the create form with a unique suggested presentation code', async () => {
+    const element = await NewPresentationPage()
     const markup = renderToStaticMarkup(element)
 
     expect(reservePresentationCode).toHaveBeenCalledWith({}, 'WAI-0626')
     expect(markup).toContain('value="WAI-06262"')
+  })
+
+  it('renders validation errors from the query string', async () => {
+    const element = await NewPresentationPage({ searchParams: Promise.resolve({ error: 'invalid-code' }) })
+    const markup = renderToStaticMarkup(element)
+
+    expect(markup).toContain('Presentation code must look like WAI-0426.')
   })
 })

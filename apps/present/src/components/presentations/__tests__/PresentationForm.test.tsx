@@ -53,4 +53,10 @@ describe('PresentationForm', () => {
     expect(markup).toContain('href="/presentations/WAI-0626/handout"')
     expect(markup).not.toContain('$argon2id$hash')
   })
+
+  it('renders validation messages', () => {
+    const markup = renderToStaticMarkup(<PresentationForm error="short-password" />)
+
+    expect(markup).toContain('Viewer password must be empty or at least 4 characters.')
+  })
 })

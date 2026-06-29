@@ -76,6 +76,27 @@ describe('presentation create route', () => {
       moderator: { sub: 'entra:moderator', name: 'Moderator' },
     })
   })
+
+  it('redirects validation failures back to the create form', async () => {
+    vi.mocked(createPresentation).mockRejectedValue(new Error('Presentation code must look like WAI-0426'))
+
+    const response = await POST(formRequest({
+      title: 'Jahreshauptversammlung',
+      code: 'bad',
+    }))
+
+    expect(response.status).toBe(303)
+    expect(response.headers.get('location')).toBe('http://localhost:3003/presentations/new?error=invalid-code')
+  })
+
+  it('does not hide unexpected creation failures', async () => {
+    vi.mocked(createPresentation).mockRejectedValue(new Error('database unavailable'))
+
+    await expect(POST(formRequest({
+      title: 'Jahreshauptversammlung',
+      code: 'WAI-0626',
+    }))).rejects.toThrow('database unavailable')
+  })
 })
 
 function formRequest(fields: Record<string, string>): NextRequest {

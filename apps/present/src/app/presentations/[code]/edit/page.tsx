@@ -8,10 +8,12 @@ export const dynamic = 'force-dynamic'
 
 interface EditPresentationPageProps {
   params: Promise<{ code: string }>
+  searchParams?: Promise<{ error?: string }>
 }
 
-export default async function EditPresentationPage({ params }: EditPresentationPageProps) {
+export default async function EditPresentationPage({ params, searchParams }: EditPresentationPageProps) {
   const [{ code }, session] = await Promise.all([params, getSession()])
+  const { error } = searchParams ? await searchParams : {}
   if (!session) redirect('/login')
   const presentation = getPresentationByCode(code)
   if (!presentation || !canManagePresentation(presentation, session)) notFound()
@@ -22,7 +24,7 @@ export default async function EditPresentationPage({ params }: EditPresentationP
         <p className="mb-1 text-xs font-bold uppercase text-tcw-red-700">Access Flow</p>
         <h1 className="text-3xl font-bold text-body">Edit presentation</h1>
       </div>
-      <PresentationForm presentation={presentation} />
+      <PresentationForm presentation={presentation} error={error} />
     </AdminShell>
   )
 }

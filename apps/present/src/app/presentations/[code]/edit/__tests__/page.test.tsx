@@ -72,4 +72,14 @@ describe('edit presentation page', () => {
     expect(markup).toContain('href="/presentations/WAI-0626/handout"')
     expect(markup).not.toContain('$argon2id$hash')
   })
+
+  it('renders validation errors from the query string', async () => {
+    const element = await EditPresentationPage({
+      params: Promise.resolve({ code: 'WAI-0626' }),
+      searchParams: Promise.resolve({ error: 'missing-title' }),
+    })
+    const markup = renderToStaticMarkup(element)
+
+    expect(markup).toContain('Title is required.')
+  })
 })

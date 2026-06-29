@@ -68,7 +68,7 @@ Server-side room API calls derive `http/https` from `LIVEKIT_URL`; keep `LIVEKIT
 - `src/lib/viewer-auth.ts` signs anonymous viewer sessions scoped by presentation ID/code.
 - `src/lib/entra.ts` implements Microsoft Entra OIDC with PKCE.
 - `src/lib/db.ts` owns SQLite schema setup.
-- `src/lib/presentations.ts` owns presentation CRUD and lifecycle events.
+- `src/lib/presentations.ts` owns presentation CRUD and lifecycle state.
 - `src/lib/livekit.ts` creates screen-share-only moderator tokens and subscribe-only viewer tokens.
 - `/presentations/*` implements the Design 03 access flow.
 - `/moderator/[code]` implements the Design 01 control room.

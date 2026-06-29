@@ -1,4 +1,5 @@
 import { getSession } from '@/lib/auth'
+import { presentationFormErrorCode } from '@/lib/presentation-form-errors'
 import { canManagePresentation, getPresentationByCode, updatePresentation, type PresentationStatus } from '@/lib/presentations'
 import { publicUrl } from '@/lib/public-url'
 import { NextResponse, type NextRequest } from 'next/server'
@@ -15,13 +16,21 @@ export async function POST(request: NextRequest, { params }: PresentationRoutePr
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const form = await request.formData()
-  await updatePresentation(code, {
-    title: readRequiredFormString(form, 'title'),
-    startsAt: readFormString(form, 'startsAt'),
-    viewerPassword: shouldClearViewerPassword(form) ? '' : readFormString(form, 'viewerPassword'),
-    status: readStatus(form),
-  })
+  try {
+    const form = await request.formData()
+    await updatePresentation(code, {
+      title: readRequiredFormString(form, 'title'),
+      startsAt: readFormString(form, 'startsAt'),
+      viewerPassword: shouldClearViewerPassword(form) ? '' : readFormString(form, 'viewerPassword'),
+      status: readStatus(form),
+    })
+  } catch (error) {
+    const errorCode = presentationFormErrorCode(error)
+    if (!errorCode) throw error
+    const url = publicUrl(`/presentations/${presentation.code}/edit`, request)
+    url.searchParams.set('error', errorCode)
+    return NextResponse.redirect(url, { status: 303 })
+  }
 
   return NextResponse.redirect(publicUrl(`/presentations/${presentation.code}/edit`, request), { status: 303 })
 }

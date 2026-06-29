@@ -20,15 +20,7 @@ const SCHEMA_STATEMENTS = [
   )`,
   `CREATE INDEX IF NOT EXISTS presentations_moderator_idx ON presentations (moderator_sub, updated_at)`,
   `CREATE INDEX IF NOT EXISTS presentations_status_idx ON presentations (status, starts_at)`,
-  `CREATE TABLE IF NOT EXISTS presentation_events (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    presentation_id INTEGER NOT NULL,
-    type            TEXT    NOT NULL,
-    payload_json    TEXT,
-    created_at      INTEGER NOT NULL,
-    FOREIGN KEY (presentation_id) REFERENCES presentations(id) ON DELETE CASCADE
-  )`,
-  `CREATE INDEX IF NOT EXISTS presentation_events_presentation_idx ON presentation_events (presentation_id, created_at)`,
+  `DROP TABLE IF EXISTS presentation_events`,
 ]
 
 export function applySchema(d: Database.Database): void {

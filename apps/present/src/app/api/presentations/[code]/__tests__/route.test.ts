@@ -105,6 +105,36 @@ describe('presentation update route', () => {
       status: 'ready',
     })
   })
+
+  it('redirects validation failures back to the edit form', async () => {
+    vi.mocked(updatePresentation).mockRejectedValue(new Error('Viewer password must be at least 4 characters'))
+
+    const response = await POST(formRequest({
+      title: 'Updated title',
+      viewerPassword: 'abc',
+    }), params())
+
+    expect(response.status).toBe(303)
+    expect(response.headers.get('location')).toBe('http://localhost:3003/presentations/WAI-0626/edit?error=short-password')
+  })
+
+  it('redirects missing titles back to the edit form', async () => {
+    const response = await POST(formRequest({
+      title: '',
+    }), params())
+
+    expect(response.status).toBe(303)
+    expect(response.headers.get('location')).toBe('http://localhost:3003/presentations/WAI-0626/edit?error=missing-title')
+    expect(updatePresentation).not.toHaveBeenCalled()
+  })
+
+  it('does not hide unexpected update failures', async () => {
+    vi.mocked(updatePresentation).mockRejectedValue(new Error('database unavailable'))
+
+    await expect(POST(formRequest({
+      title: 'Updated title',
+    }), params())).rejects.toThrow('database unavailable')
+  })
 })
 
 function formRequest(fields: Record<string, string>): NextRequest {

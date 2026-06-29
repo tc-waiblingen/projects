@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { logPresentationEvent, getPresentationByCode, type Presentation } from '@/lib/presentations'
+import { getPresentationByCode, type Presentation } from '@/lib/presentations'
 import { signViewerToken, VIEWER_MAX_AGE_SECONDS, viewerCookieName } from '@/lib/viewer-auth'
 import { verifyViewerPassword } from '@/lib/viewer-password'
 import { NextRequest } from 'next/server'
@@ -8,7 +8,6 @@ import { POST } from '../route'
 
 vi.mock('@/lib/presentations', () => ({
   getPresentationByCode: vi.fn(),
-  logPresentationEvent: vi.fn(),
 }))
 vi.mock('@/lib/viewer-password', () => ({ verifyViewerPassword: vi.fn() }))
 vi.mock('@/lib/viewer-auth', async (importOriginal) => {
@@ -88,7 +87,6 @@ describe('viewer login route', () => {
       code: 'WAI-0626',
       viewerId: expect.stringMatching(/^viewer:8:[0-9a-f-]+$/),
     })
-    expect(logPresentationEvent).toHaveBeenCalledWith(8, 'viewer_joined', null)
     expect(setCookie).toContain(`${viewerCookieName('WAI-0626')}=viewer-session-token`)
     expect(setCookie).toContain(`Max-Age=${VIEWER_MAX_AGE_SECONDS}`)
     expect(setCookie).toContain('HttpOnly')

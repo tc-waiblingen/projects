@@ -1,4 +1,4 @@
-import { getPresentationByCode, logPresentationEvent } from '@/lib/presentations'
+import { getPresentationByCode } from '@/lib/presentations'
 import { publicUrl } from '@/lib/public-url'
 import { verifyViewerPassword } from '@/lib/viewer-password'
 import { signViewerToken, VIEWER_MAX_AGE_SECONDS, viewerCookieName } from '@/lib/viewer-auth'
@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
 
   const viewerId = `viewer:${presentation.id}:${randomUUID()}`
   const token = await signViewerToken({ presentationId: presentation.id, code: presentation.code, viewerId })
-  logPresentationEvent(presentation.id, 'viewer_joined', null)
 
   const response = NextResponse.redirect(publicUrl(`/p/${presentation.code}/watch`, request), { status: 303 })
   response.cookies.set({
