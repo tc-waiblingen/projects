@@ -97,7 +97,7 @@ export function RichtextContent({ html, fileMetadata }: RichtextContentProps) {
             src={src}
             alt={metadata?.description || alt}
             title={metadata?.title || title || undefined}
-            className="w-full cursor-pointer transition-opacity hover:opacity-80"
+            className="h-auto w-full max-w-full cursor-pointer transition-opacity hover:opacity-80"
             data-richtext-lightbox-index={imageIndex}
           />
         )

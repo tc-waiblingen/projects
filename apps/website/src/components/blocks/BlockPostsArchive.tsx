@@ -189,6 +189,7 @@ function PostListImage({ file }: { file: DirectusFile }) {
   const src = `/api/images/${file.id}`
   const title = file.title ?? ''
   const alt = file.description ?? ''
+  const isSvg = file.type === 'image/svg+xml'
 
   return (
     <div className="h-20 w-28 overflow-hidden rounded-md sm:h-24 sm:w-36">
@@ -199,8 +200,13 @@ function PostListImage({ file }: { file: DirectusFile }) {
         width={144}
         height={96}
         sizes="(min-width: 640px) 144px, 112px"
-        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 group-active:scale-105 group-focus-visible:scale-105"
-        unoptimized={file.type === 'image/svg+xml'}
+        className={clsx(
+          'h-full w-full transition-transform duration-300',
+          isSvg
+            ? 'object-contain'
+            : 'object-cover group-hover:scale-105 group-active:scale-105 group-focus-visible:scale-105'
+        )}
+        unoptimized={isSvg}
       />
     </div>
   )

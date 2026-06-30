@@ -273,7 +273,7 @@ function PostHeroImage({ file }: { file: DirectusFile }) {
           title={title}
           alt={alt}
           fill
-          className="object-cover"
+          className={isSvg ? "object-contain" : "object-cover"}
           style={objectPosition ? { objectPosition } : undefined}
           sizes="100vw"
           priority

@@ -112,6 +112,7 @@ function PostImage({ file }: { file: DirectusFile }) {
   const src = `/api/images/${file.id}`
   const title = file.title ?? ""
   const alt = file.description ?? ""
+  const isSvg = file.type === "image/svg+xml"
 
   return (
     <div className="aspect-16/9 overflow-hidden rounded-lg">
@@ -122,8 +123,12 @@ function PostImage({ file }: { file: DirectusFile }) {
         width={file.width ?? 800}
         height={file.height ?? 450}
         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 group-active:scale-105 group-focus-visible:scale-105"
-        unoptimized={file.type === "image/svg+xml"}
+        className={
+          isSvg
+            ? "h-full w-full object-contain transition-transform duration-300"
+            : "h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 group-active:scale-105 group-focus-visible:scale-105"
+        }
+        unoptimized={isSvg}
       />
     </div>
   )
