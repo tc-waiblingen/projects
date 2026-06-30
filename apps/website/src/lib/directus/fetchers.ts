@@ -1,6 +1,6 @@
 import { cache } from 'react'
 import type { RestCommand } from "@directus/sdk"
-import type { Court, DirectusFile, Form, Global, Navigation, OfficeClosingDay, OfficeHour, Page, Post, Redirect, Schema, Sponsor, Team, Trainer } from "@/types/directus-schema"
+import type { Court, DirectusFile, Form, Global, Navigation, OfficeClosingDay, OfficeHour, Page, Post, PostGroup, Redirect, Schema, Sponsor, Team, Trainer } from "@/types/directus-schema"
 import { getDirectus } from "./directus"
 
 /** Common DirectusFile fields needed for image display */
@@ -750,16 +750,19 @@ export async function fetchFilesByIds(fileIds: string[]): Promise<DirectusFile[]
   }
 }
 
-export const fetchPostsByGroup = async (groupId: number, limit?: number, preview = false) => {
+type RelatedPostGroup = Pick<PostGroup, 'id' | 'status' | 'name' | 'description' | 'posts_direction'>
+
+export const fetchPostGroupWithPosts = async (groupId: number, limit?: number, preview = false) => {
   const { directus, readItems, readItem } = getDirectus()
 
   try {
     const group = await directus.request(
       readItem("post_groups", groupId, {
-        fields: ["posts_direction"],
+        fields: ["id", "status", "name", "description", "posts_direction"],
       }),
-    )
-    const posts = await directus.request(
+    ) as RelatedPostGroup
+
+    const posts = !preview && group.status !== 'published' ? [] : await directus.request(
       readItems("posts", {
         filter: preview
           ? { group: { _eq: groupId } }
@@ -778,11 +781,16 @@ export const fetchPostsByGroup = async (groupId: number, limit?: number, preview
       }),
     )
 
-    return posts as Post[]
+    return { group, posts: posts as Post[] }
   } catch (error) {
     console.error("Error fetching posts by group:", error)
     throw new Error("Failed to fetch posts by group")
   }
+}
+
+export const fetchPostsByGroup = async (groupId: number, limit?: number, preview = false) => {
+  const { posts } = await fetchPostGroupWithPosts(groupId, limit, preview)
+  return posts
 }
 
 export async function fetchCourtsWithSponsors() {
