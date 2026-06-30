@@ -1,9 +1,25 @@
 import { cache } from 'react'
-import { Court, DirectusFile, Form, Global, Navigation, OfficeClosingDay, OfficeHour, Page, Post, Redirect, Sponsor, Team, Trainer } from "@/types/directus-schema"
+import type { RestCommand } from "@directus/sdk"
+import type { Court, DirectusFile, Form, Global, Navigation, OfficeClosingDay, OfficeHour, Page, Post, Redirect, Schema, Sponsor, Team, Trainer } from "@/types/directus-schema"
 import { getDirectus } from "./directus"
 
 /** Common DirectusFile fields needed for image display */
 const DIRECTUS_FILE_FIELDS = ["id", "filename_disk", "filename_download", "title", "description", "type", "width", "height", "focal_point_x", "focal_point_y"] as const
+
+function withNoStore<Output>(command: RestCommand<Output, Schema>): RestCommand<Output, Schema> {
+  return () => {
+    const options = command()
+    const onRequest = options.onRequest
+
+    return {
+      ...options,
+      onRequest: async (requestOptions) => ({
+        ...(onRequest ? await onRequest(requestOptions) : requestOptions),
+        cache: 'no-store',
+      }),
+    }
+  }
+}
 
 export const fetchAllPages = async () => {
   const { directus, readItems } = getDirectus()
@@ -19,30 +35,61 @@ export const fetchAllPages = async () => {
   return pages
 }
 
-const fetchPageDataUncached = async (permalink: string /*, postPage = 1 */) => {
-  const { directus, readItems } = getDirectus()
+const fetchPageDataUncached = async (permalink: string, version?: string /*, postPage = 1 */) => {
+  const { directus, readItems, readItem } = getDirectus()
 
   try {
+    const query = {
+      fields: [
+        "id",
+        "title",
+        "status",
+        "published_at",
+        "permalink",
+        "show_title",
+        "show_toc",
+        "seo",
+        "blocks.*",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
+        "blocks.item.*.*.*.*" as any,
+      ],
+      deep: {
+        blocks: { _sort: ["sort"] as ["sort"], _filter: { hide_block: { _neq: true } } },
+      },
+    }
+
+    if (version) {
+      const pageLookup = await directus.request(
+        withNoStore(
+          readItems("pages", {
+            filter: { permalink: { _eq: permalink } },
+            limit: 1,
+            fields: ["id"],
+          }),
+        ),
+      )
+
+      const pageId = pageLookup[0]?.id
+
+      if (!pageId) {
+        throw new Error("Page not found")
+      }
+
+      return (await directus.request(
+        withNoStore(
+          readItem("pages", pageId, {
+            ...query,
+            version,
+          }),
+        ),
+      )) as unknown as Page
+    }
+
     const pageData = await directus.request(
       readItems("pages", {
         filter: { permalink: { _eq: permalink } },
         limit: 1,
-        fields: [
-          "id",
-          "title",
-          "status",
-          "published_at",
-          "permalink",
-          "show_title",
-          "show_toc",
-          "seo",
-          "blocks.*",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
-          "blocks.item.*.*.*.*" as any,
-        ],
-        deep: {
-          blocks: { _sort: ["sort"], _filter: { hide_block: { _neq: true } } },
-        },
+        ...query,
       }),
     )
 
@@ -50,7 +97,7 @@ const fetchPageDataUncached = async (permalink: string /*, postPage = 1 */) => {
       throw new Error("Page not found")
     }
 
-    const page = pageData[0] as Page
+    const page = pageData[0] as unknown as Page
 
     return page
   } catch (error) {
@@ -61,15 +108,44 @@ const fetchPageDataUncached = async (permalink: string /*, postPage = 1 */) => {
 
 export const fetchPageData = cache(fetchPageDataUncached)
 
-const fetchPageMetadataUncached = async (permalink: string) => {
-  const { directus, readItems } = getDirectus()
+const fetchPageMetadataUncached = async (permalink: string, version?: string) => {
+  const { directus, readItems, readItem } = getDirectus()
 
   try {
+    const query = { fields: ["id", "title", "status", "published_at", "permalink", "seo"] as const }
+
+    if (version) {
+      const pageLookup = await directus.request(
+        withNoStore(
+          readItems("pages", {
+            filter: { permalink: { _eq: permalink } },
+            limit: 1,
+            fields: ["id"],
+          }),
+        ),
+      )
+
+      const pageId = pageLookup[0]?.id
+
+      if (!pageId) {
+        throw new Error("Page not found")
+      }
+
+      return (await directus.request(
+        withNoStore(
+          readItem("pages", pageId, {
+            ...query,
+            version,
+          }),
+        ),
+      )) as unknown as Page
+    }
+
     const pageData = await directus.request(
       readItems("pages", {
         filter: { permalink: { _eq: permalink } },
         limit: 1,
-        fields: ["id", "title", "status", "published_at", "permalink", "seo"],
+        ...query,
       }),
     )
 
@@ -77,7 +153,7 @@ const fetchPageMetadataUncached = async (permalink: string) => {
       throw new Error("Page not found")
     }
 
-    return pageData[0] as Page
+    return pageData[0] as unknown as Page
   } catch (error) {
     console.error("Error fetching page metadata for " + permalink + ":", error)
     throw new Error("Failed to fetch page metadata")
@@ -367,36 +443,78 @@ export const fetchAllPublishedPosts = async () => {
  * Fetches a post by slug without status filtering, for preview purposes.
  * Used to display drafts and scheduled posts in development mode.
  */
-const fetchPostForPreviewUncached = async (slug: string, year?: string) => {
-  const { directus, readItems } = getDirectus()
+const fetchPostForPreviewUncached = async (slug: string, year?: string, version?: string) => {
+  const { directus, readItems, readItem } = getDirectus()
 
   try {
+    const query = {
+      fields: [
+        "id",
+        "title",
+        "slug",
+        "status",
+        "published_at",
+        "date_updated",
+        "description",
+        "content",
+        "show_toc",
+        "group",
+        "seo",
+        "blocks.*",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
+        "blocks.item.*.*.*.*" as any,
+        { image: [...DIRECTUS_FILE_FIELDS], author: ["first_name", "last_name"] },
+      ],
+      deep: {
+        blocks: { _sort: ["sort"] as ["sort"], _filter: { hide_block: { _neq: true } } },
+      },
+    }
+
+    if (version) {
+      const postLookup = await directus.request(
+        withNoStore(
+          readItems("posts", {
+            filter: {
+              slug: { _eq: slug },
+            },
+            limit: 1,
+            fields: ["id"],
+          }),
+        ),
+      )
+
+      const postId = postLookup[0]?.id
+
+      if (!postId) {
+        return null
+      }
+
+      const post = (await directus.request(
+        withNoStore(
+          readItem("posts", postId, {
+            ...query,
+            version,
+          }),
+        ),
+      )) as unknown as Post
+
+      if (year && post.published_at) {
+        const postYear = new Date(post.published_at).getFullYear().toString()
+        if (postYear !== year) {
+          return null
+        }
+      }
+
+      return post
+    }
+
     const posts = await directus.request(
       readItems("posts", {
         filter: {
           slug: { _eq: slug },
         },
         limit: 1,
-        fields: [
-          "id",
-          "title",
-          "slug",
-          "status",
-          "published_at",
-          "date_updated",
-          "description",
-          "content",
-          "show_toc",
-          "group",
-          "seo",
-          "blocks.*",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Directus SDK doesn't support deep field type inference
-          "blocks.item.*.*.*.*" as any,
-          { image: [...DIRECTUS_FILE_FIELDS], author: ["first_name", "last_name"] },
-        ],
-        deep: {
-          blocks: { _sort: ["sort"], _filter: { hide_block: { _neq: true } } },
-        },
+        ...query,
       }),
     )
 
@@ -423,27 +541,69 @@ const fetchPostForPreviewUncached = async (slug: string, year?: string) => {
 
 export const fetchPostForPreview = cache(fetchPostForPreviewUncached)
 
-const fetchPostMetadataForPreviewUncached = async (slug: string, year?: string) => {
-  const { directus, readItems } = getDirectus()
+const fetchPostMetadataForPreviewUncached = async (slug: string, year?: string, version?: string) => {
+  const { directus, readItems, readItem } = getDirectus()
 
   try {
+    const query = {
+      fields: [
+        "id",
+        "title",
+        "slug",
+        "status",
+        "published_at",
+        "date_updated",
+        "description",
+        "seo",
+        { image: [...DIRECTUS_FILE_FIELDS] },
+      ] as const,
+    }
+
+    if (version) {
+      const postLookup = await directus.request(
+        withNoStore(
+          readItems("posts", {
+            filter: {
+              slug: { _eq: slug },
+            },
+            limit: 1,
+            fields: ["id"],
+          }),
+        ),
+      )
+
+      const postId = postLookup[0]?.id
+
+      if (!postId) {
+        return null
+      }
+
+      const post = (await directus.request(
+        withNoStore(
+          readItem("posts", postId, {
+            ...query,
+            version,
+          }),
+        ),
+      )) as unknown as Post
+
+      if (year && post.published_at) {
+        const postYear = new Date(post.published_at).getFullYear().toString()
+        if (postYear !== year) {
+          return null
+        }
+      }
+
+      return post
+    }
+
     const posts = await directus.request(
       readItems("posts", {
         filter: {
           slug: { _eq: slug },
         },
         limit: 1,
-        fields: [
-          "id",
-          "title",
-          "slug",
-          "status",
-          "published_at",
-          "date_updated",
-          "description",
-          "seo",
-          { image: [...DIRECTUS_FILE_FIELDS] },
-        ],
+        ...query,
       }),
     )
 

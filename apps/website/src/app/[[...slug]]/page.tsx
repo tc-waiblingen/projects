@@ -13,8 +13,11 @@ import { PreviewBadge } from '@/components/elements/preview-badge'
 import { getEditAttr } from '@/lib/visual-editing'
 import { VisualEditingWrapper } from '@/components/visual-editing/VisualEditingWrapper'
 
+type RouteSearchParams = Record<string, string | string[] | undefined>
+
 interface PageProps {
   params: Promise<{ slug?: string[] }>
+  searchParams: Promise<RouteSearchParams>
 }
 
 // Legacy WordPress paths that should 404 immediately without querying Directus
@@ -43,6 +46,12 @@ function slugToPermalink(slug?: string[]): string {
   return "/" + slug.join("/")
 }
 
+function getPreviewVersion(searchParams: RouteSearchParams): string | undefined {
+  const version = searchParams.version
+  const value = Array.isArray(version) ? version[0] : version
+  return value || undefined
+}
+
 export async function generateStaticParams() {
   const pages = await fetchAllPages()
 
@@ -57,8 +66,9 @@ export async function generateStaticParams() {
   })
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params
+export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
+  const [{ slug }, resolvedSearchParams] = await Promise.all([params, searchParams])
+  const version = getPreviewVersion(resolvedSearchParams)
 
   if (isBlockedPath(slug)) {
     return { title: 'Seite nicht gefunden' }
@@ -68,7 +78,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   try {
     const [page, globals] = await Promise.all([
-      fetchPageMetadata(permalink),
+      fetchPageMetadata(permalink, version),
       getGlobals(),
     ])
     const visibility = await checkVisibility(page.status, page.published_at)
@@ -111,8 +121,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function Page({ params }: PageProps) {
-  const { slug } = await params
+export default async function Page({ params, searchParams }: PageProps) {
+  const [{ slug }, resolvedSearchParams] = await Promise.all([params, searchParams])
+  const version = getPreviewVersion(resolvedSearchParams)
 
   if (isBlockedPath(slug)) {
     notFound()
@@ -122,7 +133,7 @@ export default async function Page({ params }: PageProps) {
 
   let page
   try {
-    page = await fetchPageData(permalink)
+    page = await fetchPageData(permalink, version)
   } catch {
     notFound()
   }

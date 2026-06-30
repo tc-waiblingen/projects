@@ -234,5 +234,67 @@ describe('directus', () => {
         })
       )
     })
+
+    it('adds production cache settings for Directus item requests', async () => {
+      vi.stubEnv('NODE_ENV', 'production')
+      const mockResponse = new Response('OK', { status: 200 })
+      global.fetch = vi.fn().mockResolvedValue(mockResponse)
+
+      await fetchRetryAndCache(0, 'https://example.com/items/pages')
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://example.com/items/pages',
+        expect.objectContaining({
+          next: {
+            revalidate: 1800,
+            tags: ['directus', 'directus:collection:pages'],
+          },
+        })
+      )
+    })
+
+    it('does not add production cache settings for no-store requests', async () => {
+      vi.stubEnv('NODE_ENV', 'production')
+      const mockResponse = new Response('OK', { status: 200 })
+      global.fetch = vi.fn().mockResolvedValue(mockResponse)
+
+      await fetchRetryAndCache(0, 'https://example.com/items/pages', {
+        cache: 'no-store',
+      })
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://example.com/items/pages',
+        expect.objectContaining({
+          cache: 'no-store',
+        })
+      )
+      expect(global.fetch).not.toHaveBeenCalledWith(
+        'https://example.com/items/pages',
+        expect.objectContaining({
+          next: expect.anything(),
+        })
+      )
+    })
+
+    it('disables production caching for versioned Directus requests', async () => {
+      vi.stubEnv('NODE_ENV', 'production')
+      const mockResponse = new Response('OK', { status: 200 })
+      global.fetch = vi.fn().mockResolvedValue(mockResponse)
+
+      await fetchRetryAndCache(0, 'https://example.com/items/pages/1?version=draft')
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://example.com/items/pages/1?version=draft',
+        expect.objectContaining({
+          cache: 'no-store',
+        })
+      )
+      expect(global.fetch).not.toHaveBeenCalledWith(
+        'https://example.com/items/pages/1?version=draft',
+        expect.objectContaining({
+          next: expect.anything(),
+        })
+      )
+    })
   })
 })

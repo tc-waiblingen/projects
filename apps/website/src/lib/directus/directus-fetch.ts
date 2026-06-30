@@ -17,6 +17,22 @@ export function extractCollectionFromUrl(url: string | URL | Request): string | 
   return match?.[1] ?? null
 }
 
+function hasVersionParam(url: string | URL | Request): boolean {
+  const urlString =
+    typeof url === 'string'
+      ? url
+      : url instanceof URL
+        ? url.toString()
+        : url.url
+
+  try {
+    const parsedUrl = new URL(urlString, 'https://directus.local')
+    return parsedUrl.searchParams.has('version')
+  } catch {
+    return false
+  }
+}
+
 export const fetchRetryAndCache = async (
   count: number,
   ...args: Parameters<typeof fetch>
@@ -24,7 +40,9 @@ export const fetchRetryAndCache = async (
   const [url, options = {}] = args
 
   let nextOpts: { revalidate?: number; tags?: string[] } = {}
-  if (process.env.NODE_ENV === 'production') {
+  const skipCache = options.cache === 'no-store' || hasVersionParam(url)
+
+  if (process.env.NODE_ENV === 'production' && !skipCache) {
     const collection = extractCollectionFromUrl(url)
     nextOpts = {
       revalidate: 30 * 60,
@@ -34,7 +52,9 @@ export const fetchRetryAndCache = async (
     }
   }
 
-  const fetchOptions = { ...options, next: nextOpts } as RequestInit
+  const fetchOptions = (skipCache
+    ? { ...options, cache: 'no-store' }
+    : { ...options, next: nextOpts }) as RequestInit
 
   let response: Response
   try {
