@@ -263,6 +263,7 @@ function PostHeroImage({ file }: { file: DirectusFile }) {
   const title = file.title ?? ""
   const alt = file.description ?? ""
   const objectPosition = getObjectPosition(file)
+  const isSvg = file.type === "image/svg+xml"
 
   if (isWideImage(file)) {
     return (
@@ -276,6 +277,7 @@ function PostHeroImage({ file }: { file: DirectusFile }) {
           style={objectPosition ? { objectPosition } : undefined}
           sizes="100vw"
           priority
+          unoptimized={isSvg}
         />
       </div>
     )
@@ -291,6 +293,7 @@ function PostHeroImage({ file }: { file: DirectusFile }) {
         className="scale-[1.2] object-cover brightness-150 blur-[30px] saturate-50 dark:brightness-[.7]"
         aria-hidden
         sizes="100vw"
+        unoptimized={isSvg}
       />
       {/* Sharp foreground */}
       <Image
@@ -302,6 +305,7 @@ function PostHeroImage({ file }: { file: DirectusFile }) {
         style={objectPosition ? { objectPosition } : undefined}
         sizes="100vw"
         priority
+        unoptimized={isSvg}
       />
     </div>
   )

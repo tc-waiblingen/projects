@@ -123,6 +123,7 @@ function PostImage({ file }: { file: DirectusFile }) {
         height={file.height ?? 450}
         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 group-active:scale-105 group-focus-visible:scale-105"
+        unoptimized={file.type === "image/svg+xml"}
       />
     </div>
   )
