@@ -27,7 +27,7 @@
     "isomorphic-dompurify": "^3.13.0",
     "libphonenumber-js": "^1.13.2",
     "marked": "^18.0.4",
-    "next": "^16.2.6",
+    "next": "^16.2.11",
     "node-html-parser": "^7.1.0",
     "p-queue": "^9.3.0",
     "react": "^19.2.6",
