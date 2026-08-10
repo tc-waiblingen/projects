@@ -10,6 +10,7 @@ import { Section } from '@/components/elements/section'
 import { SoftButton } from '@/components/elements/button'
 import { fetchPostsPage, type PostsPageResult } from '@/lib/actions/posts'
 import { getEditAttr } from '@/lib/visual-editing'
+import { getImageObjectPosition } from '@/lib/image-focus'
 
 interface BlockPostsArchiveProps {
   data: BlockPostType
@@ -190,6 +191,7 @@ function PostListImage({ file }: { file: DirectusFile }) {
   const title = file.title ?? ''
   const alt = file.description ?? ''
   const isSvg = file.type === 'image/svg+xml'
+  const objectPosition = getImageObjectPosition(file)
 
   return (
     <div className="h-20 w-28 overflow-hidden rounded-md sm:h-24 sm:w-36">
@@ -206,6 +208,7 @@ function PostListImage({ file }: { file: DirectusFile }) {
             ? 'object-contain'
             : 'object-cover group-hover:scale-105 group-active:scale-105 group-focus-visible:scale-105'
         )}
+        style={!isSvg && objectPosition ? { objectPosition } : undefined}
         unoptimized={isSvg}
       />
     </div>

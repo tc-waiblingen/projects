@@ -26,8 +26,15 @@ describe('resolveOgImageFromFileId', () => {
 })
 
 describe('resolveOgImageFromDirectusFile', () => {
-  it('accepts a DirectusFile object and uses its id', () => {
-    const file = { id: UUID, title: 'Photo' } as DirectusFile
+  it('requests a cover crop that uses the Directus focal point', () => {
+    const file = {
+      id: UUID,
+      title: 'Photo',
+      focal_point_x: 900,
+      focal_point_y: 200,
+      width: 1200,
+      height: 800,
+    } as DirectusFile
     expect(resolveOgImageFromDirectusFile(file, 'Alt', BASE)).toEqual({
       url: `${BASE}/api/images/${UUID}?width=1200&height=630&fit=cover`,
       alt: 'Alt',

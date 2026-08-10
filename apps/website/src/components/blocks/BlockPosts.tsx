@@ -4,6 +4,7 @@ import type { BlockPost as BlockPostType, DirectusFile, Post } from "@/types/dir
 import { Section } from "@/components/elements/section"
 import { fetchPosts, fetchPostsPaginated } from "@/lib/directus/fetchers"
 import { getEditAttr } from "@/lib/visual-editing"
+import { getImageObjectPosition } from '@/lib/image-focus'
 import { BlockPostsArchive } from "./BlockPostsArchive"
 
 interface BlockPostsProps {
@@ -113,6 +114,7 @@ function PostImage({ file }: { file: DirectusFile }) {
   const title = file.title ?? ""
   const alt = file.description ?? ""
   const isSvg = file.type === "image/svg+xml"
+  const objectPosition = getImageObjectPosition(file)
 
   return (
     <div className="aspect-16/9 overflow-hidden rounded-lg">
@@ -128,6 +130,7 @@ function PostImage({ file }: { file: DirectusFile }) {
             ? "h-full w-full object-contain transition-transform duration-300"
             : "h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 group-active:scale-105 group-focus-visible:scale-105"
         }
+        style={!isSvg && objectPosition ? { objectPosition } : undefined}
         unoptimized={isSvg}
       />
     </div>

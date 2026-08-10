@@ -26,6 +26,7 @@ export function buildDynamicOgImage(
 }
 
 function buildImageProxyUrl(fileId: string, baseUrl: string): string {
+  // Directus applies the file's stored focal point to cover transformations.
   return `${baseUrl}/api/images/${fileId}?width=${OG_WIDTH}&height=${OG_HEIGHT}&fit=cover`
 }
 

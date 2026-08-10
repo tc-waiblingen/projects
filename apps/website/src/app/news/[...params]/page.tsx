@@ -16,6 +16,7 @@ import { PreviewBadge } from '@/components/elements/preview-badge'
 import { VisualEditingWrapper } from '@/components/visual-editing/VisualEditingWrapper'
 import { getEditAttr } from '@/lib/visual-editing'
 import { RelatedGroupPosts } from '@/components/elements/related-group-posts'
+import { getImageObjectPosition } from '@/lib/image-focus'
 
 type RouteSearchParams = Record<string, string | string[] | undefined>
 
@@ -235,20 +236,6 @@ export default async function PostPage({ params, searchParams }: PageProps) {
 
 const WIDE_THRESHOLD = 16 / 9
 
-function getObjectPosition(file: DirectusFile): string | undefined {
-  if (
-    file.focal_point_x != null &&
-    file.focal_point_y != null &&
-    file.width &&
-    file.height
-  ) {
-    const x = (file.focal_point_x / file.width) * 100
-    const y = (file.focal_point_y / file.height) * 100
-    return `${x.toFixed(1)}% ${y.toFixed(1)}%`
-  }
-  return undefined
-}
-
 function isWideImage(file: DirectusFile): boolean {
   if (!file.width || !file.height) return true // fallback: treat as wide (current behavior)
   return file.width / file.height >= WIDE_THRESHOLD
@@ -262,7 +249,7 @@ function PostHeroImage({ file }: { file: DirectusFile }) {
   const src = `/api/images/${file.id}`
   const title = file.title ?? ""
   const alt = file.description ?? ""
-  const objectPosition = getObjectPosition(file)
+  const objectPosition = getImageObjectPosition(file)
   const isSvg = file.type === "image/svg+xml"
 
   if (isWideImage(file)) {
