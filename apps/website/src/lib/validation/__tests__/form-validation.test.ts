@@ -106,18 +106,17 @@ describe('form-validation', () => {
   describe('validateFormSubmission', () => {
     const createForm = (fields: Partial<FormField>[]): Form => ({
       id: 'test-form',
-      status: 'published',
-      name: 'Test Form',
+      title: 'Test Form',
       fields: fields.map((f, i) => ({
         id: `field-${i}`,
         name: f.name ?? `field${i}`,
         label: f.label ?? null,
-        type: f.type ?? 'input',
+        type: f.type ?? 'text',
         required: f.required ?? false,
         validation: f.validation ?? null,
-        width: f.width ?? 'full',
+        width: f.width ?? '100',
         placeholder: f.placeholder ?? null,
-        note: f.note ?? null,
+        help: f.help ?? null,
         choices: f.choices ?? null,
       })) as FormField[],
       on_success: null,
@@ -392,9 +391,8 @@ describe('form-validation', () => {
       it('handles null fields array', () => {
         const form: Form = {
           id: 'test',
-          status: 'published',
-          name: 'Test',
-          fields: null,
+          title: 'Test',
+          fields: null as unknown as Form['fields'],
           on_success: null,
           submit_label: null,
           success_message: null,

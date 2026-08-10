@@ -78,7 +78,6 @@ export function BlockGallery({ data }: BlockGalleryProps) {
     if (matchedId === galleryId && matchedIndex && galleryItems.length > 0) {
       const index = parseInt(matchedIndex, 10)
       const validIndex = Math.max(0, Math.min(index, galleryItems.length - 1))
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional: synchronizing state with URL on mount
       setCurrentIndex(validIndex)
       setIsOpen(true)
     }

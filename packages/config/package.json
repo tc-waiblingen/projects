@@ -21,11 +21,12 @@
     "prettier.config.mjs"
   ],
   "peerDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@testing-library/jest-dom": "^6",
-    "@vitejs/plugin-react": "^5",
-    "eslint": "^9",
-    "eslint-config-next": "^16",
-    "vitest": "^4"
+    "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@vitejs/plugin-react": "^6.0.5",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.3.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   }
 }

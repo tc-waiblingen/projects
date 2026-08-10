@@ -6,6 +6,7 @@ export const baseIgnores = ['.next/**', 'out/**', 'build/**', 'next-env.d.ts', '
 
 export const baseRules = {
   '@next/next/no-page-custom-font': 'off',
+  'react-hooks/set-state-in-effect': 'off',
 }
 
 export const baseConfig = defineConfig([

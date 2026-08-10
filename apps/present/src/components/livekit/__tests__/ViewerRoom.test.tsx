@@ -5,7 +5,7 @@ import { ViewerRoom } from '../ViewerRoom'
 import { attachVideoTrack, detachVideoTrack } from '../livekit-dom'
 
 const livekitMock = vi.hoisted(() => {
-  const connect = vi.fn(async () => undefined)
+  const connect = vi.fn<(url: string, token: string) => Promise<void>>(async () => undefined)
   const rooms: MockRoom[] = []
   let initialParticipants: Array<{
     trackPublications: Map<string, MockPublication>

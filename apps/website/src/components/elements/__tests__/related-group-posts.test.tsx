@@ -17,7 +17,7 @@ const publishedPost = {
   title: 'Current post',
   slug: 'current-post',
   published_at: '2026-01-15T10:00:00.000Z',
-  status: 'published',
+  status: 'published' as const,
 }
 
 const otherPost = {
@@ -25,12 +25,14 @@ const otherPost = {
   title: 'Other post',
   slug: 'other-post',
   published_at: '2026-01-16T10:00:00.000Z',
-  status: 'published',
+  status: 'published' as const,
 }
 
+type GroupResult = Awaited<ReturnType<typeof fetchPostGroupWithPosts>>
+
 function mockGroupResult(
-  overrides: Partial<Awaited<ReturnType<typeof fetchPostGroupWithPosts>>> = {}
-) {
+  overrides: { group?: Partial<GroupResult['group']>; posts?: GroupResult['posts'] } = {}
+): GroupResult {
   return {
     group: {
       id: 1,
@@ -41,7 +43,7 @@ function mockGroupResult(
       ...overrides.group,
     },
     posts: overrides.posts ?? [publishedPost],
-  } as Awaited<ReturnType<typeof fetchPostGroupWithPosts>>
+  }
 }
 
 async function renderRelatedGroupPosts() {

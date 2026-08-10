@@ -19,6 +19,7 @@ function createEvent(overrides: Partial<CalendarEvent>): CalendarEvent {
     url: null,
     imageUrl: null,
     metadata: {},
+    displayWeight: 1,
     ...overrides,
   }
 }

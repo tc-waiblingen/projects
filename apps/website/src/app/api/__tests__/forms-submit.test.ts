@@ -240,7 +240,7 @@ describe('POST /api/forms/submit', () => {
       mockGetDirectus.mockReturnValue({
         directus: { request: mockDirectusRequest },
         createItem: vi.fn(() => ({})),
-      } as ReturnType<typeof getDirectus>)
+      } as unknown as ReturnType<typeof getDirectus>)
 
       const request = new NextRequest('https://localhost/api/forms/submit', {
         method: 'POST',
@@ -275,7 +275,7 @@ describe('POST /api/forms/submit', () => {
       mockGetDirectus.mockReturnValue({
         directus: { request: mockDirectusRequest },
         createItem: vi.fn(() => ({})),
-      } as ReturnType<typeof getDirectus>)
+      } as unknown as ReturnType<typeof getDirectus>)
 
       const request = new NextRequest('https://localhost/api/forms/submit', {
         method: 'POST',
@@ -308,7 +308,7 @@ describe('POST /api/forms/submit', () => {
       mockGetDirectus.mockReturnValue({
         directus: { request: mockDirectusRequest },
         createItem: vi.fn(() => ({})),
-      } as ReturnType<typeof getDirectus>)
+      } as unknown as ReturnType<typeof getDirectus>)
 
       const request = new NextRequest('https://localhost/api/forms/submit', {
         method: 'POST',

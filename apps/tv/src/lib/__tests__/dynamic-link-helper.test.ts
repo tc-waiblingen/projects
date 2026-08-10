@@ -52,7 +52,6 @@ describe('GetLinkHref', () => {
     it('returns null when page has no permalink', () => {
       const page: Partial<Page> = {
         id: '123',
-        permalink: null,
       }
       const result = GetLinkHref({
         type: 'page',

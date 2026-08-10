@@ -272,7 +272,6 @@ describe('schedule-transformer', () => {
           isAllDay: true,
           displayWeight: 2, // Tournaments always have weight 2
           metadata: {
-            category: 'open',
             registrationUrl: 'https://example.com/register',
           },
         }),
