@@ -829,6 +829,8 @@ export interface DirectusCollection {
 	collapse?: string;
 	preview_url?: string | null;
 	versioning?: boolean;
+	status?: 'active' | 'inactive';
+	autosave_revision_interval?: null | 30 | 60 | 300 | 600 | null;
 }
 
 export interface DirectusField {
@@ -899,6 +901,21 @@ export interface DirectusRelation {
 	one_deselect_action?: string;
 }
 
+export interface DirectusVersion {
+	/** @primaryKey */
+	id: string;
+	key?: string;
+	name?: string | null;
+	collection?: DirectusCollection | string;
+	item?: string | null;
+	hash?: string | null;
+	date_created?: string | null;
+	date_updated?: string | null;
+	user_created?: string | null;
+	user_updated?: string | null;
+	delta?: 'json' | null;
+}
+
 export interface Schema {
 	block_attachments: BlockAttachment[];
 	block_attachments_files: BlockAttachmentsFile[];
@@ -947,6 +964,7 @@ export interface Schema {
 	directus_fields: DirectusField[];
 	directus_files: DirectusFile[];
 	directus_relations: DirectusRelation[];
+	directus_versions: DirectusVersion[];
 }
 
 export enum CollectionNames {
@@ -996,5 +1014,6 @@ export enum CollectionNames {
 	directus_collections = 'directus_collections',
 	directus_fields = 'directus_fields',
 	directus_files = 'directus_files',
-	directus_relations = 'directus_relations'
+	directus_relations = 'directus_relations',
+	directus_versions = 'directus_versions'
 }

@@ -3,6 +3,20 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "passThroughEnv": [
+        "DIRECTUS_PUBLIC_TOKEN",
+        "DIRECTUS_TOKEN",
+        "DISPO_API_URL",
+        "EBUSY_API_PASSWORD",
+        "EBUSY_API_URL",
+        "EBUSY_API_USER",
+        "INSTAGRAM_ACCESS_TOKEN",
+        "INSTAGRAM_USER_ID",
+        "NR_API_TOKEN",
+        "NR_API_URL",
+        "NR_CLUB_ID",
+        "URL_SIGNING_SECRET"
+      ],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {

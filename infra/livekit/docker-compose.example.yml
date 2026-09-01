@@ -1,6 +1,6 @@
 services:
   livekit:
-    image: livekit/livekit-server:v1.13.1
+    image: livekit/livekit-server:v1.13.6
     command: --config /etc/livekit.yaml
     restart: unless-stopped
     ports:
@@ -20,7 +20,7 @@ services:
       start_period: 10s
 
   redis:
-    image: redis:7-alpine
+    image: redis:8.10.0-alpine
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:

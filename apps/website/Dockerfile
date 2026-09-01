@@ -1,6 +1,6 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:25-alpine AS base
+FROM node:26.8.1-alpine AS base
 
 RUN --mount=type=cache,target=/var/cache/apk \
     apk add curl tzdata
