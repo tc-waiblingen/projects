@@ -2,7 +2,7 @@
   "name": "tcw-monorepo",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@11.25.0",
+  "packageManager": "pnpm@12.15.0",
   "scripts": {
     "dev:website": "pnpm --filter @tcw/website dev",
     "dev:tv": "pnpm --filter @tcw/tv dev",
@@ -35,6 +35,6 @@
     "generate:types": "pnpm -r generate:types"
   },
   "devDependencies": {
-    "turbo": "^2.10.12"
+    "turbo": "^2.11.10"
   }
 }

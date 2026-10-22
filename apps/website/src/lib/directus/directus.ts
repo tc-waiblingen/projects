@@ -17,7 +17,7 @@ import Queue from "p-queue"
 import { fetchRetryAndCache } from './directus-fetch'
 
 // Queue for rate-limited requests
-const queue = new Queue({ intervalCap: 10, interval: 500, carryoverConcurrencyCount: true })
+const queue = new Queue({ intervalCap: 10, interval: 500, carryoverIntervalCount: true })
 
 const getDirectusUrl = (): string => {
   const url = process.env.NEXT_PUBLIC_DIRECTUS_URL

@@ -8,6 +8,7 @@ export function createVitestConfig(appRoot: string, testOverrides: Partial<TestO
   return defineConfig({
     plugins: [react()],
     test: {
+      fsModuleCachePath: resolve(appRoot, 'node_modules/.vitest-cache'),
       environment: 'jsdom',
       globals: true,
       setupFiles: [resolve(appRoot, 'vitest.setup.ts')],

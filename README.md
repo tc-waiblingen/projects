@@ -20,9 +20,13 @@ Monorepo for the Tennis-Club Waiblingen website, TV kiosk, and shared packages.
 
 ## Prerequisites
 
-- Node.js (current LTS)
-- pnpm 10.33+
+- Node.js 26.12.1
+- pnpm 12.15.0
 - Access to a Directus instance (tokens required)
+
+Runtime versions are managed in `.config/mise/config.toml`; run `mise install` to install them.
+
+The apps use TypeScript 7 through the `@typescript/native` alias for `tsc`. The `typescript` dependency aliases Microsoft's TypeScript 6 compatibility package because ESLint and the import formatter still require the compiler API. See [Microsoft's side-by-side setup](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6.0).
 
 ## Getting started
 
