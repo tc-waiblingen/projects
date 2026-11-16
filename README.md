@@ -20,8 +20,8 @@ Monorepo for the Tennis-Club Waiblingen website, TV kiosk, and shared packages.
 
 ## Prerequisites
 
-- Node.js 26.12.1
-- pnpm 12.15.0
+- Node.js 26.13.1
+- pnpm 12.21.0
 - Access to a Directus instance (tokens required)
 
 Runtime versions are managed in `.config/mise/config.toml`; run `mise install` to install them.
