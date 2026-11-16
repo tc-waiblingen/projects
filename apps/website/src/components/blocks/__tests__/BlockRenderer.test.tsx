@@ -262,7 +262,7 @@ describe('BlockRenderer', () => {
 
       const { container } = render(<BlockRenderer blocks={blocks} />)
 
-      const wrapper = container.querySelector('.bg-tcw-red-600')
+      const wrapper = container.querySelector('.bg-tcw-red-100')
       expect(wrapper).toBeInTheDocument()
     })
 

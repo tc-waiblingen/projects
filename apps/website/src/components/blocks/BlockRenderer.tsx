@@ -71,7 +71,7 @@ function BlockWrapper({
         background === "default" && "",
         background === "dark" && "bg-tcw-accent-950 text-white",
         background === "light" && "bg-tcw-accent-50 dark:bg-tcw-accent-900",
-        background === "highlight" && "bg-tcw-red-600 text-white",
+        background === "highlight" && "bg-tcw-red-100 dark:bg-tcw-red-900",
       )}
     >
       {children}
