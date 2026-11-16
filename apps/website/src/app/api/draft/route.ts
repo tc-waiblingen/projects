@@ -32,7 +32,8 @@ export async function GET(request: NextRequest) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || ''
   let redirectUrl = '/'
   if (collection === 'pages') {
-    redirectUrl = appendVersion(`/${slug || ''}`, version)
+    // Page permalinks already start with "/" — strip it to avoid a protocol-relative "//..." URL
+    redirectUrl = appendVersion(`/${(slug || '').replace(/^\/+/, '')}`, version)
   } else if (collection === 'posts' && slug) {
     // Fetch post to get the year from published_at
     const post = await fetchPostForPreview(slug, undefined, version ?? undefined)
