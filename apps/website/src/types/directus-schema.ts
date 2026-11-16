@@ -626,7 +626,7 @@ export interface PageBlock {
 	/** @description Temporarily hide this block on the website without having to remove it from your page. */
 	hide_block?: boolean | null;
 	/** @description Background color for the block to create contrast. Does not control dark or light mode for the entire site. */
-	background?: 'default' | 'light' | 'dark' | null;
+	background?: 'default' | 'light' | 'dark' | 'highlight' | null;
 	date_created?: string | null;
 	user_created?: string | null;
 	date_updated?: string | null;

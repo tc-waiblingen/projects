@@ -249,6 +249,23 @@ describe('BlockRenderer', () => {
       expect(wrapper).toBeInTheDocument()
     })
 
+    it('applies highlight background class', () => {
+      const blocks: PageBlock[] = [
+        {
+          id: '1',
+          collection: 'block_hero',
+          item: { id: 'item-1' },
+          sort: 1,
+          background: 'highlight',
+        } as PageBlock,
+      ]
+
+      const { container } = render(<BlockRenderer blocks={blocks} />)
+
+      const wrapper = container.querySelector('.bg-tcw-red-600')
+      expect(wrapper).toBeInTheDocument()
+    })
+
     it('does not wrap when background is default', () => {
       const blocks: PageBlock[] = [
         {
