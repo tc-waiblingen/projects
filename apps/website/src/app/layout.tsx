@@ -2,7 +2,6 @@ import { ClubOfficeInfo } from '@/components/sections/club-office-info'
 import { Main } from '@/components/elements/main'
 import { SearchProvider } from '@/components/search/search-provider'
 import { FooterNavItems } from '@/components/nav/footer-nav-items'
-// import { GitHubIcon } from '@/components/icons/social/github-icon'
 import { InstagramIcon } from '@/components/icons/social/instagram-icon'
 import {
   FooterWithNewsletterFormCategoriesAndSocialIcons,
@@ -97,9 +96,6 @@ export default async function RootLayout({
                 >
                   <InstagramIcon />
                 </SocialLink>
-                {/* <SocialLink href="https://github.com/tc-waiblingen/" name="GitHub">
-                  <GitHubIcon />
-                </SocialLink> */}
               </>
             }
           />

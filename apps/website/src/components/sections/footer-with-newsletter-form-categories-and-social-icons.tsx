@@ -3,7 +3,6 @@ import Link from 'next/link'
 import type { ComponentProps, ReactNode } from 'react'
 import { Container } from '../elements/container'
 import { FooterPrintInfo } from '../elements/footer-print-info'
-import { ArrowNarrowRightIcon } from '../icons/arrow-narrow-right-icon'
 
 export function FooterCategory({
   title,
@@ -80,38 +79,6 @@ export function SocialLink({
         children
       )}
     </Link>
-  )
-}
-
-export function NewsletterForm({
-  headline,
-  subheadline,
-  className,
-  ...props
-}: {
-  headline: ReactNode
-  subheadline: ReactNode
-} & ComponentProps<'form'>) {
-  return (
-    <form className={clsx('flex max-w-sm flex-col gap-2', className)} {...props}>
-      <p>{headline}</p>
-      <div className="flex flex-col gap-4 text-muted">{subheadline}</div>
-      <div className="flex items-center border-b border-tcw-accent-900/20 py-2 has-[input:focus]:border-tcw-accent-900 dark:border-white/20 dark:has-[input:focus]:border-white">
-        <input
-          type="email"
-          placeholder="Email"
-          aria-label="Email"
-          className="flex-1 text-tcw-accent-900 focus:outline-hidden dark:text-white"
-        />
-        <button
-          type="submit"
-          aria-label="Subscribe"
-          className="relative inline-flex size-7 items-center justify-center rounded-full after:absolute after:-inset-2 hover:bg-tcw-accent-900/10 dark:hover:bg-white/10 after:pointer-fine:hidden"
-        >
-          <ArrowNarrowRightIcon />
-        </button>
-      </div>
-    </form>
   )
 }
 
