@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import type { CalendarEvent, ClubEventMetadata, MatchEventMetadata } from '@tcw/calendar'
-import { isTournamentEvent } from '@tcw/calendar'
+import type { CalendarEvent, MatchEventMetadata } from '@tcw/calendar'
+import { matchesCategory } from '@tcw/calendar'
 import { FilterControls, type CategoryFilter, type TeamEntry } from './FilterControls'
 import { EventList } from './EventList'
 import { useTocSafe } from '@/components/toc'
@@ -182,37 +182,8 @@ export function CalendarClient({ events, teamEntries, serverNow, filterCategory,
         }
       }
 
-      // Category filter
-      if (state.category !== 'all') {
-        if (state.category === 'matches' && event.source !== 'match') {
-          return false
-        }
-        if (state.category === 'tournaments' && !isTournamentEvent(event)) {
-          return false
-        }
-        if (state.category === 'club' && event.source !== 'club' && event.source !== 'app') {
-          return false
-        }
-        // beginners filter - only club events with category === 'beginners'
-        if (state.category === 'beginners') {
-          if (event.source !== 'club') {
-            return false
-          }
-          const metadata = event.metadata as ClubEventMetadata
-          if (metadata.category !== 'beginners') {
-            return false
-          }
-        }
-        // children filter - only club events with category === 'children'
-        if (state.category === 'children') {
-          if (event.source !== 'club') {
-            return false
-          }
-          const metadata = event.metadata as ClubEventMetadata
-          if (metadata.category !== 'children') {
-            return false
-          }
-        }
+      if (!matchesCategory(event, state.category)) {
+        return false
       }
 
       // Team filter (only applies to match events)

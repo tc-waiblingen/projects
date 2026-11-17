@@ -5,8 +5,12 @@ import {
   fetchNrMatchChanges,
   fetchNrMatchesResponse,
   fetchNrTeams,
+  groupUpcomingDays,
+  matchesCategory,
 } from '@tcw/calendar'
+import { PlainButtonLink } from '@/components/elements/button'
 import { Section } from '@/components/elements/section'
+import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
 import { fetchAllCalendarEvents } from '@/lib/directus/calendar-fetchers'
 import { fetchCourtsWithSponsors } from '@/lib/directus/fetchers'
 import { logger } from '@/lib/logger'
@@ -15,6 +19,7 @@ import { CalendarClient } from './CalendarClient'
 import { CourtUsageChanges } from './CourtUsageChanges'
 import { CourtUsageClient } from './CourtUsageClient'
 import type { TeamEntry } from './FilterControls'
+import { CALENDAR_HREF, UpcomingEvents } from './UpcomingEvents'
 
 interface BlockClubCalendarProps {
   data: BlockClubCalendarType
@@ -95,7 +100,7 @@ function extractTeamEntries(events: CalendarEvent[]): TeamEntry[] {
 }
 
 export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
-  const { id, headline, tagline, alignment, filter_category, style } = data
+  const { id, headline, tagline, alignment, filter_category, style, max_days } = data
 
   const dateRange = getCalendarDateRange()
 
@@ -127,6 +132,33 @@ export async function BlockClubCalendar({ data }: BlockClubCalendarProps) {
           matchesLastRefreshedAt={matchesLastRefreshedAtDisplay}
         />
         <CourtUsageChanges groups={changeGroups} now={dateRange.now} />
+      </Section>
+    )
+  }
+
+  if (style === 'upcoming') {
+    const events = await fetchAllCalendarEvents(dateRange)
+    const category = filter_category ?? 'all'
+    const days = groupUpcomingDays(
+      events.filter((event) => matchesCategory(event, category)),
+      dateRange.now,
+      max_days ?? 5,
+    )
+    if (days.length === 0) return null
+
+    return (
+      <Section
+        headline={headline}
+        eyebrow={tagline}
+        alignment={alignment}
+        editAttr={{ collection: 'block_club_calendar', item: String(id) }}
+        cta={
+          <PlainButtonLink href={CALENDAR_HREF} size="lg" className="self-start">
+            Alle Termine <ArrowNarrowRightIcon />
+          </PlainButtonLink>
+        }
+      >
+        <UpcomingEvents days={days} now={dateRange.now} />
       </Section>
     )
   }

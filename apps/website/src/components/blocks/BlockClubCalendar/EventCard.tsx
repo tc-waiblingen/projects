@@ -27,7 +27,7 @@ function formatDateRange(start: Date, end: Date): string {
   return `${startDay}.${startMonth}. – ${endDay}.${endMonth}.${endYear}`
 }
 
-function formatEventSpan(event: CalendarEvent, compact = false): string {
+export function formatEventSpan(event: CalendarEvent, compact = false): string {
   if (event.playDates && event.playDates.length > 0) {
     return formatTournamentPlayDates(event.playDates, { compact })
   }

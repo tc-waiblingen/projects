@@ -88,8 +88,10 @@ export interface BlockClubCalendar {
 	headline?: string | null;
 	/** @description Controls how the content block is positioned on the page. Choose "Left" to align the block against the left margin or "Center" to position the block in the middle of the page. This setting affects the entire content block's placement, not the text alignment within it. */
 	alignment?: 'left' | 'center' | null;
-	style?: 'default' | 'list' | 'court_usage';
+	style?: 'default' | 'list' | 'court_usage' | 'upcoming';
 	filter_category?: 'all' | 'matches' | 'tournaments' | 'club' | 'beginners' | 'children' | null;
+	/** @description Anzahl der Tage, die angezeigt werden (der hervorgehobene nächste Tag zählt mit). */
+	max_days?: number | null;
 }
 
 export interface BlockClubOffice {
