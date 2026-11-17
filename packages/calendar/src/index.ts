@@ -43,7 +43,8 @@ export type {
 } from './nr-client'
 
 // Event predicates
-export { isTournamentEvent } from './event-predicates'
+export { isTournamentEvent, matchesCategory } from './event-predicates'
+export type { CalendarCategory } from './event-predicates'
 
 // Active-days + date formatting
 export { eventActiveDays, parsePlayDate } from './active-days'
@@ -62,6 +63,7 @@ export type {
 // Grouping
 export {
   groupEventsByMonth,
+  groupUpcomingDays,
   sortDayEvents,
   addEventToDay,
   formatMonthHeader,

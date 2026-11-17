@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isTournamentEvent } from '../event-predicates'
+import { isTournamentEvent, matchesCategory } from '../event-predicates'
 import type {
   AppEventMetadata,
   CalendarEvent,
@@ -65,5 +65,37 @@ describe('isTournamentEvent', () => {
     const appMeta: AppEventMetadata = { uid: 'u' }
     expect(isTournamentEvent(makeEvent('match', matchMeta))).toBe(false)
     expect(isTournamentEvent(makeEvent('app', appMeta))).toBe(false)
+  })
+})
+
+describe('matchesCategory', () => {
+  const match = makeEvent('match', {} as MatchEventMetadata)
+  const tournament = makeEvent('tournament', {} as TournamentEventMetadata)
+  const app = makeEvent('app', {} as AppEventMetadata)
+  const club = makeEvent('club', { important: false, showOnTv: false } as ClubEventMetadata)
+  const beginners = makeEvent('club', { important: false, showOnTv: false, category: 'beginners' } as ClubEventMetadata)
+  const children = makeEvent('club', { important: false, showOnTv: false, category: 'children' } as ClubEventMetadata)
+  const clubTournament = makeEvent('club', { important: false, showOnTv: false, category: 'tournament' } as ClubEventMetadata)
+  const all = [match, tournament, app, club, beginners, children, clubTournament]
+
+  it('matches everything for "all"', () => {
+    expect(all.filter((e) => matchesCategory(e, 'all'))).toEqual(all)
+  })
+
+  it('matches only matches for "matches"', () => {
+    expect(all.filter((e) => matchesCategory(e, 'matches'))).toEqual([match])
+  })
+
+  it('matches tournaments and club tournaments for "tournaments"', () => {
+    expect(all.filter((e) => matchesCategory(e, 'tournaments'))).toEqual([tournament, clubTournament])
+  })
+
+  it('matches club and app events for "club"', () => {
+    expect(all.filter((e) => matchesCategory(e, 'club'))).toEqual([app, club, beginners, children, clubTournament])
+  })
+
+  it('matches club events by category for "beginners" and "children"', () => {
+    expect(all.filter((e) => matchesCategory(e, 'beginners'))).toEqual([beginners])
+    expect(all.filter((e) => matchesCategory(e, 'children'))).toEqual([children])
   })
 })

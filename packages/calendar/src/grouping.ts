@@ -148,3 +148,38 @@ export function groupEventsByMonth(events: CalendarEvent[]): MonthGroup[] {
     days: Array.from(daysMap.values()),
   }))
 }
+
+/**
+ * Group events into the next `maxDays` days that have events, starting today.
+ *
+ * Each event appears on exactly one day: its start day, or today if it
+ * started in the past but is still running (last active day >= today).
+ * Events whose last active day is before today are dropped.
+ */
+export function groupUpcomingDays(events: CalendarEvent[], now: Date, maxDays: number): DayGroup[] {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const daysMap = new Map<string, DayGroup>()
+
+  for (const event of events) {
+    if (!isValidDate(event.startDate)) continue
+
+    const activeDays = eventActiveDays(event)
+    const firstDay = activeDays[0]!
+    const lastDay = activeDays[activeDays.length - 1]!
+    if (lastDay < today) continue
+
+    const date = firstDay < today ? today : firstDay
+    const dateKey = getDateKey(date)
+    let dayGroup = daysMap.get(dateKey)
+    if (!dayGroup) {
+      dayGroup = { dateKey, date, events: [] }
+      daysMap.set(dateKey, dayGroup)
+    }
+    dayGroup.events.push(event)
+  }
+
+  return Array.from(daysMap.values())
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .slice(0, maxDays)
+    .map((day) => ({ ...day, events: sortDayEvents(day.events) }))
+}
