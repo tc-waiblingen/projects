@@ -28,7 +28,7 @@ function SponsorCard({ sponsor, size = 'lg' }: { sponsor: Sponsor; size?: 'lg' |
   ) : (
     <span
       title={title}
-      className={`line-clamp-2 text-center font-semibold text-gray-700 ${size === 'lg' ? 'text-sm' : 'text-xs'}`}
+      className={`line-clamp-2 text-center font-semibold text-taupe-700 ${size === 'lg' ? 'text-sm' : 'text-xs'}`}
     >
       {sponsor.name}
     </span>

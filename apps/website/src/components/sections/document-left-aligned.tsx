@@ -18,7 +18,7 @@ export function DocumentLeftAligned({
   subheadline?: ReactNode
 } & ComponentProps<'section'>) {
   return (
-    <section className={clsx('py-8', className)} {...props}>
+    <section className={clsx('py-8 sm:py-12', className)} {...props}>
       <Container className="flex flex-col gap-6 sm:gap-10">
         {(headline || subheadline) && <div className="flex max-w-2xl flex-col gap-6">
           {headline && <Heading as={headlineLevel}>{headline}</Heading>}

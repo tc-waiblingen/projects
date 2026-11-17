@@ -36,7 +36,7 @@ export function BlockHero({ data }: BlockHeroProps) {
   ) : undefined
   const photo = image && typeof image !== "string" ? (
     <div data-directus={getEditAttr({ collection: "block_hero", item: String(id), fields: "image" })}>
-      <HeroImage file={image} />
+      <HeroImage file={image} sizes={layout === "image_center" ? "(min-width: 1024px) 1200px, 100vw" : undefined} />
     </div>
   ) : undefined
 

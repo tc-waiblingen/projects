@@ -20,12 +20,12 @@ export function HeroTwoColumnWithPhoto({
   photo?: ReactNode
   photoSide?: 'left' | 'right'
 } & ComponentProps<'section'>) {
-  const textCol = photoSide === 'left' ? 'xl:col-start-2' : 'xl:col-start-1'
-  const photoCol = photoSide === 'left' ? 'xl:col-start-1' : 'xl:col-start-2'
+  const textCol = photoSide === 'left' ? 'lg:col-start-2' : 'lg:col-start-1'
+  const photoCol = photoSide === 'left' ? 'lg:col-start-1' : 'lg:col-start-2'
 
   return (
-    <section className="py-8" {...props}>
-      <Container className="grid gap-x-8 gap-y-4 xl:grid-cols-2 xl:grid-rows-[auto_1fr]">
+    <section className="py-10 sm:py-16" {...props}>
+      <Container className="grid gap-x-8 gap-y-4 lg:grid-cols-2 lg:grid-rows-[auto_1fr]">
         <div className={clsx('self-end', textCol)}>{eyebrow}</div>
         <div className={clsx('flex flex-col items-start gap-4', textCol)}>
           <Heading>{headline}</Heading>
@@ -41,7 +41,7 @@ export function HeroTwoColumnWithPhoto({
             className={clsx(
               'overflow-hidden rounded-xl outline -outline-offset-1 outline-black/5 *:object-cover dark:outline-white/5',
               photoCol,
-              'xl:row-start-2',
+              'lg:row-start-2',
             )}
           >
             {photo}

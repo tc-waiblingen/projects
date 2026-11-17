@@ -31,7 +31,7 @@ export function Section({
   }
 
   return (
-    <section className={clsx('py-8', className)} {...props}>
+    <section className={clsx('py-8 sm:py-12', className)} {...props}>
       <Container className={clsx('flex flex-col gap-2', isCentered && 'items-center')}>
         {headline && (
           <div className={clsx('flex max-w-2xl flex-col gap-4', isCentered && 'items-center')}>

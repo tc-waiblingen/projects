@@ -22,7 +22,7 @@ export function FooterCategory({
           title
         )}
       </h3>
-      <ul role="list" className="mt-2 flex flex-col gap-2">
+      <ul role="list" className="mt-2 flex flex-col">
         {children}
       </ul>
     </div>
@@ -39,9 +39,16 @@ export function FooterLink({
   href: string
   contentDataDirectus?: string
 } & Omit<ComponentProps<'a'>, 'href'>) {
+  const isExternal = /^https?:\/\//.test(href)
+
   return (
     <li className={clsx('text-muted', className)}>
-      <Link href={href} {...props}>
+      <Link
+        href={href}
+        className="block cursor-pointer py-1 hover:text-body hover:underline hover:underline-offset-4 pointer-coarse:py-2"
+        {...(isExternal && { rel: 'noopener noreferrer nofollow' })}
+        {...props}
+      >
         {contentDataDirectus ? (
           <span data-directus={contentDataDirectus}>{children}</span>
         ) : (
@@ -69,8 +76,8 @@ export function SocialLink({
       href={href}
       target="_blank"
       aria-label={name}
-      className={clsx('text-tcw-accent-900 *:size-6 dark:text-white', className)}
-      rel="noopener noreferrer"
+      className={clsx('relative cursor-pointer text-tcw-accent-900 *:size-6 after:absolute after:-inset-2.5 dark:text-white', className)}
+      rel="noopener noreferrer nofollow"
       {...props}
     >
       {contentDataDirectus ? (
@@ -108,14 +115,14 @@ export function FooterWithNewsletterFormCategoriesAndSocialIcons({
       )}
       <div className="bg-tcw-accent-900/2.5 py-16 text-tcw-accent-900 print:hidden dark:bg-white/5 dark:text-white">
         <Container className="flex flex-col gap-16">
-          <div className="grid grid-cols-1 gap-x-6 gap-y-16 text-sm/7 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-16 text-sm/7 lg:grid-cols-2 [&_h3]:text-sm/7 [&_h3]:font-semibold">
             {cta}
             <nav className="grid grid-cols-2 gap-6 sm:has-[>:last-child:nth-child(3)]:grid-cols-3 sm:has-[>:nth-child(5)]:grid-cols-3 md:has-[>:last-child:nth-child(4)]:grid-cols-4 lg:max-xl:has-[>:last-child:nth-child(4)]:grid-cols-2">
               {links}
             </nav>
           </div>
           <div className="flex items-center justify-between gap-10 text-sm/7">
-            <div className="text-tcw-accent-600 dark:text-tcw-accent-500">{fineprint}</div>
+            <div className="text-subtle">{fineprint}</div>
             {socialLinks && <div className="flex items-center gap-4 sm:gap-10">{socialLinks}</div>}
           </div>
         </Container>

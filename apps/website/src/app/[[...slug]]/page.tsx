@@ -155,7 +155,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const content = (
     <>
       {showTitle &&
-        <Container className="mt-8">
+        <Container className="mt-8 sm:mt-12">
           <Heading data-directus={getEditAttr({ collection: 'pages', item: page.id, fields: 'title' })}>
             {title}
           </Heading>

@@ -65,13 +65,14 @@ export default async function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png" />
         <link rel="manifest" href="/assets/favicons/site.webmanifest" />
-        <link rel="mask-icon" href="/assets/favicons/safari-pinned-tab.svg" color="#5bbad5" />
+        <link rel="mask-icon" href="/assets/favicons/safari-pinned-tab.svg" color="#d63c2b" />
         <link rel="shortcut icon" href="/assets/favicons/favicon.ico" />
         <link rel="alternate" type="application/rss+xml" title={`${globals.club_name} – News`} href={`${feedUrl}`} />
 
-        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="msapplication-TileColor" content="#908987" />
         <meta name="msapplication-config" content="/assets/favicons/browserconfig.xml" />
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3eee3" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#201700" />
         <meta name="apple-itunes-app" content="app-id=6444000701" />
       </head>
       <body>
@@ -86,7 +87,14 @@ export default async function RootLayout({
             sponsors={<SponsorsSection sponsors={sponsors} />}
             cta={<ClubOfficeInfo />}
             links={<FooterNavItems navigation={navFooter} />}
-            fineprint=""
+            fineprint={
+              <>
+                © {new Date().getFullYear()}{' '}
+                <span data-directus={getEditAttr({ collection: 'globals', item: String(globals.id), fields: 'club_name' })}>
+                  {globals.club_name ?? globals.title}
+                </span>
+              </>
+            }
             socialLinks={
               <>
                 <SocialLink

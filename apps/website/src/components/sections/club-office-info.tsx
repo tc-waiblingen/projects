@@ -55,7 +55,7 @@ export async function ClubOfficeInfo() {
             <td className="pr-2">Telefon:</td>
             <td>
               <span data-directus={getEditAttr({ collection: 'globals', item: String(globals.id), fields: 'phone' })}>
-                <ContactInfo type="phone" value={globals.phone ?? ''} name={globals.club_name ?? undefined} />
+                <ContactInfo type="phone" value={globals.phone ?? ''} name={globals.club_name ?? undefined} className="hover:text-body hover:underline hover:underline-offset-4" />
               </span>
             </td>
           </tr>
@@ -64,7 +64,7 @@ export async function ClubOfficeInfo() {
             <td className="pr-2">E-Mail:</td>
             <td>
               <span data-directus={getEditAttr({ collection: 'globals', item: String(globals.id), fields: 'email' })}>
-                <ContactInfo type="email" value={globals.email ?? ''} name={globals.club_name ?? undefined} />
+                <ContactInfo type="email" value={globals.email ?? ''} name={globals.club_name ?? undefined} className="hover:text-body hover:underline hover:underline-offset-4" />
               </span>
             </td>
           </tr>
@@ -73,7 +73,7 @@ export async function ClubOfficeInfo() {
             <td className="pr-2">Adresse:</td>
             <td>
               <span data-directus={getEditAttr({ collection: 'globals', item: String(globals.id), fields: ['address_street', 'address_zip_code', 'address_city', 'address_maps_url'] })}>
-                <Link href={globals.address_maps_url || ""} target="_blank" rel="noopener noreferrer">
+                <Link href={globals.address_maps_url || ""} target="_blank" rel="noopener noreferrer nofollow" className="cursor-pointer hover:text-body hover:underline hover:underline-offset-4">
                   {globals.address_street}, {globals.address_zip_code} {globals.address_city}
                 </Link>
               </span>
@@ -82,7 +82,7 @@ export async function ClubOfficeInfo() {
         </tbody>
       </table>
 
-      <h3 className="mt-2">Öffnungszeiten</h3>
+      <h3 className="mt-6">Öffnungszeiten</h3>
 
       <table className="mt-2 text-muted">
         <tbody>
@@ -97,7 +97,7 @@ export async function ClubOfficeInfo() {
 
       {officeClosingDays?.length > 0 && officeClosingDays[0] && (
         <div
-          className="text-red-700 dark:text-red-200"
+          className="text-tcw-red-700 dark:text-tcw-red-200"
           data-directus={getEditAttr({ collection: 'office_closing_days', item: String(officeClosingDays[0].id), fields: 'date', mode: 'drawer' })}
         >
           Ausnahmsweise geschlossen am: {formatClosingDays(officeClosingDays).join(', ')}

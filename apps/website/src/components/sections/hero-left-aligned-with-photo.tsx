@@ -22,9 +22,9 @@ export function HeroLeftAlignedWithPhoto({
   footer?: ReactNode
 } & ComponentProps<'section'>) {
   return (
-    <section className={clsx('py-8', className)} {...props}>
+    <section className={clsx('py-10 sm:py-16', className)} {...props}>
       <Container className="flex flex-col gap-16">
-        <div className="flex flex-col gap-32">
+        <div className="flex flex-col gap-8 sm:gap-12">
           <div className="flex flex-col items-start gap-4">
             {eyebrow}
             <Heading>{headline}</Heading>

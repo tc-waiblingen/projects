@@ -29,7 +29,7 @@ export function MatchResultCard({ match }: MatchResultCardProps) {
             <a
               href={metadata.groupUrl}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer nofollow"
               className="font-medium text-tcw-accent-900 underline decoration-tcw-accent-400 underline-offset-2 hover:decoration-tcw-accent-600 dark:text-tcw-accent-100 dark:decoration-tcw-accent-500 dark:hover:decoration-tcw-accent-300"
             >
               {metadata.group}

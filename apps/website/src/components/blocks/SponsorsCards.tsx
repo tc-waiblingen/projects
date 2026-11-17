@@ -40,7 +40,7 @@ function SponsorCard({
   ) : (
     <span
       title={title}
-      className={`line-clamp-2 text-center font-semibold text-gray-700 ${size === "lg" ? "text-sm" : "text-xs"}`}
+      className={`line-clamp-2 text-center font-semibold text-taupe-700 ${size === "lg" ? "text-sm" : "text-xs"}`}
     >
       {sponsor.name}
     </span>
@@ -54,7 +54,7 @@ function SponsorCard({
         <Link
           href={url}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener noreferrer nofollow"
           aria-label={sponsor.name}
         >
           {content}
