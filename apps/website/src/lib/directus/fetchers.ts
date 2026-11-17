@@ -232,7 +232,8 @@ export const fetchHeaderNavigation = async () => {
                 {
                   page: ["permalink"],
                   post: ["slug", "published_at"],
-                  children: ["id", "title", "url", "is_primary", "primary_on_mobile", "type", { page: ["permalink"], post: ["slug", "published_at"] }],
+                  file: ["id"],
+                  children: ["id", "title", "url", "is_primary", "primary_on_mobile", "type", { page: ["permalink"], post: ["slug", "published_at"], file: ["id"] }],
                 },
               ],
             },
@@ -259,7 +260,8 @@ export const fetchHeaderNavigation = async () => {
                 {
                   page: ["permalink"],
                   post: ["slug", "published_at"],
-                  children: ["id", "title", "url", "is_primary", "primary_on_mobile", "type", { page: ["permalink"], post: ["slug", "published_at"] }],
+                  file: ["id"],
+                  children: ["id", "title", "url", "is_primary", "primary_on_mobile", "type", { page: ["permalink"], post: ["slug", "published_at"], file: ["id"] }],
                 },
               ],
             },
@@ -302,7 +304,8 @@ export const fetchFooterNavigation = async () => {
               {
                 page: ["permalink"],
                 post: ["slug", "published_at"],
-                children: ["id", "title", "url", "type", { page: ["permalink"], post: ["slug", "published_at"] }],
+                file: ["id"],
+                children: ["id", "title", "url", "type", { page: ["permalink"], post: ["slug", "published_at"], file: ["id"] }],
               },
             ],
           },
