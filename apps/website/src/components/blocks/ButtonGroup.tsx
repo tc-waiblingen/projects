@@ -5,18 +5,11 @@ import {
   PlainButtonLink,
 } from "@/components/elements/button"
 import { ArrowNarrowRightIcon } from "@/components/icons/arrow-narrow-right-icon"
-import { GetLinkHref } from "@/lib/dynamic-link-helper"
+import { GetLinkHref, isActiveLink } from "@/lib/dynamic-link-helper"
 
 interface ButtonGroupProps {
   data: BlockButtonGroup
   currentPath?: string
-}
-
-function isActiveLink(href: string, currentPath: string): boolean {
-  if (href === '/') {
-    return currentPath === '/'
-  }
-  return currentPath === href || currentPath.startsWith(href + '/')
 }
 
 export function ButtonGroup({ data, currentPath }: ButtonGroupProps) {

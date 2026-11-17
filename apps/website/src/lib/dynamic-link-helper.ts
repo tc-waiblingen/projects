@@ -1,4 +1,11 @@
-import { DirectusFile, Page, Post } from "@/types/directus-schema"
+import { DirectusFile, NavigationItem, Page, Post } from "@/types/directus-schema"
+
+function getPostPath(slug: string, publishedAt?: string | null): string {
+	if (publishedAt) {
+		return `/news/${new Date(publishedAt).getFullYear()}/${slug}`
+	}
+	return `/news/${slug}`
+}
 
 function GetLinkHref({
 	type,
@@ -22,9 +29,8 @@ function GetLinkHref({
 			}
 			return null
 		case "post":
-			if (post && typeof post !== "string" && post.slug && post.published_at) {
-				const year = new Date(post.published_at).getFullYear()
-				return `/news/${year}/${post.slug}`
+			if (post && typeof post !== "string" && post.slug) {
+				return getPostPath(post.slug, post.published_at)
 			}
 			return null
 		case "file":
@@ -37,4 +43,20 @@ function GetLinkHref({
 	}
 }
 
-export { GetLinkHref }
+function getNavItemHref(
+	item: Pick<NavigationItem, "type" | "url" | "page" | "post" | "file">,
+): string | null {
+	if (!item.type || item.type === "group" || item.type === "divider") {
+		return null
+	}
+	return GetLinkHref({ type: item.type, url: item.url, page: item.page, post: item.post, file: item.file })
+}
+
+function isActiveLink(href: string, currentPath: string): boolean {
+	if (href === "/") {
+		return currentPath === "/"
+	}
+	return currentPath === href || currentPath.startsWith(href + "/")
+}
+
+export { GetLinkHref, getNavItemHref, getPostPath, isActiveLink }

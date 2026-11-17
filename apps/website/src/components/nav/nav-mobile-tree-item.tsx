@@ -3,36 +3,9 @@
 import { PopoverButton } from '@headlessui/react'
 import { clsx } from 'clsx/lite'
 import Link from 'next/link'
-import { DirectusFile, NavigationItem, Page, Post } from '@/types/directus-schema'
+import { getNavItemHref, isActiveLink } from '@/lib/dynamic-link-helper'
+import { NavigationItem } from '@/types/directus-schema'
 import { prioritizePrimary } from './nav-mobile-menu'
-
-function getHref(item: NavigationItem): string | null {
-  switch (item.type) {
-    case 'page':
-      if (!item.page) return null
-      return (item.page as Page).permalink
-    case 'post':
-      if (!item.post) return null
-      return `/news/${(item.post as Post).slug}/`
-    case 'url':
-      if (!item.url) return null
-      return item.url as string
-    case 'file': {
-      if (!item.file) return null
-      const file = item.file as DirectusFile
-      return `/api/files/${file.id}`
-    }
-    default:
-      return null
-  }
-}
-
-function isActiveLink(href: string, currentPath: string): boolean {
-  if (href === '/') {
-    return currentPath === '/'
-  }
-  return currentPath === href || currentPath.startsWith(href + '/')
-}
 
 interface NavMobileTreeItemProps {
   item: NavigationItem
@@ -89,7 +62,7 @@ export function NavMobileTreeItem({ item, currentPath, depth = 0 }: NavMobileTre
     )
   }
 
-  const href = getHref(item)
+  const href = getNavItemHref(item)
   if (!href) return null
 
   const isActive = currentPath ? isActiveLink(href, currentPath) : false

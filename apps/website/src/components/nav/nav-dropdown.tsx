@@ -5,34 +5,14 @@ import { clsx } from 'clsx/lite'
 import Link from 'next/link'
 import { type ComponentProps, useEffect, useId, useRef, useState } from 'react'
 import { ChevronDownIcon } from '../icons/chevron-down-icon'
-import { DirectusFile, NavigationItem, Page, Post } from '@/types/directus-schema'
+import { getNavItemHref } from '@/lib/dynamic-link-helper'
+import { NavigationItem } from '@/types/directus-schema'
 
 type NavDropdownVariant = 'default' | 'primary'
 
 // Check if browser supports CSS Anchor Positioning
 const supportsAnchorPositioning =
   typeof CSS !== 'undefined' && CSS.supports('anchor-name', '--test')
-
-function getChildHref(item: NavigationItem): string | null {
-  switch (item.type) {
-    case 'page':
-      if (!item.page) return null
-      return (item.page as Page).permalink
-    case 'post':
-      if (!item.post) return null
-      return `/news/${(item.post as Post).slug}/`
-    case 'url':
-      if (!item.url) return null
-      return item.url as string
-    case 'file': {
-      if (!item.file) return null
-      const file = item.file as DirectusFile
-      return `/api/files/${file.id}`
-    }
-    default:
-      return null
-  }
-}
 
 export function NavDropdown({
   item,
@@ -176,7 +156,7 @@ export function NavDropdown({
                 </div>
               )
             }
-            const href = getChildHref(child)
+            const href = getNavItemHref(child)
             if (!href) return null
             return (
               <Link

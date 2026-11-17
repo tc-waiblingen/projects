@@ -6,18 +6,11 @@ import type {
 import { clsx } from "clsx/lite"
 import { Section } from "@/components/elements/section"
 import { ButtonLink, SoftButtonLink } from "@/components/elements/button"
-import { GetLinkHref } from "@/lib/dynamic-link-helper"
+import { GetLinkHref, isActiveLink } from "@/lib/dynamic-link-helper"
 
 interface BlockNavMenuProps {
   data: BlockNavMenuType
   currentPath?: string
-}
-
-function isActiveLink(href: string, currentPath: string): boolean {
-  if (href === '/') {
-    return currentPath === '/'
-  }
-  return currentPath === href || currentPath.startsWith(href + '/')
 }
 
 export function BlockNavMenu({ data, currentPath }: BlockNavMenuProps) {

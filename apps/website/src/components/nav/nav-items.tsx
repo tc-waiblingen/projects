@@ -1,48 +1,17 @@
 import { getEditAttr } from '@/lib/visual-editing'
-import { DirectusFile, Navigation, NavigationItem, Page, Post } from '@/types/directus-schema'
+import { getNavItemHref, isActiveLink } from '@/lib/dynamic-link-helper'
+import { Navigation, NavigationItem } from '@/types/directus-schema'
 import { NavDropdown } from './nav-dropdown'
 import { NavLink } from './nav-link'
 
 type NavItemsVariant = 'links' | 'actions'
-
-function getHref(item: NavigationItem): string | null {
-  switch (item.type) {
-    case 'page':
-      if (!item.page) return null
-      return (item.page as Page).permalink
-    case 'post': {
-      if (!item.post) return null
-      const post = item.post as Post
-      if (!post.slug || !post.published_at) return null
-      const year = new Date(post.published_at).getFullYear()
-      return `/news/${year}/${post.slug}/`
-    }
-    case 'url':
-      if (!item.url) return null
-      return item.url as string
-    case 'file': {
-      if (!item.file) return null
-      const file = item.file as DirectusFile
-      return `/api/files/${file.id}`
-    }
-    default:
-      return null
-  }
-}
-
-function isActiveLink(href: string, currentPath: string): boolean {
-  if (href === '/') {
-    return currentPath === '/'
-  }
-  return currentPath === href || currentPath.startsWith(href + '/')
-}
 
 function hasActiveChild(item: NavigationItem, currentPath: string): boolean {
   const children = item.children as NavigationItem[] | undefined
   if (!children || children.length === 0) return false
 
   return children.some((child) => {
-    const href = getHref(child)
+    const href = getNavItemHref(child)
     return href ? isActiveLink(href, currentPath) : false
   })
 }
@@ -101,7 +70,7 @@ export function NavItems({
         )
       }
 
-      const href = getHref(item)
+      const href = getNavItemHref(item)
       if (!href) return null
 
       const isActive = currentPath ? isActiveLink(href, currentPath) : false
