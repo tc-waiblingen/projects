@@ -133,7 +133,7 @@ function GalleryImage({ file, onClick }: GalleryImageProps) {
   return (
     <button
       onClick={onClick}
-      className="aspect-4/3 w-full cursor-pointer overflow-hidden rounded-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+      className="aspect-4/3 w-full cursor-pointer overflow-hidden rounded-lg"
       aria-label={`Bild öffnen: ${title || "Galeriebild"}`}
     >
       <Image

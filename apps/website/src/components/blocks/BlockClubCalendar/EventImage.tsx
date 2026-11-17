@@ -16,7 +16,7 @@ export function EventImage({ src, alt = "" }: EventImageProps) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="cursor-pointer rounded focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+        className="cursor-pointer rounded"
         aria-label={alt ? `Bild öffnen: ${alt}` : "Bild vergrößern"}
       >
         <Image

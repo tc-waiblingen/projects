@@ -9,9 +9,9 @@ interface CourtUsageGridProps {
 }
 
 const HEAT_COLORS = {
-  low: 'bg-green-900/80 text-green-200',
-  medium: 'bg-amber-900/80 text-amber-200',
-  high: 'bg-red-900/80 text-red-200',
+  low: 'bg-success-900/80 text-success-200',
+  medium: 'bg-warning-900/80 text-warning-200',
+  high: 'bg-tcw-red-700/80 text-tcw-red-100',
 } as const
 
 const WEEKDAY_HEADERS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']

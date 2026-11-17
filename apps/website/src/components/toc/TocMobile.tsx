@@ -75,7 +75,7 @@ export function TocMobile({ isOpen, onClose }: TocMobileProps) {
           </span>
           <button
             onClick={onClose}
-            className="rounded p-1 text-taupe-500 hover:bg-taupe-100 dark:text-taupe-400 dark:hover:bg-taupe-800"
+            className="relative cursor-pointer rounded p-1 text-taupe-500 after:absolute after:-inset-2 hover:bg-taupe-100 dark:text-taupe-400 dark:hover:bg-taupe-800"
             aria-label="Schließen"
           >
             <svg
@@ -100,7 +100,7 @@ export function TocMobile({ isOpen, onClose }: TocMobileProps) {
               <li key={heading.id}>
                 <button
                   onClick={() => handleClick(heading.id)}
-                  className={`block w-full cursor-pointer rounded px-3 py-2 text-left text-base transition-colors ${heading.level === 3 ? 'pl-6' : 'font-semibold'
+                  className={`block w-full cursor-pointer rounded px-3 py-2 text-left text-base transition-colors focus-visible:-outline-offset-2 ${heading.level === 3 ? 'pl-6' : 'font-semibold'
                     } ${heading.id === activeId
                       ? 'bg-tcw-accent-100 font-semibold text-tcw-accent-900 dark:bg-tcw-accent-900/20 dark:text-tcw-accent-400'
                       : 'text-taupe-700 hover:bg-taupe-100 dark:text-taupe-300 dark:hover:bg-taupe-800'

@@ -121,7 +121,7 @@ export function SitePlanMap({ areaMapId, courtSponsorsMap }: SitePlanMapProps) {
   if (!svgContent) {
     return (
       <div className="flex h-64 items-center justify-center rounded-lg bg-tcw-accent-100 dark:bg-tcw-accent-800">
-        <span className="text-tcw-accent-500">Lageplan wird geladen...</span>
+        <span className="text-subtle">Lageplan wird geladen...</span>
       </div>
     )
   }

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import type { ComponentProps } from 'react'
 
 const sizes = {
-  md: 'px-3 py-1',
+  md: 'px-3 py-1 pointer-coarse:min-h-11',
   lg: 'px-4 py-2',
 }
 
@@ -29,7 +29,7 @@ export function Button({
           : 'cursor-pointer',
         !disabled && color === 'dark/light' &&
         'bg-tcw-accent-900 text-white hover:bg-tcw-accent-800 dark:bg-tcw-accent-300 dark:text-tcw-accent-900 dark:hover:bg-tcw-accent-200',
-        !disabled && color === 'light' && 'hover bg-white text-tcw-accent-900 hover:bg-tcw-accent-100 dark:bg-tcw-accent-100 dark:hover:bg-white',
+        !disabled && color === 'light' && 'bg-white text-tcw-accent-900 hover:bg-tcw-accent-100 dark:bg-tcw-accent-100 dark:hover:bg-white',
         sizes[size],
         className,
       )}
@@ -62,8 +62,8 @@ export function ButtonLink({
     'bg-tcw-accent-900 text-white hover:bg-tcw-accent-800 dark:bg-tcw-accent-300 dark:text-tcw-accent-900 dark:hover:bg-tcw-accent-200',
     !disabled && color === 'primary+dark/light' &&
     'bg-tcw-red-600 text-white hover:bg-tcw-red-500 dark:bg-tcw-red-200 dark:text-tcw-red-900 dark:hover:bg-tcw-red-100',
-    !disabled && color === 'light' && 'hover bg-white text-tcw-accent-900 hover:bg-tcw-accent-100 dark:bg-tcw-accent-100 dark:hover:bg-white',
-    isActive && 'ring-2 ring-offset-2 ring-tcw-accent-900 dark:ring-tcw-accent-300 dark:ring-offset-tcw-accent-900',
+    !disabled && color === 'light' && 'bg-white text-tcw-accent-900 hover:bg-tcw-accent-100 dark:bg-tcw-accent-100 dark:hover:bg-white',
+    isActive && 'ring-2 ring-offset-2 ring-offset-taupe-100 ring-tcw-accent-900 focus-visible:outline-offset-[6px] dark:ring-tcw-accent-300 dark:ring-offset-taupe-900',
     sizes[size],
     className,
   )

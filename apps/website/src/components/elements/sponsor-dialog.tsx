@@ -138,13 +138,13 @@ export function SponsorDialog({
             )}
           >
             {title && (
-              <span className="text-sm font-semibold uppercase tracking-wider text-tcw-accent-500 dark:text-tcw-accent-400">
+              <span className="text-sm font-semibold uppercase tracking-wider text-subtle">
                 {title}
               </span>
             )}
             <button
               onClick={onClose}
-              className="cursor-pointer rounded p-1 text-tcw-accent-500 hover:bg-tcw-accent-100 dark:text-tcw-accent-400 dark:hover:bg-tcw-accent-800"
+              className="relative cursor-pointer rounded p-1 text-subtle after:absolute after:-inset-2 hover:bg-tcw-accent-100 dark:hover:bg-tcw-accent-800"
               aria-label="Schließen"
             >
               <svg

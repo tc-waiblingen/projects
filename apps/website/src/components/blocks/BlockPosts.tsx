@@ -87,7 +87,7 @@ function PostCard({ post }: { post: Post }) {
         <div className="flex flex-col gap-2">
           <time
             dateTime={published_at}
-            className="text-sm text-tcw-accent-600 dark:text-tcw-accent-400"
+            className="text-sm text-subtle"
           >
             {formattedDate}
           </time>

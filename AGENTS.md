@@ -117,7 +117,7 @@ Each app has detailed documentation in its `AGENTS.md` file covering architectur
 - No semicolons, single quotes (Prettier)
 - Two-space indentation
 - `clsx` for conditional classes
-- Semantic text colors: `text-body`, `text-muted` (not raw color classes)
+- Semantic text colors: `text-body`, `text-muted`, `text-subtle` (not raw color classes)
 - All interactive elements need `cursor-pointer`
 - External links need `rel="noopener noreferrer nofollow"`
 

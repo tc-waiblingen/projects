@@ -44,7 +44,7 @@ export function MobileNavigation({ navMain, navCTA, currentPath }: MobileNavigat
   return (
     <Popover className="lg:hidden">
       <PopoverButton
-        className="relative z-10 flex size-10 cursor-pointer items-center justify-center rounded-full hover:bg-tcw-accent-900/10 focus:outline-none dark:hover:bg-white/10"
+        className="relative z-10 flex size-11 cursor-pointer items-center justify-center rounded-full hover:bg-tcw-accent-900/10 dark:hover:bg-white/10"
         aria-label="Navigation umschalten"
       >
         {({ open }) => <MobileNavIcon open={open} />}

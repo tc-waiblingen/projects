@@ -147,16 +147,16 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
           {/* Search Input */}
           <div className="relative flex items-center border-b border-tcw-accent-200 dark:border-tcw-accent-700">
-            <MagnifyingGlassIcon className="pointer-events-none ml-4 h-5 w-5 text-tcw-accent-500" />
+            <MagnifyingGlassIcon className="pointer-events-none ml-4 h-5 w-5 text-subtle" />
             <input
               ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Suchen..."
-              className="h-14 w-full border-0 bg-transparent pl-3 pr-4 text-tcw-accent-900 placeholder-tcw-accent-500 focus:outline-none focus:ring-0 dark:text-white dark:placeholder-tcw-accent-400"
+              className="h-14 w-full border-0 bg-transparent pl-3 pr-4 text-tcw-accent-900 placeholder:text-subtle focus:outline-none focus:ring-0 dark:text-white"
             />
-            <kbd className="mr-4 hidden rounded bg-tcw-accent-100 px-2 py-1 text-xs font-medium text-tcw-accent-600 sm:inline-block dark:bg-tcw-accent-700 dark:text-tcw-accent-300">
+            <kbd className="mr-4 hidden rounded bg-tcw-accent-100 px-2 py-1 text-xs font-medium text-tcw-accent-700 sm:inline-block dark:bg-tcw-accent-700 dark:text-tcw-accent-100">
               ESC
             </kbd>
           </div>
@@ -164,13 +164,13 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
           {/* Results */}
           <div className="max-h-[60vh] overflow-y-auto p-2">
             {isLoading && (
-              <div className="px-4 py-8 text-center text-tcw-accent-500">
+              <div className="px-4 py-8 text-center text-subtle">
                 Suche...
               </div>
             )}
 
             {!isLoading && query && results.length === 0 && (
-              <div className="px-4 py-8 text-center text-tcw-accent-500">
+              <div className="px-4 py-8 text-center text-subtle">
                 Keine Ergebnisse für &quot;{query}&quot;
               </div>
             )}
@@ -198,7 +198,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       </div>
                       {/* Pagefind excerpt; wraps query matches in <mark> tags — Pagefind escapes user input before indexing. */}
                       <div
-                        className="mt-1 line-clamp-2 text-sm text-tcw-accent-600 dark:text-tcw-accent-300"
+                        className="mt-1 line-clamp-2 text-sm text-muted"
                         dangerouslySetInnerHTML={{ __html: result.excerpt }}
                       />
                     </a>
@@ -208,7 +208,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             )}
 
             {!query && (
-              <div className="px-4 py-8 text-center text-tcw-accent-500">
+              <div className="px-4 py-8 text-center text-subtle">
                 Suchbegriff eingeben...
               </div>
             )}
@@ -216,7 +216,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
           {/* Keyboard hints footer */}
           {results.length > 0 && (
-            <div className="flex items-center justify-end gap-4 border-t border-tcw-accent-200 px-4 py-2 text-xs text-tcw-accent-500 dark:border-tcw-accent-700">
+            <div className="flex items-center justify-end gap-4 border-t border-tcw-accent-200 px-4 py-2 text-xs text-subtle dark:border-tcw-accent-700">
               <span className="flex items-center gap-1">
                 <kbd className="rounded bg-tcw-accent-100 px-1.5 py-0.5 font-medium dark:bg-tcw-accent-700">↑</kbd>
                 <kbd className="rounded bg-tcw-accent-100 px-1.5 py-0.5 font-medium dark:bg-tcw-accent-700">↓</kbd>

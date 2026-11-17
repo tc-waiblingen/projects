@@ -24,7 +24,7 @@ export function NavLink({
       data-directus={dataDirectus}
       aria-current={isActive ? 'page' : undefined}
       className={clsx(
-        'inline-flex shrink-0 items-center justify-center rounded-full px-3 py-1 text-sm/7 font-medium',
+        'inline-flex shrink-0 items-center justify-center rounded-full px-3 py-1 text-sm/7 font-medium pointer-coarse:min-h-11',
         variant === 'default' && 'text-tcw-accent-900 dark:text-white',
         variant === 'default' && isActive && 'bg-tcw-accent-900/10 dark:bg-white/10',
         variant === 'default' && !isActive && 'hover:bg-tcw-accent-900/10 dark:hover:bg-white/10',

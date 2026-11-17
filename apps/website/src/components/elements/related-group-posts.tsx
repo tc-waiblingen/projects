@@ -72,7 +72,7 @@ export async function RelatedGroupPosts({ groupId, currentPostId }: RelatedGroup
 
               const badgeEl = preview ? (() => {
                 if (post.status !== 'published') {
-                  return <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-900 dark:text-amber-100">Entwurf</span>
+                  return <span className="rounded bg-warning-100 px-1.5 py-0.5 text-xs font-medium text-warning-900 dark:bg-warning-900 dark:text-warning-100">Entwurf</span>
                 }
                 if (post.published_at && new Date(post.published_at) > new Date()) {
                   return <span className="rounded bg-tcw-red-100 px-1.5 py-0.5 text-xs font-medium text-tcw-red-900 dark:bg-tcw-red-900 dark:text-tcw-red-100">Geplant</span>

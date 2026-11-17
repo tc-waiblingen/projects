@@ -39,18 +39,18 @@ export function CourtUsageClient({ events, indoorCourtCount, outdoorCourtCount, 
       )}
       {/* Toggle + Print — visible on screen only */}
       <div className="mb-6 flex items-center gap-4 print:hidden">
-        <div className="flex gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
+        <div className="flex gap-1 rounded-lg bg-taupe-200 p-1 dark:bg-taupe-700">
           <button
             type="button"
             onClick={() => setMode('courts')}
-            className={`cursor-pointer rounded-md px-3 py-1.5 text-sm ${mode === 'courts' ? 'bg-white font-medium text-body shadow-sm dark:bg-gray-700' : 'text-muted'}`}
+            className={`cursor-pointer rounded-md px-3 py-1.5 text-sm ${mode === 'courts' ? 'bg-white font-medium text-body shadow-sm dark:bg-taupe-800' : 'text-muted'}`}
           >
             Platzbelegung
           </button>
           <button
             type="button"
             onClick={() => setMode('teams')}
-            className={`cursor-pointer rounded-md px-3 py-1.5 text-sm ${mode === 'teams' ? 'bg-white font-medium text-body shadow-sm dark:bg-gray-700' : 'text-muted'}`}
+            className={`cursor-pointer rounded-md px-3 py-1.5 text-sm ${mode === 'teams' ? 'bg-white font-medium text-body shadow-sm dark:bg-taupe-800' : 'text-muted'}`}
           >
             Heimmannschaften
           </button>
@@ -58,7 +58,7 @@ export function CourtUsageClient({ events, indoorCourtCount, outdoorCourtCount, 
         <button
           type="button"
           onClick={() => window.print()}
-          className="cursor-pointer rounded-md border border-gray-200 px-3 py-1.5 text-sm text-muted hover:text-body dark:border-gray-700"
+          className="cursor-pointer rounded-md border border-tcw-accent-300 px-3 py-1.5 text-sm text-muted hover:text-body dark:border-tcw-accent-700"
         >
           Drucken
         </button>
@@ -66,9 +66,9 @@ export function CourtUsageClient({ events, indoorCourtCount, outdoorCourtCount, 
 
       {/* Legend */}
       <div className="mb-4 flex flex-wrap gap-3 text-xs text-muted print:hidden">
-        <span><span className="mr-1 inline-block h-3 w-3 rounded bg-green-900/80" /> Niedrig</span>
-        <span><span className="mr-1 inline-block h-3 w-3 rounded bg-amber-900/80" /> Mittel</span>
-        <span><span className="mr-1 inline-block h-3 w-3 rounded bg-red-900/80" /> Hoch / Turnier</span>
+        <span><span className="mr-1 inline-block h-3 w-3 rounded bg-success-900/80" /> Niedrig</span>
+        <span><span className="mr-1 inline-block h-3 w-3 rounded bg-warning-900/80" /> Mittel</span>
+        <span><span className="mr-1 inline-block h-3 w-3 rounded bg-tcw-red-700/80" /> Hoch / Turnier</span>
         <span className="text-muted">
           {mode === 'courts' ? 'vorm.+nachm. Plätze' : 'vorm.+nachm. Mannschaften'} | <strong>T</strong> = Turnier
         </span>
@@ -97,7 +97,7 @@ export function CourtUsageClient({ events, indoorCourtCount, outdoorCourtCount, 
             <DialogTitle className="mb-4 flex items-center justify-end">
               <button
                 onClick={() => setDialogDay(null)}
-                className="cursor-pointer rounded p-1 text-tcw-accent-500 hover:bg-tcw-accent-100 dark:text-tcw-accent-400 dark:hover:bg-tcw-accent-800"
+                className="relative cursor-pointer rounded p-1 text-subtle after:absolute after:-inset-2 hover:bg-tcw-accent-100 dark:hover:bg-tcw-accent-800"
                 aria-label="Schließen"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

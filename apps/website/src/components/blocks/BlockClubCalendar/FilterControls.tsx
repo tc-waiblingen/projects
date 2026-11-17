@@ -89,7 +89,7 @@ export function FilterControls({
           <select
             value={team ?? ''}
             onChange={(e) => onTeamChange(e.target.value || null)}
-            className="cursor-pointer appearance-none rounded-full bg-transparent px-2.5 py-1 pr-7 text-xs font-medium text-taupe-700 transition-colors hover:text-taupe-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:text-taupe-200 dark:hover:text-white"
+            className="cursor-pointer appearance-none rounded-full bg-transparent px-2.5 py-1 pr-7 text-xs font-medium text-taupe-700 transition-colors hover:text-taupe-900 dark:text-taupe-200 dark:hover:text-white"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23787264' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E")`, backgroundPosition: 'right 0.4rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1rem 1rem' }}
           >
             <option value="">Mannschaft wählen...</option>

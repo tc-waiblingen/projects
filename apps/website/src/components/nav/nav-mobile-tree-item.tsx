@@ -73,7 +73,7 @@ export function NavMobileTreeItem({ item, currentPath, depth = 0 }: NavMobileTre
       href={href}
       aria-current={isActive ? 'page' : undefined}
       className={clsx(
-        'block w-full rounded-lg px-3 py-2 text-base transition-colors',
+        'block w-full rounded-lg px-3 py-2 text-base transition-colors pointer-coarse:py-2.5 focus-visible:-outline-offset-2',
         isPrimary
           ? 'bg-tcw-red-600 text-white hover:bg-tcw-red-500 dark:bg-tcw-red-200 dark:text-tcw-red-900 dark:hover:bg-tcw-red-100'
           : 'text-tcw-accent-700 hover:bg-tcw-accent-100 dark:text-tcw-accent-200 dark:hover:bg-tcw-accent-700',

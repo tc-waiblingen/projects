@@ -22,13 +22,13 @@ function formatCourtType(courtType: 'tennis_indoor' | 'tennis_outdoor'): string 
 
 function EntryRow({ entry, courtTypeLabel }: { entry: CourtUsageEntry; courtTypeLabel: string }) {
   return (
-    <div className="grid grid-cols-[50px_70px_65px_1fr] gap-2 border-b border-gray-100 py-1.5 text-sm dark:border-gray-800">
+    <div className="grid grid-cols-[50px_70px_65px_1fr] gap-2 border-b border-tcw-accent-100 py-1.5 text-sm dark:border-tcw-accent-700">
       <span className="font-bold tabular-nums text-body">{entry.time}</span>
       <span className="text-muted">{entry.courts} Pl. ({courtTypeLabel})</span>
       <span className="text-xs text-muted">{entry.players} Sp.</span>
       <div>
         {entry.leagueUrl ? (
-          <a href={entry.leagueUrl} target="_blank" rel="noopener noreferrer nofollow" className="cursor-pointer font-bold text-body underline decoration-muted/30 hover:decoration-body">{entry.league}</a>
+          <a href={entry.leagueUrl} target="_blank" rel="noopener noreferrer nofollow" className="font-bold text-body text-link">{entry.league}</a>
         ) : (
           <span className="font-bold text-body">{entry.league}</span>
         )}
@@ -47,16 +47,16 @@ export function CourtUsageDayDetail({ day, showDayHeader = true }: CourtUsageDay
   return (
     <div>
       {showDayHeader && (
-        <div className="mb-3 border-b-2 border-gray-200 pb-2 dark:border-gray-700">
+        <div className="mb-3 border-b-2 border-tcw-accent-200 pb-2 dark:border-tcw-accent-700">
           <span className="text-lg font-bold text-body">{formatDate(day.date)}</span>
         </div>
       )}
 
       {day.tournament ? (
-        <div className="border-b border-gray-100 py-1.5 text-sm dark:border-gray-800">
-          <span className="mr-2 inline-block rounded bg-red-900/80 px-1.5 py-0.5 text-[10px] font-bold text-red-200">TURNIER</span>
+        <div className="border-b border-tcw-accent-100 py-1.5 text-sm dark:border-tcw-accent-700">
+          <span className="mr-2 inline-block rounded bg-tcw-red-700/80 px-1.5 py-0.5 text-[10px] font-bold text-tcw-red-100">TURNIER</span>
           {day.tournament.url ? (
-            <a href={day.tournament.url} target="_blank" rel="noopener noreferrer nofollow" className="cursor-pointer underline decoration-muted/30 hover:decoration-body">{day.tournament.title}</a>
+            <a href={day.tournament.url} target="_blank" rel="noopener noreferrer nofollow" className="text-link">{day.tournament.title}</a>
           ) : (
             day.tournament.title
           )} — alle {day.courtType === 'tennis_indoor' ? 'Hallenplätze' : 'Freiplätze'} belegt
@@ -72,7 +72,7 @@ export function CourtUsageDayDetail({ day, showDayHeader = true }: CourtUsageDay
       )}
 
       {!day.tournament && (
-        <div className="mt-3 flex gap-8 rounded-md bg-gray-50 px-3 py-2 text-xs text-muted dark:bg-gray-800/50">
+        <div className="mt-3 flex gap-8 rounded-md bg-tcw-accent-50 px-3 py-2 text-xs text-muted dark:bg-tcw-accent-800">
           <div className="flex flex-col gap-0.5">
             <span><strong className="text-body">{totalTeams}</strong> {totalTeams === 1 ? 'Heimmannschaft' : 'Heimmannschaften'}</span>
             <span><strong className="text-body">{totalCourts}</strong> {totalCourts === 1 ? 'Platz' : 'Plätze'} belegt</span>

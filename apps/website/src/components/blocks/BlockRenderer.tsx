@@ -131,7 +131,7 @@ function PlaceholderBlock({ name }: { name: string }) {
     <div className="py-8">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="rounded-lg border-2 border-dashed border-tcw-accent-300 p-8 text-center dark:border-tcw-accent-700">
-          <p className="text-tcw-accent-500 dark:text-tcw-accent-400">
+          <p className="text-subtle">
             Block: {name} (not yet implemented)
           </p>
         </div>

@@ -26,7 +26,7 @@ export function InstagramPost({ item, showCaption, variant }: InstagramPostProps
       target="_blank"
       rel="noopener noreferrer nofollow"
       className={clsx(
-        'group interactive-group relative flex-shrink-0 snap-start overflow-hidden',
+        'group interactive-group relative flex-shrink-0 snap-start overflow-hidden focus-visible:-outline-offset-2',
         'aspect-[4/5]',
         isCompact ? 'w-40 sm:w-44' : 'w-64 sm:w-72',
         isStory && 'ring-2 ring-gradient-to-tr from-purple-500 via-pink-500 to-orange-500'

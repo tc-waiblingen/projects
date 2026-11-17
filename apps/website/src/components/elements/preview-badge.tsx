@@ -40,8 +40,8 @@ export function PreviewBadge({ reason, className }: PreviewBadgeProps) {
     <div
       className={clsx(
         'fixed right-4 top-20 z-50 max-w-sm rounded-lg px-4 py-2 text-sm font-medium shadow-lg',
-        variant === 'draft' && 'bg-amber-100 text-amber-900 dark:bg-amber-900 dark:text-amber-100',
-        variant === 'in_review' && 'bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100',
+        variant === 'draft' && 'bg-warning-100 text-warning-900 dark:bg-warning-900 dark:text-warning-100',
+        variant === 'in_review' && 'bg-info-100 text-info-900 dark:bg-info-900 dark:text-info-100',
         variant === 'scheduled' && 'bg-tcw-red-100 text-tcw-red-900 dark:bg-tcw-red-900 dark:text-tcw-red-100',
         className,
       )}

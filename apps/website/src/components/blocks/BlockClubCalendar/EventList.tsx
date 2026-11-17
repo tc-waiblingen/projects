@@ -12,7 +12,7 @@ interface EventListProps {
 export function EventList({ events, style = 'default', alignment = 'left' }: EventListProps) {
   if (events.length === 0) {
     return (
-      <p className="text-tcw-accent-500 dark:text-tcw-accent-400">
+      <p className="text-subtle">
         Keine Termine vorhanden.
       </p>
     )

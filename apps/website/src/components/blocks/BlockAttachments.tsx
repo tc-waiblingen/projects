@@ -74,7 +74,7 @@ function AttachmentItem({ file }: AttachmentItemProps) {
             className="h-16 w-16 text-tcw-accent-400 transition-colors group-hover:text-tcw-accent-600 group-active:text-tcw-accent-600 group-focus-visible:text-tcw-accent-600 dark:text-tcw-accent-500 dark:group-hover:text-tcw-accent-300 dark:group-active:text-tcw-accent-300 dark:group-focus-visible:text-tcw-accent-300"
           />
           {extension && (
-            <span className="absolute right-0 bottom-0 rounded bg-tcw-accent-600 px-2 py-0.5 text-[7px] font-semibold leading-none text-white dark:bg-tcw-accent-500">
+            <span className="absolute right-0 bottom-0 rounded bg-tcw-accent-700 px-2 py-0.5 text-[7px] font-semibold leading-none text-white">
               {extension}
             </span>
           )}
@@ -83,7 +83,7 @@ function AttachmentItem({ file }: AttachmentItemProps) {
           <p className="line-clamp-2 text-center text-sm font-medium text-tcw-accent-900 dark:text-white">
             {displayName}
           </p>
-          <p className="text-xs text-tcw-accent-500 dark:text-tcw-accent-400">{fileSize}</p>
+          <p className="text-xs text-subtle">{fileSize}</p>
         </div>
       </a>
     </li>

@@ -96,7 +96,7 @@ function DefaultLayout({
               'text-sm tabular-nums leading-5',
               homeTeamWon
                 ? 'font-bold text-tcw-accent-900 dark:text-white'
-                : 'text-tcw-accent-700 dark:text-tcw-accent-300'
+                : 'text-tcw-accent-700 dark:text-tcw-accent-100'
             )}
           >
             {parsedResult.homeScore}
@@ -106,7 +106,7 @@ function DefaultLayout({
               'text-sm tabular-nums leading-5',
               awayTeamWon
                 ? 'font-bold text-tcw-accent-900 dark:text-white'
-                : 'text-tcw-accent-700 dark:text-tcw-accent-300'
+                : 'text-tcw-accent-700 dark:text-tcw-accent-100'
             )}
           >
             {parsedResult.awayScore}
@@ -146,7 +146,7 @@ function CompactLayout({
   return (
     <div className="flex items-center gap-2">
       {parsedResult && (
-        <span className="shrink-0 rounded bg-tcw-accent-100 px-1.5 py-0.5 text-xs tabular-nums text-tcw-accent-700 dark:bg-tcw-accent-700 dark:text-tcw-accent-200">
+        <span className="shrink-0 rounded bg-tcw-accent-100 px-1.5 py-0.5 text-xs tabular-nums text-tcw-accent-700 dark:bg-tcw-accent-700 dark:text-tcw-accent-100">
           {parsedResult.homeScore}:{parsedResult.awayScore}
         </span>
       )}

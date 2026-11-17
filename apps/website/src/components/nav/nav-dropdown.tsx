@@ -109,7 +109,7 @@ export function NavDropdown({
         aria-expanded={isOpen}
         style={{ anchorName } as React.CSSProperties}
         className={clsx(
-          'inline-flex shrink-0 cursor-pointer items-center justify-center gap-1 rounded-full px-3 py-1 text-sm/7 font-medium',
+          'inline-flex shrink-0 cursor-pointer items-center justify-center gap-1 rounded-full px-3 py-1 text-sm/7 font-medium pointer-coarse:min-h-11',
           variant === 'default' && 'text-tcw-accent-900 dark:text-white',
           variant === 'default' && isActive && 'bg-tcw-accent-900/10 dark:bg-white/10',
           variant === 'default' && !isActive && 'hover:bg-tcw-accent-900/10 dark:hover:bg-white/10',
@@ -162,7 +162,7 @@ export function NavDropdown({
               <Link
                 key={child.id}
                 href={href}
-                className="rounded-md px-3 py-2 text-sm/6 text-tcw-accent-900 hover:bg-tcw-accent-100 dark:text-white dark:hover:bg-tcw-accent-700"
+                className="rounded-md px-3 py-2 text-sm/6 pointer-coarse:py-2.5 text-tcw-accent-900 hover:bg-tcw-accent-100 dark:text-white dark:hover:bg-tcw-accent-700"
               >
                 {child.title}
               </Link>

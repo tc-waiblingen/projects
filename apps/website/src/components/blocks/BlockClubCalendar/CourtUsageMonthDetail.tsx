@@ -23,7 +23,7 @@ export function CourtUsageMonthDetail({ month, onDayClick, onBack }: CourtUsageM
       >
         ← Zurück zur Übersicht
       </button>
-      <h3 className="mb-6 border-b-[3px] border-gray-900 pb-2 text-xl font-bold text-body dark:border-gray-100">
+      <h3 className="mb-6 border-b-[3px] border-tcw-accent-900 pb-2 text-xl font-bold text-body dark:border-tcw-accent-100">
         {formatMonthHeader(month.monthDate)}
       </h3>
       <div className="flex flex-col gap-6">
@@ -32,7 +32,7 @@ export function CourtUsageMonthDetail({ month, onDayClick, onBack }: CourtUsageM
             key={day.dateKey}
             type="button"
             onClick={() => onDayClick(day.dateKey)}
-            className="cursor-pointer rounded-lg border border-gray-100 p-4 text-left transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50"
+            className="cursor-pointer rounded-lg border border-tcw-accent-200 p-4 text-left transition-colors hover:bg-tcw-accent-50 dark:border-tcw-accent-700 dark:hover:bg-tcw-accent-800"
           >
             <CourtUsageDayDetail day={day} />
           </button>

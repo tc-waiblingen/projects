@@ -51,7 +51,7 @@ export function CourtUsageChanges({ groups, now }: CourtUsageChangesProps) {
               {group.entries.map((entry) => (
                 <li
                   key={`${entry.matchId}-${entry.kind}-${entry.changedAt}`}
-                  className="flex flex-col gap-1 border-b border-gray-100 px-4 py-2 text-sm last:border-b-0 sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-baseline sm:gap-4 dark:border-gray-800"
+                  className="flex flex-col gap-1 border-b border-tcw-accent-100 px-4 py-2 text-sm last:border-b-0 sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-baseline sm:gap-4 dark:border-tcw-accent-700"
                 >
                   <span className="text-muted tabular-nums">
                     Spieltermin: {formatShortDate(entry.matchDate)}

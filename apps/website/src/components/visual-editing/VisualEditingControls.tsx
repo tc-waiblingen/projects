@@ -52,7 +52,7 @@ export function VisualEditingControls({ itemId, collection }: { itemId?: string;
       )}
       <button
         onClick={disable}
-        className="cursor-pointer rounded-full bg-tcw-accent-700 px-3 py-2 text-sm font-medium text-white shadow-lg transition-colors hover:bg-tcw-accent-600 dark:bg-tcw-accent-200 dark:text-tcw-accent-900 dark:hover:bg-tcw-accent-300"
+        className="cursor-pointer rounded-full bg-tcw-accent-700 px-3 py-2 text-sm font-medium text-white shadow-lg transition-colors hover:bg-tcw-accent-800 dark:bg-tcw-accent-200 dark:text-tcw-accent-900 dark:hover:bg-tcw-accent-300"
         title="Visual Editing deaktivieren"
       >
         ✕

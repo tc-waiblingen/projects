@@ -189,6 +189,8 @@ If modifying this component, ensure both positioning methods continue to work.
 ### Styling
 - Tailwind CSS 4 with custom theme in `src/app/globals.css`
 - Custom color palettes: `tcw-red-*`, `tcw-accent-*`, `taupe-*`
+- Accent ramp usage: 50–300 surfaces/borders; 400–500 decoration and dark-mode text only; 600 icons/UI on light surfaces (≥3:1); 700 lightest text step on light surfaces (≥4.5:1); 800–900 text
+- Status colors: `success-*`, `warning-*`, `info-*`; danger is `tcw-red-*`. No raw Tailwind palette classes (`gray-*`, `green-*`, `amber-*`, `blue-*`, `red-*`, …). Exceptions: Instagram gradients, print-only tables, `global-error.tsx`
 - Custom fonts: Open Sans (sans-serif), EB Garamond (serif)
 - Use `clsx` for conditional class composition
 
@@ -196,8 +198,14 @@ If modifying this component, ensure both positioning methods continue to work.
 Use semantic text color classes for consistency:
 - `text-body` — Primary body text (tcw-accent-900 / dark:tcw-accent-100)
 - `text-muted` — Secondary/supporting text like descriptions, roles, bylines (tcw-accent-800 / dark:tcw-accent-200)
+- `text-subtle` — Metadata, help text, placeholders, empty states (tcw-accent-700 / dark:tcw-accent-400)
 
-Do NOT use raw color classes like `text-tcw-accent-800` for body text. Use the semantic classes instead.
+Do NOT use raw color classes like `text-tcw-accent-800` for body text. Use the semantic classes instead. Never use `text-tcw-accent-400/500/600` for light-mode text.
+
+### Focus and Touch Targets
+- Focus outlines are global (`:focus-visible` in `globals.css`). Don't add `focus:ring-*`, and never use `focus:outline-none` without a visible replacement.
+- Inside `overflow-hidden`/scrolling containers, use `focus-visible:-outline-offset-2` so the outline isn't clipped.
+- `Button` (md), `NavLink` and nav pills carry `pointer-coarse:min-h-11`. Icon-only buttons need a 44px hit area: `relative after:absolute after:-inset-2`.
 
 ## Environment Variables
 

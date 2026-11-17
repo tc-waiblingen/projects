@@ -24,7 +24,7 @@ export function AnnouncementBadge({
       className={clsx(
         'group interactive-group relative inline-flex max-w-full gap-x-3 overflow-hidden rounded-md px-3.5 py-2 text-sm/6 font-medium max-sm:flex-col sm:items-center sm:rounded-full sm:px-4 sm:py-1',
         variant === 'normal' &&
-        'animate-glow-pulse bg-gradient-to-r from-tcw-red-500 to-tcw-red-400 text-white shadow-lg shadow-tcw-red-500/25 transition-shadow hover:shadow-xl hover:shadow-tcw-red-500/40',
+        'animate-glow-pulse bg-gradient-to-r from-tcw-red-600 to-tcw-red-500 text-white shadow-lg shadow-tcw-red-600/30 transition-shadow hover:shadow-xl hover:shadow-tcw-red-600/50',
         variant === 'overlay' &&
         'animate-glow-pulse bg-gradient-to-r from-tcw-red-600 to-tcw-red-500 text-white shadow-lg shadow-tcw-red-600/30 transition-shadow hover:shadow-xl hover:shadow-tcw-red-600/50',
         className,

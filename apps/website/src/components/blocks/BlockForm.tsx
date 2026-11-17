@@ -119,7 +119,7 @@ function FormContent({ form }: { form: Form }) {
 
   if (submitResult?.success) {
     return (
-      <div className="rounded-lg bg-green-50 p-6 text-green-800 dark:bg-green-900/20 dark:text-green-200">
+      <div className="rounded-lg bg-success-50 p-6 text-success-800 dark:bg-success-900/20 dark:text-success-200">
         {submitResult.message}
       </div>
     )
@@ -145,7 +145,7 @@ function FormContent({ form }: { form: Form }) {
       </div>
 
       {submitResult && !submitResult.success && (
-        <div className="mt-4 rounded-lg bg-red-50 p-4 text-red-800 dark:bg-red-900/20 dark:text-red-200">
+        <div className="mt-4 rounded-lg bg-tcw-red-50 p-4 text-tcw-red-700 dark:bg-tcw-red-700/20 dark:text-tcw-red-100">
           {submitResult.message}
         </div>
       )}
@@ -171,13 +171,13 @@ function FormFieldComponent({ field, error, onClearError }: FormFieldComponentPr
   const widthClass = getWidthClass(width)
 
   const baseInputClasses =
-    "w-full rounded-lg border bg-white px-4 py-2 text-tcw-accent-900 placeholder:text-tcw-accent-500 focus:outline-none focus:ring-1 dark:bg-tcw-accent-900 dark:text-white dark:placeholder:text-tcw-accent-400"
+    "w-full rounded-lg border bg-white px-4 py-2 text-tcw-accent-900 placeholder:text-subtle focus:outline-none focus:ring-1 dark:bg-tcw-accent-900 dark:text-white"
 
   const inputClasses = clsx(
     baseInputClasses,
     error
-      ? "border-red-500 focus:border-red-500 focus:ring-red-500 dark:border-red-500"
-      : "border-tcw-accent-300 focus:border-tcw-accent-500 focus:ring-tcw-accent-500 dark:border-tcw-accent-700"
+      ? "border-tcw-red-500 focus:border-tcw-red-500 focus:ring-tcw-red-500 dark:border-tcw-red-500"
+      : "border-tcw-accent-300 focus:border-tcw-accent-900 focus:ring-tcw-accent-900 dark:border-tcw-accent-700 dark:focus:border-tcw-accent-200 dark:focus:ring-tcw-accent-200"
   )
 
   const labelClasses = "block text-sm font-medium text-tcw-accent-900 dark:text-white"
@@ -197,7 +197,7 @@ function FormFieldComponent({ field, error, onClearError }: FormFieldComponentPr
       {label && (
         <label htmlFor={name ?? ""} className={labelClasses}>
           {label}
-          {required && <span className="ml-1 text-red-500">*</span>}
+          {required && <span className="ml-1 text-tcw-red-600 dark:text-tcw-red-400">*</span>}
         </label>
       )}
 
@@ -235,9 +235,9 @@ function FormFieldComponent({ field, error, onClearError }: FormFieldComponentPr
             name={name ?? ""}
             required={required ?? false}
             className={clsx(
-              "h-4 w-4 rounded focus:ring-tcw-accent-500",
+              "h-4 w-4 rounded",
               error
-                ? "border-red-500 text-red-500 dark:border-red-500"
+                ? "border-tcw-red-500 text-tcw-red-500 dark:border-tcw-red-500"
                 : "border-tcw-accent-300 text-tcw-accent-900 dark:border-tcw-accent-700"
             )}
             onChange={handleChange}
@@ -259,9 +259,9 @@ function FormFieldComponent({ field, error, onClearError }: FormFieldComponentPr
                   name={name ?? ""}
                   value={choice.value}
                   className={clsx(
-                    "h-4 w-4 rounded focus:ring-tcw-accent-500",
+                    "h-4 w-4 rounded",
                     error
-                      ? "border-red-500 text-red-500 dark:border-red-500"
+                      ? "border-tcw-red-500 text-tcw-red-500 dark:border-tcw-red-500"
                       : "border-tcw-accent-300 text-tcw-accent-900 dark:border-tcw-accent-700"
                   )}
                   onChange={handleChange}
@@ -287,9 +287,9 @@ function FormFieldComponent({ field, error, onClearError }: FormFieldComponentPr
                   value={choice.value}
                   required={required ?? false}
                   className={clsx(
-                    "h-4 w-4 focus:ring-tcw-accent-500",
+                    "h-4 w-4",
                     error
-                      ? "border-red-500 text-red-500 dark:border-red-500"
+                      ? "border-tcw-red-500 text-tcw-red-500 dark:border-tcw-red-500"
                       : "border-tcw-accent-300 text-tcw-accent-900 dark:border-tcw-accent-700"
                   )}
                   onChange={handleChange}
@@ -316,11 +316,11 @@ function FormFieldComponent({ field, error, onClearError }: FormFieldComponentPr
       )}
 
       {error && (
-        <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-xs text-tcw-red-600 dark:text-tcw-red-400">{error}</p>
       )}
 
       {help && !error && (
-        <p className="text-xs text-tcw-accent-600 dark:text-tcw-accent-400">{help}</p>
+        <p className="text-xs text-subtle">{help}</p>
       )}
     </div>
   )
