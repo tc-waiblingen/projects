@@ -1,26 +1,11 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 
-const DEBOUNCE_MS = 300
-
-// In-memory map of pending revalidations (works for self-hosted/standalone)
-const pendingRevalidations = new Map<string, NodeJS.Timeout>()
-
-function debouncedRevalidate(tag: string) {
-  // Cancel existing pending revalidation for this tag
-  const existing = pendingRevalidations.get(tag)
-  if (existing) {
-    clearTimeout(existing)
-  }
-
-  // Schedule new revalidation after debounce period
-  const timeout = setTimeout(() => {
-    revalidateTag(tag, 'max')
-    pendingRevalidations.delete(tag)
-    console.log(`[RevalidateTag] ${tag}`)
-  }, DEBOUNCE_MS)
-
-  pendingRevalidations.set(tag, timeout)
+// Must run synchronously within the request: Next.js collects revalidated tags
+// on the request's work store and flushes them when the handler finishes.
+function revalidate(tag: string) {
+  revalidateTag(tag, 'max')
+  console.log(`[RevalidateTag] ${tag}`)
 }
 
 export async function POST(request: NextRequest) {
@@ -44,11 +29,11 @@ export async function POST(request: NextRequest) {
   }
 
   const tag = rawTag ?? `directus:collection:${collection}`
-  debouncedRevalidate(tag)
+  revalidate(tag)
 
   // Revalidate all route cache to ensure layout-level data (globals) is refreshed
   revalidatePath('/', 'layout')
   console.log(`[RevalidatePath] / (layout)`)
 
-  return NextResponse.json({ scheduled: true, tag, debounceMs: DEBOUNCE_MS })
+  return NextResponse.json({ revalidated: true, tag })
 }
