@@ -45,34 +45,35 @@ COPY apps/tv ./apps/tv
 
 # Build-time environment variables
 ARG NEXT_PUBLIC_DIRECTUS_URL
-ARG NEXT_PUBLIC_SITE_URL
-ARG NEXT_PUBLIC_ENABLE_VISUAL_EDITING
 ARG EBUSY_API_URL
+ARG NR_API_URL
+ARG NR_CLUB_ID
+ARG DISPO_API_URL
 
 ENV NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
-ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
-ENV NEXT_PUBLIC_ENABLE_VISUAL_EDITING=${NEXT_PUBLIC_ENABLE_VISUAL_EDITING}
 ENV EBUSY_API_URL=${EBUSY_API_URL}
+ENV NR_API_URL=${NR_API_URL}
+ENV NR_CLUB_ID=${NR_CLUB_ID}
+ENV DISPO_API_URL=${DISPO_API_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 
 WORKDIR /app/apps/tv
 
 # Build with secrets and cache mounts
 RUN --mount=type=cache,target=/app/apps/tv/.next/cache \
-    --mount=type=secret,id=DIRECTUS_TOKEN \
-    --mount=type=secret,id=DIRECTUS_PUBLIC_TOKEN \
-    --mount=type=secret,id=INSTAGRAM_ACCESS_TOKEN \
-    --mount=type=secret,id=INSTAGRAM_USER_ID \
-    --mount=type=secret,id=URL_SIGNING_SECRET \
-    --mount=type=secret,id=EBUSY_API_USER \
-    --mount=type=secret,id=EBUSY_API_PASSWORD \
+    --mount=type=secret,id=DIRECTUS_TOKEN,required=true \
+    --mount=type=secret,id=INSTAGRAM_ACCESS_TOKEN,required=true \
+    --mount=type=secret,id=INSTAGRAM_USER_ID,required=true \
+    --mount=type=secret,id=EBUSY_API_USER,required=true \
+    --mount=type=secret,id=EBUSY_API_PASSWORD,required=true \
+    --mount=type=secret,id=NR_API_TOKEN,required=true \
+    : "${NEXT_PUBLIC_DIRECTUS_URL:?}" "${EBUSY_API_URL:?}" "${NR_API_URL:?}" "${NR_CLUB_ID:?}" "${DISPO_API_URL:?}" && \
     DIRECTUS_TOKEN=$(cat /run/secrets/DIRECTUS_TOKEN) \
-    DIRECTUS_PUBLIC_TOKEN=$(cat /run/secrets/DIRECTUS_PUBLIC_TOKEN) \
     INSTAGRAM_ACCESS_TOKEN=$(cat /run/secrets/INSTAGRAM_ACCESS_TOKEN) \
     INSTAGRAM_USER_ID=$(cat /run/secrets/INSTAGRAM_USER_ID) \
-    URL_SIGNING_SECRET=$(cat /run/secrets/URL_SIGNING_SECRET) \
     EBUSY_API_USER=$(cat /run/secrets/EBUSY_API_USER) \
     EBUSY_API_PASSWORD=$(cat /run/secrets/EBUSY_API_PASSWORD) \
+    NR_API_TOKEN=$(cat /run/secrets/NR_API_TOKEN) \
     pnpm run build
 
 # Production image

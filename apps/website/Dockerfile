@@ -47,26 +47,31 @@ COPY apps/website ./apps/website
 ARG NEXT_PUBLIC_DIRECTUS_URL
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_ENABLE_VISUAL_EDITING
+ARG NR_API_URL
+ARG NR_CLUB_ID
 
 ENV NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
 ENV NEXT_PUBLIC_ENABLE_VISUAL_EDITING=${NEXT_PUBLIC_ENABLE_VISUAL_EDITING}
+ENV NR_API_URL=${NR_API_URL}
+ENV NR_CLUB_ID=${NR_CLUB_ID}
 ENV NEXT_TELEMETRY_DISABLED=1
 
 WORKDIR /app/apps/website
 
 # Build with secrets and cache mounts
 RUN --mount=type=cache,target=/app/apps/website/.next/cache \
-    --mount=type=secret,id=DIRECTUS_TOKEN \
-    --mount=type=secret,id=DIRECTUS_PUBLIC_TOKEN \
-    --mount=type=secret,id=INSTAGRAM_ACCESS_TOKEN \
-    --mount=type=secret,id=INSTAGRAM_USER_ID \
-    --mount=type=secret,id=URL_SIGNING_SECRET \
+    --mount=type=secret,id=DIRECTUS_TOKEN,required=true \
+    --mount=type=secret,id=INSTAGRAM_ACCESS_TOKEN,required=true \
+    --mount=type=secret,id=INSTAGRAM_USER_ID,required=true \
+    --mount=type=secret,id=URL_SIGNING_SECRET,required=true \
+    --mount=type=secret,id=NR_API_TOKEN,required=true \
+    : "${NEXT_PUBLIC_DIRECTUS_URL:?}" "${NEXT_PUBLIC_SITE_URL:?}" "${NR_API_URL:?}" "${NR_CLUB_ID:?}" && \
     DIRECTUS_TOKEN=$(cat /run/secrets/DIRECTUS_TOKEN) \
-    DIRECTUS_PUBLIC_TOKEN=$(cat /run/secrets/DIRECTUS_PUBLIC_TOKEN) \
     INSTAGRAM_ACCESS_TOKEN=$(cat /run/secrets/INSTAGRAM_ACCESS_TOKEN) \
     INSTAGRAM_USER_ID=$(cat /run/secrets/INSTAGRAM_USER_ID) \
     URL_SIGNING_SECRET=$(cat /run/secrets/URL_SIGNING_SECRET) \
+    NR_API_TOKEN=$(cat /run/secrets/NR_API_TOKEN) \
     pnpm run build
 
 # Production image
