@@ -50,6 +50,7 @@ export type { CalendarCategory } from './event-predicates'
 export { eventActiveDays, parsePlayDate } from './active-days'
 export { formatTournamentPlayDates, buildTournamentDateRuns } from './format-dates'
 export type { FormatPlayDatesOptions, DateRun } from './format-dates'
+export { formatLocationName } from './format-location'
 
 // Match-change summary
 export { buildMatchChangeSummary } from './match-change-summary'
