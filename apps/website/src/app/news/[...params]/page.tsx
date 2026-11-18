@@ -17,12 +17,10 @@ import { VisualEditingWrapper } from '@/components/visual-editing/VisualEditingW
 import { getEditAttr } from '@/lib/visual-editing'
 import { RelatedGroupPosts } from '@/components/elements/related-group-posts'
 import { getImageObjectPosition } from '@/lib/image-focus'
-
-type RouteSearchParams = Record<string, string | string[] | undefined>
+import { getPreviewVersion } from '@/lib/preview-version'
 
 interface PageProps {
   params: Promise<{ params: string[] }>
-  searchParams: Promise<RouteSearchParams>
 }
 
 function parseParams(params: string[]): { year?: string; slug: string } | null {
@@ -41,20 +39,6 @@ function parseParams(params: string[]): { year?: string; slug: string } | null {
   return null
 }
 
-function getPreviewVersion(searchParams: RouteSearchParams): string | undefined {
-  const version = searchParams.version
-  const value = Array.isArray(version) ? version[0] : version
-  return value || undefined
-}
-
-function appendVersion(path: string, version?: string): string {
-  if (!version) {
-    return path
-  }
-
-  return `${path}?version=${encodeURIComponent(version)}`
-}
-
 export async function generateStaticParams() {
   const posts = await fetchAllPublishedPosts()
 
@@ -69,9 +53,8 @@ export async function generateStaticParams() {
     })
 }
 
-export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
-  const [{ params: routeParams }, resolvedSearchParams] = await Promise.all([params, searchParams])
-  const version = getPreviewVersion(resolvedSearchParams)
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const [{ params: routeParams }, version] = await Promise.all([params, getPreviewVersion()])
   const parsed = parseParams(routeParams)
 
   if (!parsed) {
@@ -139,9 +122,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   }
 }
 
-export default async function PostPage({ params, searchParams }: PageProps) {
-  const [{ params: routeParams }, resolvedSearchParams] = await Promise.all([params, searchParams])
-  const version = getPreviewVersion(resolvedSearchParams)
+export default async function PostPage({ params }: PageProps) {
+  const [{ params: routeParams }, version] = await Promise.all([params, getPreviewVersion()])
   const parsed = parseParams(routeParams)
 
   if (!parsed) {
@@ -163,7 +145,7 @@ export default async function PostPage({ params, searchParams }: PageProps) {
   // If accessing /news/[slug] but post has published_at, redirect to canonical URL
   if (!parsed.year && post.published_at) {
     const year = new Date(post.published_at).getFullYear()
-    redirect(appendVersion(`/news/${year}/${parsed.slug}`, version))
+    redirect(`/news/${year}/${parsed.slug}`)
   }
 
   const { title, content, published_at, image } = post

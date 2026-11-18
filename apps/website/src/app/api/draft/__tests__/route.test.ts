@@ -5,7 +5,10 @@ import { GET } from '../route'
 
 vi.mock('next/headers', () => ({
   draftMode: vi.fn(async () => ({ enable: vi.fn() })),
+  cookies: vi.fn(async () => cookieStore),
 }))
+
+const cookieStore = { set: vi.fn(), delete: vi.fn() }
 
 vi.mock('next/navigation', () => ({
   redirect: vi.fn(),
@@ -33,11 +36,13 @@ describe('GET /api/draft', () => {
 
   it('redirects the home page permalink without a double slash', async () => {
     await GET(request({ collection: 'pages', slug: '/', version: 'published' }))
-    expect(redirect).toHaveBeenCalledWith('/?version=published')
+    expect(redirect).toHaveBeenCalledWith('/')
+    expect(cookieStore.set).toHaveBeenCalledWith('directus_preview_version', 'published', expect.any(Object))
   })
 
   it('redirects nested page permalinks without a double slash', async () => {
     await GET(request({ collection: 'pages', slug: '/verein/vorstand' }))
     expect(redirect).toHaveBeenCalledWith('/verein/vorstand')
+    expect(cookieStore.delete).toHaveBeenCalledWith('directus_preview_version')
   })
 })
