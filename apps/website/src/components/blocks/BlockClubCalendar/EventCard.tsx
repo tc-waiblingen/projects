@@ -9,7 +9,7 @@ import type {
   MatchEventMetadata,
   TournamentEventMetadata,
 } from '@tcw/calendar'
-import { isTournamentEvent, formatTournamentPlayDates } from '@tcw/calendar'
+import { isTournamentEvent, formatTournamentPlayDates, formatLocationName } from '@tcw/calendar'
 
 function formatDateRange(start: Date, end: Date): string {
   const startDay = start.getDate()
@@ -202,7 +202,7 @@ function EventItem({ event }: { event: CalendarEvent }) {
             {event.location && (
               <span className="inline-flex items-center gap-1">
                 <MapPinIcon />
-                {event.location}
+                {formatLocationName(event.location)}
               </span>
             )}
           </div>
@@ -272,7 +272,10 @@ export function CompactEventRow({ event, displayDate }: { event: CalendarEvent; 
         )}
       </span>
       {event.location && (
-        <span className="ml-auto shrink-0 text-muted">📍 {event.location}</span>
+        <span className="ml-auto inline-flex shrink-0 items-center gap-1 text-muted">
+          <MapPinIcon />
+          {formatLocationName(event.location)}
+        </span>
       )}
     </div>
   )

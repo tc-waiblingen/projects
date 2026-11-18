@@ -66,6 +66,51 @@ describe('UpcomingEvents', () => {
     expect(screen.getByRole('link', { name: /\+2 weitere Termine/ })).toHaveAttribute('href', '/kalender')
   })
 
+  it('uses singular wording for a single hidden event', () => {
+    const events = Array.from({ length: 6 }, (_, i) => createEvent({ id: String(i), title: `Event ${i}` }))
+    render(<UpcomingEvents days={[day(new Date(2026, 10, 21), events)]} now={now} />)
+
+    expect(screen.getByRole('link', { name: /\+1 weiterer Termin/ })).toBeInTheDocument()
+  })
+
+  it('omits the kind label for club events', () => {
+    render(<UpcomingEvents days={[day(new Date(2026, 10, 21), [createEvent({})])]} now={now} />)
+
+    expect(screen.queryByText('Verein')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Verein ·/)).not.toBeInTheDocument()
+  })
+
+  it('shows a date span only for multi-day events', () => {
+    const singleDay = createEvent({
+      id: 'single',
+      endDate: new Date(2026, 10, 21, 18, 0),
+      endTime: '18:00',
+    })
+    const multiDay = createEvent({
+      id: 'multi',
+      startDate: new Date(2026, 10, 21),
+      endDate: new Date(2026, 10, 23),
+      startTime: null,
+      isAllDay: true,
+      isMultiDay: true,
+    })
+    render(<UpcomingEvents days={[day(new Date(2026, 10, 21), [singleDay, multiDay])]} now={now} />)
+
+    expect(screen.getAllByText(/21\. – 23\.11\.2026/)).toHaveLength(1)
+    expect(screen.getByText('Mehr\u00ADtägig')).toBeInTheDocument()
+  })
+
+  it('shortens club names used as location', () => {
+    render(
+      <UpcomingEvents
+        days={[day(new Date(2026, 10, 21), [createEvent({ location: 'Tennis-Club Waiblingen e.V.' })])]}
+        now={now}
+      />,
+    )
+
+    expect(screen.getByText('Waiblingen')).toBeInTheDocument()
+  })
+
   it('shows matches as pairings with team label', () => {
     const match = createEvent({
       source: 'match',

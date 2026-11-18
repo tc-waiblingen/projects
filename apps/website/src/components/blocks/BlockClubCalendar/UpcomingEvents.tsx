@@ -1,7 +1,8 @@
 import type { CalendarEvent, DayGroup, MatchEventMetadata } from '@tcw/calendar'
-import { isTournamentEvent } from '@tcw/calendar'
+import { formatLocationName, isTournamentEvent } from '@tcw/calendar'
 import { PlainButtonLink } from '@/components/elements/button'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
+import { MapPinIcon } from '@/components/icons/map-pin-icon'
 import { teamLabelWithGroup } from '@/lib/team-label'
 import { formatEventSpan } from './EventCard'
 
@@ -16,27 +17,43 @@ function eventTitle(event: CalendarEvent): string {
   return event.title
 }
 
-function eventKind(event: CalendarEvent): string {
+function eventKind(event: CalendarEvent): string | null {
   if (event.source === 'match') {
     const meta = event.metadata as MatchEventMetadata
     return meta.teamName ? `Punktspiel · ${teamLabelWithGroup(meta.teamName, meta.group)}` : 'Punktspiel'
   }
   if (isTournamentEvent(event)) return 'Turnier'
-  return 'Verein'
+  return null
 }
 
 function eventTime(event: CalendarEvent): string | null {
-  if (event.isAllDay) return event.isMultiDay ? 'Mehrtägig' : 'Ganztägig'
+  // Soft hyphen lets "Mehrtägig" break as "Mehr-tägig" in narrow columns
+  if (event.isAllDay) return event.isMultiDay ? 'Mehr\u00ADtägig' : 'Ganztägig'
   return event.startTime
 }
 
-function eventDetails(event: CalendarEvent): string {
-  const parts = [
-    formatEventSpan(event),
+function eventDetails(event: CalendarEvent): string[] {
+  const spansDays = event.isMultiDay || (event.playDates?.length ?? 0) > 1
+  return [
+    spansDays ? formatEventSpan(event) : '',
     event.source === 'match' && !(event.metadata as MatchEventMetadata).isHome ? 'Auswärtsspiel' : '',
-    event.location ?? '',
-  ]
-  return parts.filter(Boolean).join(' · ')
+  ].filter(Boolean)
+}
+
+function EventMeta({ parts, location, className }: { parts: string[]; location: string | null; className: string }) {
+  if (parts.length === 0 && !location) return null
+  return (
+    <span className={className}>
+      {parts.join(' · ')}
+      {parts.length > 0 && location && ' · '}
+      {location && (
+        <span className="inline-flex items-center gap-1">
+          <MapPinIcon />
+          {formatLocationName(location)}
+        </span>
+      )}
+    </span>
+  )
 }
 
 function relativeDayLabel(date: Date, now: Date): string {
@@ -58,7 +75,7 @@ function FeaturedDay({ day, now }: { day: DayGroup; now: Date }) {
         <p className="text-sm font-semibold tracking-wide text-tcw-red-100 uppercase">
           Als Nächstes · {relativeDayLabel(day.date, now)}
         </p>
-        <h3 data-toc="false" className="text-5xl font-bold sm:text-7xl">
+        <h3 data-toc="false" className="text-5xl font-bold text-white sm:text-7xl">
           {day.date.toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })}
         </h3>
         <p className="text-lg text-tcw-red-100">
@@ -69,18 +86,20 @@ function FeaturedDay({ day, now }: { day: DayGroup; now: Date }) {
       <ul className="flex flex-col">
         {visible.map((event) => (
           <li key={event.id} className="flex items-baseline gap-5 border-t border-tcw-red-400 py-3">
-            <span className="w-14 shrink-0 font-bold tabular-nums sm:text-lg">{eventTime(event)}</span>
+            <span className="w-14 shrink-0 font-bold tabular-nums hyphens-manual sm:text-lg">{eventTime(event)}</span>
             <div className="flex min-w-0 flex-col gap-0.5">
-              <span className="text-xs font-semibold tracking-wide text-tcw-red-100 uppercase">{eventKind(event)}</span>
+              {eventKind(event) && (
+                <span className="text-xs font-semibold tracking-wide text-tcw-red-100 uppercase">{eventKind(event)}</span>
+              )}
               <span className="text-lg font-semibold sm:text-xl">{eventTitle(event)}</span>
-              {eventDetails(event) && <span className="text-sm text-tcw-red-100">{eventDetails(event)}</span>}
+              <EventMeta parts={eventDetails(event)} location={event.location} className="text-sm text-tcw-red-100" />
             </div>
           </li>
         ))}
       </ul>
       {hiddenCount > 0 && (
         <PlainButtonLink href={CALENDAR_HREF} color="light" className="self-start">
-          +{hiddenCount} weitere {hiddenCount === 1 ? 'Termin' : 'Termine'} <ArrowNarrowRightIcon />
+          +{hiddenCount} {hiddenCount === 1 ? 'weiterer Termin' : 'weitere Termine'} <ArrowNarrowRightIcon />
         </PlainButtonLink>
       )}
     </article>
@@ -100,11 +119,15 @@ function DayRow({ day }: { day: DayGroup }) {
         {day.events.map((event) => (
           <li key={event.id} className="flex flex-col gap-0.5">
             <span className="font-semibold text-body">{eventTitle(event)}</span>
-            <span className="text-sm text-subtle">
-              {[eventKind(event), event.isAllDay ? eventTime(event) : event.startTime && `${event.startTime} Uhr`, eventDetails(event)]
-                .filter(Boolean)
-                .join(' · ')}
-            </span>
+            <EventMeta
+              parts={[
+                eventKind(event),
+                event.isAllDay ? eventTime(event) : event.startTime && `${event.startTime} Uhr`,
+                ...eventDetails(event),
+              ].filter((part): part is string => !!part)}
+              location={event.location}
+              className="text-sm text-subtle"
+            />
           </li>
         ))}
       </ul>
