@@ -122,6 +122,38 @@ describe('UpcomingEvents', () => {
     expect(screen.getByText('Punktspiel · Damen')).toBeInTheDocument()
   })
 
+  it('links match teams and group on featured and following days', () => {
+    const metadata = {
+      homeTeam: 'TC Waiblingen',
+      homeTeamUrl: 'https://example.com/home',
+      awayTeam: 'TSV Korb',
+      awayTeamUrl: 'https://example.com/away',
+      isHome: true,
+      teamName: 'Damen',
+      group: 'Damen Bezirksliga',
+      groupUrl: 'https://example.com/group',
+    } as MatchEventMetadata
+    render(
+      <UpcomingEvents
+        days={[
+          day(new Date(2026, 10, 21), [createEvent({ id: 'm1', source: 'match', metadata })]),
+          day(new Date(2026, 10, 22), [createEvent({ id: 'm2', source: 'match', metadata })]),
+        ]}
+        now={now}
+      />,
+    )
+
+    for (const [name, href] of [
+      ['TC Waiblingen', 'https://example.com/home'],
+      ['TSV Korb', 'https://example.com/away'],
+      ['Damen (Bezirksliga)', 'https://example.com/group'],
+    ]) {
+      const links = screen.getAllByRole('link', { name })
+      expect(links).toHaveLength(2)
+      links.forEach((link) => expect(link).toHaveAttribute('href', href))
+    }
+  })
+
   it('lists following days with all their events', () => {
     render(
       <UpcomingEvents
@@ -166,13 +198,13 @@ describe('UpcomingEvents', () => {
     expect(details).toHaveAttribute('rel', 'noopener noreferrer nofollow')
   })
 
-  it('does not link match reports', () => {
+  it('links match report templates for upcoming matches', () => {
     const match = createEvent({
       source: 'match',
-      metadata: { homeTeam: 'A', awayTeam: 'B', isHome: true, reportUrl: 'https://example.com/report' } as MatchEventMetadata,
+      metadata: { homeTeam: 'A', awayTeam: 'B', isHome: true, reportUrl: 'https://example.com/SpielberichtVorlage' } as MatchEventMetadata,
     })
     render(<UpcomingEvents days={[day(new Date(2026, 10, 21), [match])]} now={now} />)
 
-    expect(screen.queryByRole('link', { name: /Spielbericht/ })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Spielberichts-Vorlage' })).toHaveAttribute('href', 'https://example.com/SpielberichtVorlage')
   })
 })

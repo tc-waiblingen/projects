@@ -39,9 +39,9 @@ export function formatEventSpan(event: CalendarEvent, compact = false): string {
   return ''
 }
 
-type LinkTone = 'default' | 'inverted'
+export type LinkTone = 'default' | 'inverted'
 
-function ExternalLink({
+export function ExternalLink({
   href,
   tone = 'default',
   children,
@@ -148,6 +148,15 @@ export function EventLinks({ event, tone = 'default' }: { event: CalendarEvent; 
     const { callForEntriesUrl, registrationUrl } = event.metadata as TournamentEventMetadata
     if (callForEntriesUrl) links.push({ href: callForEntriesUrl, label: 'Ausschreibung' })
     if (registrationUrl) links.push({ href: registrationUrl, label: 'Anmeldung' })
+  }
+  if (event.source === 'match') {
+    const { reportUrl, result } = event.metadata as MatchEventMetadata
+    if (reportUrl) {
+      links.push({
+        href: reportUrl,
+        label: isMatchPlayed(result, reportUrl) ? 'Spielbericht' : 'Spielberichts-Vorlage',
+      })
+    }
   }
 
   if (links.length === 0) return null

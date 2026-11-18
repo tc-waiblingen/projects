@@ -4,23 +4,40 @@ import { PlainButtonLink } from '@/components/elements/button'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
 import { MapPinIcon } from '@/components/icons/map-pin-icon'
 import { teamLabelWithGroup } from '@/lib/team-label'
-import { EventLinks, formatEventSpan } from './EventCard'
+import { Fragment } from 'react'
+import { EventLinks, ExternalLink, formatEventSpan, type LinkTone } from './EventCard'
 
 export const CALENDAR_HREF = '/kalender'
 const MAX_FEATURED_EVENTS = 5
 
-function eventTitle(event: CalendarEvent): string {
+function MaybeLink({ href, tone, children }: { href?: string; tone: LinkTone; children: string }) {
+  return href ? <ExternalLink href={href} tone={tone}>{children}</ExternalLink> : children
+}
+
+function EventTitle({ event, tone }: { event: CalendarEvent; tone: LinkTone }) {
   if (event.source === 'match') {
     const meta = event.metadata as MatchEventMetadata
-    return `${meta.homeTeam} – ${meta.awayTeam}`
+    return (
+      <>
+        <MaybeLink href={meta.homeTeamUrl} tone={tone}>{meta.homeTeam}</MaybeLink>
+        {' – '}
+        <MaybeLink href={meta.awayTeamUrl} tone={tone}>{meta.awayTeam}</MaybeLink>
+      </>
+    )
   }
   return event.title
 }
 
-function eventKind(event: CalendarEvent): string | null {
+function eventKind(event: CalendarEvent, tone: LinkTone): React.ReactNode {
   if (event.source === 'match') {
     const meta = event.metadata as MatchEventMetadata
-    return meta.teamName ? `Punktspiel · ${teamLabelWithGroup(meta.teamName, meta.group)}` : 'Punktspiel'
+    if (!meta.teamName) return 'Punktspiel'
+    return (
+      <>
+        Punktspiel ·{' '}
+        <MaybeLink href={meta.groupUrl} tone={tone}>{teamLabelWithGroup(meta.teamName, meta.group)}</MaybeLink>
+      </>
+    )
   }
   if (isTournamentEvent(event)) return 'Turnier'
   return null
@@ -40,11 +57,24 @@ function eventDetails(event: CalendarEvent): string[] {
   ].filter(Boolean)
 }
 
-function EventMeta({ parts, location, className }: { parts: string[]; location: string | null; className: string }) {
+function EventMeta({
+  parts,
+  location,
+  className,
+}: {
+  parts: React.ReactNode[]
+  location: string | null
+  className: string
+}) {
   if (parts.length === 0 && !location) return null
   return (
     <span className={className}>
-      {parts.join(' · ')}
+      {parts.map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 && ' · '}
+          {part}
+        </Fragment>
+      ))}
       {parts.length > 0 && location && ' · '}
       {location && (
         <span className="inline-flex items-center gap-1">
@@ -88,10 +118,14 @@ function FeaturedDay({ day, now }: { day: DayGroup; now: Date }) {
           <li key={event.id} className="flex items-baseline gap-5 border-t border-tcw-red-400 py-3">
             <span className="w-14 shrink-0 font-bold tabular-nums hyphens-manual sm:text-lg">{eventTime(event)}</span>
             <div className="flex min-w-0 flex-col gap-0.5">
-              {eventKind(event) && (
-                <span className="text-xs font-semibold tracking-wide text-tcw-red-100 uppercase">{eventKind(event)}</span>
+              {eventKind(event, 'inverted') && (
+                <span className="text-xs font-semibold tracking-wide text-tcw-red-100 uppercase">
+                  {eventKind(event, 'inverted')}
+                </span>
               )}
-              <span className="text-lg font-semibold sm:text-xl">{eventTitle(event)}</span>
+              <span className="text-lg font-semibold sm:text-xl">
+                <EventTitle event={event} tone="inverted" />
+              </span>
               <EventMeta parts={eventDetails(event)} location={event.location} className="text-sm text-tcw-red-100" />
               <EventLinks event={event} tone="inverted" />
             </div>
@@ -119,13 +153,15 @@ function DayRow({ day }: { day: DayGroup }) {
       <ul className="flex min-w-0 flex-col gap-3">
         {day.events.map((event) => (
           <li key={event.id} className="flex flex-col gap-0.5">
-            <span className="font-semibold text-body">{eventTitle(event)}</span>
+            <span className="font-semibold text-body">
+              <EventTitle event={event} tone="default" />
+            </span>
             <EventMeta
               parts={[
-                eventKind(event),
+                eventKind(event, 'default'),
                 event.isAllDay ? eventTime(event) : event.startTime && `${event.startTime} Uhr`,
                 ...eventDetails(event),
-              ].filter((part): part is string => !!part)}
+              ].filter(Boolean)}
               location={event.location}
               className="text-sm text-subtle"
             />
