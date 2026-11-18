@@ -4,7 +4,7 @@ import { PlainButtonLink } from '@/components/elements/button'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
 import { MapPinIcon } from '@/components/icons/map-pin-icon'
 import { teamLabelWithGroup } from '@/lib/team-label'
-import { formatEventSpan } from './EventCard'
+import { EventLinks, formatEventSpan } from './EventCard'
 
 export const CALENDAR_HREF = '/kalender'
 const MAX_FEATURED_EVENTS = 5
@@ -93,6 +93,7 @@ function FeaturedDay({ day, now }: { day: DayGroup; now: Date }) {
               )}
               <span className="text-lg font-semibold sm:text-xl">{eventTitle(event)}</span>
               <EventMeta parts={eventDetails(event)} location={event.location} className="text-sm text-tcw-red-100" />
+              <EventLinks event={event} tone="inverted" />
             </div>
           </li>
         ))}
@@ -128,6 +129,7 @@ function DayRow({ day }: { day: DayGroup }) {
               location={event.location}
               className="text-sm text-subtle"
             />
+            <EventLinks event={event} />
           </li>
         ))}
       </ul>

@@ -39,13 +39,28 @@ export function formatEventSpan(event: CalendarEvent, compact = false): string {
   return ''
 }
 
-function ExternalLink({ href, children }: { href: string; children: React.ReactNode }) {
+type LinkTone = 'default' | 'inverted'
+
+function ExternalLink({
+  href,
+  tone = 'default',
+  children,
+}: {
+  href: string
+  tone?: LinkTone
+  children: React.ReactNode
+}) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer nofollow"
-      className="underline decoration-tcw-accent-400 underline-offset-2 hover:decoration-tcw-accent-600 dark:decoration-tcw-accent-500 dark:hover:decoration-tcw-accent-300"
+      className={clsx(
+        'cursor-pointer underline underline-offset-2',
+        tone === 'inverted'
+          ? 'decoration-tcw-red-300 hover:decoration-white'
+          : 'decoration-tcw-accent-400 hover:decoration-tcw-accent-600 dark:decoration-tcw-accent-500 dark:hover:decoration-tcw-accent-300',
+      )}
     >
       {children}
     </a>
@@ -122,6 +137,28 @@ function TournamentLinks({ event }: { event: CalendarEvent }) {
       {registrationUrl && (
         <ExternalLink href={registrationUrl}>Anmeldung</ExternalLink>
       )}
+    </div>
+  )
+}
+
+export function EventLinks({ event, tone = 'default' }: { event: CalendarEvent; tone?: LinkTone }) {
+  const links: { href: string; label: string }[] = []
+  if (event.url) links.push({ href: event.url, label: 'Mehr Details' })
+  if (event.source === 'tournament') {
+    const { callForEntriesUrl, registrationUrl } = event.metadata as TournamentEventMetadata
+    if (callForEntriesUrl) links.push({ href: callForEntriesUrl, label: 'Ausschreibung' })
+    if (registrationUrl) links.push({ href: registrationUrl, label: 'Anmeldung' })
+  }
+
+  if (links.length === 0) return null
+
+  return (
+    <div className={clsx('flex flex-wrap gap-x-4 gap-y-1 text-sm', tone === 'default' && 'text-body')}>
+      {links.map((link) => (
+        <ExternalLink key={link.label} href={link.href} tone={tone}>
+          {link.label}
+        </ExternalLink>
+      ))}
     </div>
   )
 }

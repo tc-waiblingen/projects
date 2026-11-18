@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import type { CalendarEvent, DayGroup, MatchEventMetadata } from '@tcw/calendar'
+import type { CalendarEvent, DayGroup, MatchEventMetadata, TournamentEventMetadata } from '@tcw/calendar'
 import { UpcomingEvents } from '../UpcomingEvents'
 
 const now = new Date(2026, 10, 17, 12, 0) // Tue Nov 17, 2026
@@ -139,5 +139,40 @@ describe('UpcomingEvents', () => {
     expect(screen.getByText('Sunday A')).toBeInTheDocument()
     expect(screen.getByText('Sunday B')).toBeInTheDocument()
     expect(screen.getByText('22.11.')).toBeInTheDocument()
+  })
+
+  it('links event details and tournament documents on featured and following days', () => {
+    const tournament = createEvent({
+      id: 't',
+      source: 'tournament',
+      title: 'Clubmeisterschaft',
+      metadata: {
+        callForEntriesUrl: 'https://example.com/ausschreibung.pdf',
+        registrationUrl: 'https://example.com/anmeldung',
+      } as TournamentEventMetadata,
+    })
+    const clubEvent = createEvent({ id: 'c', title: 'Saisonabschluss', url: 'https://example.com/fest' })
+    render(
+      <UpcomingEvents
+        days={[day(new Date(2026, 10, 21), [tournament]), day(new Date(2026, 10, 22), [clubEvent])]}
+        now={now}
+      />,
+    )
+
+    expect(screen.getByRole('link', { name: 'Ausschreibung' })).toHaveAttribute('href', 'https://example.com/ausschreibung.pdf')
+    expect(screen.getByRole('link', { name: 'Anmeldung' })).toHaveAttribute('href', 'https://example.com/anmeldung')
+    const details = screen.getByRole('link', { name: 'Mehr Details' })
+    expect(details).toHaveAttribute('href', 'https://example.com/fest')
+    expect(details).toHaveAttribute('rel', 'noopener noreferrer nofollow')
+  })
+
+  it('does not link match reports', () => {
+    const match = createEvent({
+      source: 'match',
+      metadata: { homeTeam: 'A', awayTeam: 'B', isHome: true, reportUrl: 'https://example.com/report' } as MatchEventMetadata,
+    })
+    render(<UpcomingEvents days={[day(new Date(2026, 10, 21), [match])]} now={now} />)
+
+    expect(screen.queryByRole('link', { name: /Spielbericht/ })).not.toBeInTheDocument()
   })
 })
