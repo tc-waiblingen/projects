@@ -17,23 +17,15 @@ WORKDIR /app
 
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/config/package.json ./packages/config/
-COPY packages/calendar/package.json ./packages/calendar/
-COPY packages/ebusy/package.json ./packages/ebusy/
-COPY packages/email/package.json ./packages/email/
-COPY apps/website/package.json ./apps/website/
-COPY apps/tv/package.json ./apps/tv/
-COPY apps/dispo/package.json ./apps/dispo/
 COPY apps/present/package.json ./apps/present/
 
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
+    pnpm install --frozen-lockfile --filter @tcw/present...
 
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     pnpm rebuild better-sqlite3
 
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app ./
+FROM deps AS builder
 
 COPY packages/config ./packages/config
 COPY apps/present ./apps/present

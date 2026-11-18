@@ -24,21 +24,18 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/config/package.json ./packages/config/
 COPY packages/calendar/package.json ./packages/calendar/
 COPY packages/ebusy/package.json ./packages/ebusy/
-COPY packages/email/package.json ./packages/email/
 COPY apps/dispo/package.json ./apps/dispo/
 
 # Install dependencies (skip ignored builds for unrelated packages)
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
+    pnpm install --frozen-lockfile --filter @tcw/dispo...
 
 # Make sure better-sqlite3's native binding is built against this image's Node
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     pnpm rebuild better-sqlite3
 
 # Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app ./
+FROM deps AS builder
 
 # Copy shared package source and build it
 COPY packages/config ./packages/config

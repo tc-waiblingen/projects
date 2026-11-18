@@ -28,16 +28,10 @@ COPY apps/tv/package.json ./apps/tv/
 
 # Install dependencies (--frozen-lockfile ensures reproducible builds)
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
+    pnpm install --frozen-lockfile --filter @tcw/tv...
 
 # Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/calendar/node_modules ./packages/calendar/node_modules
-COPY --from=deps /app/packages/ebusy/node_modules ./packages/ebusy/node_modules
-COPY --from=deps /app/apps/tv/node_modules ./apps/tv/node_modules
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+FROM deps AS builder
 
 # Copy shared package source and build it
 COPY packages/config ./packages/config

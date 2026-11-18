@@ -28,12 +28,10 @@ COPY apps/website/package.json ./apps/website/
 
 # Install dependencies
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
+    pnpm install --frozen-lockfile --filter @tcw/website...
 
 # Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app ./
+FROM deps AS builder
 
 # Copy shared package source and build it
 COPY packages/config ./packages/config
